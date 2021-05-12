@@ -82,6 +82,7 @@
         <p class="admonition-title">Observação</p>
         <p>
             A instrução <code>pass</code> em Python é como um conjunto vazio de chaves (<code>{}</code>) em Java ou C.
+        </p>
     </div>
     <p>
         Muitas classes são herdadas de outras classes, mas esta não é. Muitas classes definem métodos, mas esta não. Não há nada que uma classe Python absolutamente deva ter, exceto um nome. Em particular, os programadores C++ podem achar estranho que as classes Python não tenham construtores e destruidores explícitos. Embora não seja obrigatório, as classes Python <em>podem</em> ter algo semelhante a um construtor: o método <code>__init__()</code>.
@@ -117,13 +118,13 @@
         Instanciar classes em Python é simples. Para instanciar uma classe, basta chamar a classe como se fosse uma função, passando os argumentos que o método <code>__init__()</code> requer. O valor de retorno será o objeto recém-criado.
     </p>
     
-    <pre><code class="language-python-repl">>>> import fibonacci2
->>> fib = fibonacci2.Fib(100)  ①
->>> fib                        ②
-<fibonacci2.Fib object at 0x00DB8810>
->>> fib.__class__              ③
-<class 'fibonacci2.Fib'>
->>> fib.__doc__                ④
+    <pre><code class="language-python-repl">&gt;&gt;&gt; import fibonacci2
+&gt;&gt;&gt; fib = fibonacci2.Fib(100)  ①
+&gt;&gt;&gt; fib                        ②
+&lt;fibonacci2.Fib object at 0x00DB8810&gt;
+&gt;&gt;&gt; fib.__class__              ③
+&lt;class 'fibonacci2.Fib'&gt;
+&gt;&gt;&gt; fib.__doc__                ④
 'iterator that yields numbers in the Fibonacci sequence'</code></pre>
 
 
@@ -145,6 +146,7 @@
         <p class="admonition-title">Observação</p>
         <p>
             Em Python, simplesmente chame uma classe como se fosse uma função para criar uma nova instância da classe. Não há <code>new</code>operador explícito como em <abbr>C ++</abbr> ou Java.
+        </p>
     </div>
 
     <h2 id="instance-variables">Variáveis ​​de instância</h2>
@@ -184,12 +186,12 @@
         Variáveis ​​de instância são específicas para uma instância de uma classe. Por exemplo, se você criar duas instâncias <code>Fib</code> com valores máximos diferentes, cada uma se lembrará de seus próprios valores.
     </p>
 
-    <pre><code class="language-python">>>> import fibonacci2
->>> fib1 = fibonacci2.Fib(100)
->>> fib2 = fibonacci2.Fib(200)
->>> fib1.max
+    <pre><code class="language-python">&gt;&gt;&gt; import fibonacci2
+&gt;&gt;&gt; fib1 = fibonacci2.Fib(100)
+&gt;&gt;&gt; fib2 = fibonacci2.Fib(200)
+&gt;&gt;&gt; fib1.max
 100
->>> fib2.max
+&gt;&gt;&gt; fib2.max
 200</code></pre>
 
     <h2 id="a-fibonacci-iterator">Um Iterador Fibonacci</h2>
@@ -242,8 +244,8 @@
         Completamente confuso ainda? Excelente. Vamos ver como chamar este iterador:
     </p>
     
-    <pre><code class="language-python-repl">>>> from fibonacci2 import Fib
->>> for n in Fib(1000):
+    <pre><code class="language-python-repl">&gt;&gt;&gt; from fibonacci2 import Fib
+&gt;&gt;&gt; for n in Fib(1000):
 ...     print(n, end=' ')
 0 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987</code></pre>
 
@@ -280,7 +282,7 @@
         Agora é a hora do final. Vamos reescrever o <a href="https://www.acervolima.com.br/2021/05/closures-e-geradores-em-python.html" style="color: #b44582;">gerador de regras plurais</a> como um iterador.
     </p>
     
-    <pre><code class="language-python-repl">class LazyRules:
+    <pre><code class="language-python">class LazyRules:
     rules_filename = 'plural6-rules.txt'
 
     def __init__(self):
@@ -338,109 +340,211 @@ rules = LazyRules()</code></pre>
         Antes de continuar, vamos dar uma olhada mais de perto em <code>rules_filename</code>. Não está definido dentro do método <code>__iter__()</code>. Na verdade, não é definido em <em>nenhum</em> método. É definido no nível da classe. É uma <i>variável de classe</i> e, embora você possa acessá-la como uma variável de instância (<code>self.rules_filename</code> ), ela é compartilhada por todas as instâncias da classe <code>LazyRules</code>.
     </p>
 
-    <pre><code class="language-python-repl">>>> import plural6
->>> r1 = plural6.LazyRules()
->>> r2 = plural6.LazyRules()
->>> r1.rules_filename                               ①
+    <pre><code class="language-python-repl">&gt;&gt;&gt; import plural6
+&gt;&gt;&gt; r1 = plural6.LazyRules()
+&gt;&gt;&gt; r2 = plural6.LazyRules()
+&gt;&gt;&gt; r1.rules_filename                               ①
 'plural6-rules.txt'
->>> r2.rules_filename
+&gt;&gt;&gt; r2.rules_filename
 'plural6-rules.txt'
->>> r2.rules_filename = 'r2-override.txt'           ②
->>> r2.rules_filename
+&gt;&gt;&gt; r2.rules_filename = 'r2-override.txt'           ②
+&gt;&gt;&gt; r2.rules_filename
 'r2-override.txt'
->>> r1.rules_filename
+&gt;&gt;&gt; r1.rules_filename
 'plural6-rules.txt'
->>> r2.__class__.rules_filename                     ③
+&gt;&gt;&gt; r2.__class__.rules_filename                     ③
 'plural6-rules.txt'
->>> r2.__class__.rules_filename = 'papayawhip.txt'  ④
->>> r1.rules_filename
+&gt;&gt;&gt; r2.__class__.rules_filename = 'papayawhip.txt'  ④
+&gt;&gt;&gt; r1.rules_filename
 'papayawhip.txt'
->>> r2.rules_filename                               ⑤
+&gt;&gt;&gt; r2.rules_filename                               ⑤
 'r2-overridetxt'</code></pre>
 
+    <ol>
+        <li>
+            Cada instância da classe herda o atributo <code>rules_filename</code> com o valor definido pela classe.
+        </li>
+        <li>
+            Alterar o valor do atributo em uma instância não afeta outras instâncias...
+        </li>
+        <li>
+            …Nem muda o atributo de classe. Você pode acessar o atributo de classe (em oposição ao atributo de uma instância individual) usando o atributo especial <code>__class__</code> para acessar a própria classe.
+        </li>
+        <li>
+            Se você alterar o atributo de classe, todas as instâncias que ainda herdam esse valor (como <code>r1</code> aqui) serão afetadas.
+        </li>
+        <li>
+            As instâncias que substituíram esse atributo (como <code>r2</code> aqui) não serão afetadas.
+        </li>
+    </ol>
+    <p>
+        E agora de volta ao nosso show.
+    </p>
     
+    <pre><code class="language-python">def __iter__(self):       ①
+    self.cache_index = 0
+    return self           ②</code></pre>
 
+    <ol>
+        <li>
+            O método <code>__iter__()</code> será chamado sempre que alguém - digamos, um loop <code>for</code> - chamar <code>iter(rules)</code>.
+        </li>
+        <li>
+            A única coisa que todo método <code>__iter__()</code> deve fazer é retornar um iterador. Nesse caso, ele retorna <code>self</code>, o que sinaliza que essa classe define um método <code>__next__()</code> que se encarregará de retornar valores ao longo da iteração.
+        </li>
+    </ol>
+    
+    <pre><code class="language-python">def __next__(self):                                 ①
+    .
+    .
+    .
+    pattern, search, replace = line.split(None, 2)
+    funcs = build_match_and_apply_functions(        ②
+        pattern, search, replace)
+    self.cache.append(funcs)                        ③
+    return funcs</code></pre>
 
-<table style="width:100%;border-collapse:collapse;margin:0;border:0"><tbody><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">①</span></td><td style="vertical-align:top;margin:0;padding:0;width:auto;border:0">Cada instância da classe herda o atributo <code>rules_filename</code> com o valor definido pela classe.
-</td></tr><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">②</span></td><td style="vertical-align:top;margin:0;padding:0;width:auto;border:0">Alterar o valor do atributo em uma instância não afeta outras instâncias ...
-</td></tr><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">③</span></td><td style="vertical-align:top;margin:0;padding:0;width:auto;border:0">… Nem muda o atributo de classe. Você pode acessar o atributo de classe (em oposição ao atributo de uma instância individual) usando o <code>__class__</code>atributo especial para acessar a própria classe.
-</td></tr><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">④</span></td><td style="vertical-align:top;margin:0;padding:0;width:auto;border:0">Se você alterar o atributo de classe, todas as instâncias que ainda herdam esse valor (como <code>r1</code> aqui) serão afetadas.
-</td></tr><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">⑤</span></td><td style="vertical-align: top; margin: 0px; padding: 0px; width: auto; border: 0px none; background-color: inherit; cursor: inherit;">As instâncias que substituíram esse atributo (como <code>r2</code> aqui) não serão afetadas.
-</td></tr></tbody></table>
-<p>E agora de volta ao nosso show.
+    <ol>
+        <li>
+            O método <code>__next__()</code> é chamado sempre que alguém - digamos, um loop <code>for</code> - chama <code>next(rules)</code>. Este método só fará sentido se começarmos pelo final e trabalharmos de trás para frente. Então vamos fazer isso.
+        </li>
+        <li>
+            A última parte desta função deve parecer familiar, pelo menos. A função <code>build_match_and_apply_functions()</code> não mudou; é o mesmo de sempre.
+        </li>
+        <li>
+            A única diferença é que, antes de retornar as funções match e apply (que são armazenadas na tupla <code>funcs</code>), vamos salvá-las em <code>self.cache</code>.
+        </li>
+    </ol>
+    <p>
+        Movendo-se para trás...
+    </p>
+    
+    <pre><code class="language-python">def __next__(self):
+    .
+    .
+    .
+    line = self.pattern_file.readline()  ①
+    if not line:                         ②
+        self.pattern_file.close()
+        raise StopIteration              ③
+    .
+    .
+    .</code></pre>
 
-</p><p class="skip"><a href="#postautopre10" style="color: #b44582;">pule esta lista de códigos</a></p><pre class="pp code" id="autopre10"><div class="w">[ <a class="toggle" href="javascript:toggleCodeBlock('autopre10')" style="color: #b44582;">ocultar</a> ] [ <a href="javascript:plainTextOnClick('autopre10')" style="color: #b44582;">abrir em uma nova janela</a> ]</div><div class="b"><code><a style="color: #b44582;"><span class="pln">    </span><span class="kwd">def</span><span class="pln"> __iter__</span><span class="pun">(</span><span class="kwd">self</span><span class="pun">):</span><span class="pln">       </span><span class="u"><span class="pun">①</span></span></a><span class="pln"><br/>        </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">cache_index </span><span class="pun">=</span><span class="pln"> </span><span class="lit">0</span><span class="pln"><br/></span><a style="color: #b44582;"><span class="pln">        </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">self</span><span class="pln">           </span><span class="u"><span class="pun">②</span></span></a><span class="pln"><br/></span></code></div></pre>
-<table style="width:100%;border-collapse:collapse;margin:0;border:0"><tbody><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">①</span></td><td style="vertical-align: top; margin: 0px; padding: 0px; width: auto; border: 0px none; background-color: inherit; cursor: inherit;">O método <code>__iter__()</code> será chamado sempre que alguém - digamos, um loop <code>for</code> - chamar <code>iter(rules)</code>.
-</td></tr><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">②</span></td><td style="vertical-align:top;margin:0;padding:0;width:auto;border:0">A única coisa que todo método <code>__iter__()</code> deve fazer é retornar um iterador. Nesse caso, ele retorna <code>self</code> , o que sinaliza que essa classe define um método <code>__next__()</code> que se encarregará de retornar valores ao longo da iteração.
-</td></tr></tbody></table>
-<p class="skip"><a href="#postautopre11" style="color: #b44582;">pule esta lista de códigos</a></p><pre class="pp code" id="autopre11"><div class="w">[ <a class="toggle" href="javascript:toggleCodeBlock('autopre11')" style="color: #b44582;">ocultar</a> ] [ <a href="javascript:plainTextOnClick('autopre11')" style="color: #b44582;">abrir em uma nova janela</a> ]</div><div class="b"><code><a style="color: #b44582;"><span class="pln">    </span><span class="kwd">def</span><span class="pln"> __next__</span><span class="pun">(</span><span class="kwd">self</span><span class="pun">):</span><span class="pln">                                 </span><span class="u"><span class="pun">①</span></span></a><span class="pln"><br/>        </span><span class="pun">.</span><span class="pln"><br/>        </span><span class="pun">.</span><span class="pln"><br/>        </span><span class="pun">.</span><span class="pln"><br/>        pattern</span><span class="pun">,</span><span class="pln"> search</span><span class="pun">,</span><span class="pln"> replace </span><span class="pun">=</span><span class="pln"> line</span><span class="pun">.</span><span class="pln">split</span><span class="pun">(</span><span class="kwd">None</span><span class="pun">,</span><span class="pln"> </span><span class="lit">2</span><span class="pun">)</span><span class="pln"><br/></span><a style="color: #b44582;"><span class="pln">        funcs </span><span class="pun">=</span><span class="pln"> build_match_and_apply_functions</span><span class="pun">(</span><span class="pln">        </span><span class="u"><span class="pun">②</span></span></a><span class="pln"><br/>            pattern</span><span class="pun">,</span><span class="pln"> search</span><span class="pun">,</span><span class="pln"> replace</span><span class="pun">)</span><span class="pln"><br/></span><a style="color: #b44582;"><span class="pln">        </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">cache</span><span class="pun">.</span><span class="pln">append</span><span class="pun">(</span><span class="pln">funcs</span><span class="pun">)</span><span class="pln">                        </span><span class="u"><span class="pun">③</span></span></a><span class="pln"><br/>        </span><span class="kwd">return</span><span class="pln"> funcs</span></code></div></pre>
-<table style="width:100%;border-collapse:collapse;margin:0;border:0"><tbody><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">①</span></td><td style="vertical-align: top; margin: 0px; padding: 0px; width: auto; border: 0px none; background-color: inherit; cursor: inherit;">O método <code>__next__()</code> é chamado sempre que alguém - digamos, um loop <code>for</code> - chama <code>next(rules)</code>. Este método só fará sentido se começarmos pelo final e trabalharmos de trás para frente. Então vamos fazer isso.
-</td></tr><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">②</span></td><td style="vertical-align:top;margin:0;padding:0;width:auto;border:0">A última parte desta função deve parecer familiar, pelo menos. A <code>build_match_and_apply_functions()</code>função não mudou; é o mesmo de sempre.
-</td></tr><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">③</span></td><td style="vertical-align: top; margin: 0px; padding: 0px; width: auto; border: 0px none; background-color: inherit; cursor: inherit;">A única diferença é que, antes de retornar as funções match e apply (que são armazenadas nas <code>funções de</code> tupla ), vamos salvá-las em <code>self.cache</code>.
-</td></tr></tbody></table>
-<p>Movendo-se para trás ...
+    <ol>
+        <li>
+            Um pouco de truque avançado de arquivo aqui. O método <code>readline()</code> (nota: singular, não plural <code>readlines()</code>) lê exatamente uma linha de um arquivo aberto. Especificamente, a próxima linha. (<em>Objetos de arquivo também são iteradores! São iteradores até o fim...</em> )
+        </li>
+        <li>
+            Se houver uma linha para <code>readline()</code> ler, <code>line</code> não será uma string vazia. Mesmo se o arquivo contiver uma linha em branco, <code>line</code> terminará como uma string de um caractere <code>'\n'</code> (um retorno de carro). Se <code>line</code> for realmente uma string vazia, isso significa que não há mais linhas para ler do arquivo.
+        </li>
+        <li>
+            Quando chegarmos ao final do arquivo, devemos fechá-lo e gerar a exceção mágica <code>StopIteration</code>. Lembre-se, chegamos a este ponto porque precisávamos de uma função de correspondência e aplicação para a próxima regra. A próxima regra vem da próxima linha do arquivo... mas não há próxima linha! Portanto, não temos valor a retornar. A iteração acabou. ( ♫ A festa acabou… ♫)
+        </li>
+    </ol>
+    <p>
+        Movendo-se para trás todo o caminho até o início do método <code>__next__()</code>...
+    </p>
+    
+    <pre><code class="language-python">def __next__(self):
+    self.cache_index += 1
+    if len(self.cache) >= self.cache_index:
+        return self.cache[self.cache_index - 1]     ①
 
-</p><p class="skip"><a href="#postautopre12" style="color: #b44582;">pule esta lista de códigos</a></p><pre class="pp code" id="autopre12"><div class="w">[ <a class="toggle" href="javascript:toggleCodeBlock('autopre12')" style="color: #b44582;">ocultar</a> ] [ <a href="javascript:plainTextOnClick('autopre12')" style="color: #b44582;">abrir em uma nova janela</a> ]</div><div class="b"><code><span class="pln">    </span><span class="kwd">def</span><span class="pln"> __next__</span><span class="pun">(</span><span class="kwd">self</span><span class="pun">):</span><span class="pln"><br/>        </span><span class="pun">.</span><span class="pln"><br/>        </span><span class="pun">.</span><span class="pln"><br/>        </span><span class="pun">.</span><span class="pln"><br/></span><a style="color: #b44582;"><span class="pln">        line </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">pattern_file</span><span class="pun">.</span><span class="pln">readline</span><span class="pun">()</span><span class="pln">  </span><span class="u"><span class="pun">①</span></span></a><span class="pln"><br/></span><a style="color: #b44582;"><span class="pln">        </span><span class="kwd">if</span><span class="pln"> </span><span class="kwd">not</span><span class="pln"> line</span><span class="pun">:</span><span class="pln">                         </span><span class="u"><span class="pun">②</span></span></a><span class="pln"><br/>            </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">pattern_file</span><span class="pun">.</span><span class="pln">close</span><span class="pun">()</span><span class="pln"><br/></span><a style="color: #b44582;"><span class="pln">            </span><span class="kwd">raise</span><span class="pln"> </span><span class="typ">StopIteration</span><span class="pln">              </span><span class="u"><span class="pun">③</span></span></a><span class="pln"><br/>        </span><span class="pun">.</span><span class="pln"><br/>        </span><span class="pun">.</span><span class="pln"><br/>        </span><span class="pun">.</span></code></div></pre>
-<table style="width:100%;border-collapse:collapse;margin:0;border:0"><tbody><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">①</span></td><td style="vertical-align: top; margin: 0px; padding: 0px; width: auto; border: 0px none; background-color: inherit; cursor: inherit;">Um pouco de truque avançado de arquivo aqui. O <code>readline()</code>método (nota: singular, não plural <code>readlines()</code>) lê exatamente uma linha de um arquivo aberto. Especificamente, a próxima linha. ( <em>Objetos de arquivo também são iteradores! São iteradores até o fim ...</em> )
-</td></tr><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">②</span></td><td style="vertical-align: top; margin: 0px; padding: 0px; width: auto; border: 0px none; background-color: inherit; cursor: inherit;">Se houver uma linha para <code>readline()</code>ler, a <code>linha</code> não será uma string vazia. Mesmo se o arquivo contiver uma linha em branco, a <code>linha</code> terminará como uma string de <code>'\n'</code>um caractere (um retorno de carro). Se a <code>linha</code> for realmente uma string vazia, isso significa que não há mais linhas para ler do arquivo.
-</td></tr><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">③</span></td><td style="vertical-align:top;margin:0;padding:0;width:auto;border:0">Quando chegarmos ao final do arquivo, devemos fechá-lo e gerar a <code>StopIteration</code>exceção mágica . Lembre-se, chegamos a este ponto porque precisávamos de uma função de correspondência e aplicação para a próxima regra. A próxima regra vem da próxima linha do arquivo ... mas não há próxima linha! Portanto, não temos valor a retornar. A iteração acabou. ( <span class="u">♫</span> A festa acabou… <span class="u">♫</span> )
-</td></tr></tbody></table>
-<p>Movendo para trás todo o caminho até o início do método <code>__next__()</code> ...
+    if self.pattern_file.closed:
+        raise StopIteration                         ②
+    .
+    .
+    .</code></pre>
 
-</p><p class="skip"><a href="#postautopre13" style="color: #b44582;">pule esta lista de códigos</a></p><pre class="pp code" id="autopre13"><div class="w">[ <a class="toggle" href="javascript:toggleCodeBlock('autopre13')" style="color: #b44582;">ocultar</a> ] [ <a href="javascript:plainTextOnClick('autopre13')" style="color: #b44582;">abrir em uma nova janela</a> ]</div><div class="b"><code><span class="pln">    </span><span class="kwd">def</span><span class="pln"> __next__</span><span class="pun">(</span><span class="kwd">self</span><span class="pun">):</span><span class="pln"><br/>        </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">cache_index </span><span class="pun">+=</span><span class="pln"> </span><span class="lit">1</span><span class="pln"><br/>        </span><span class="kwd">if</span><span class="pln"> len</span><span class="pun">(</span><span class="kwd">self</span><span class="pun">.</span><span class="pln">cache</span><span class="pun">)</span><span class="pln"> </span><span class="pun">&gt;=</span><span class="pln"> </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">cache_index</span><span class="pun">:</span><span class="pln"><br/></span><a style="color: #b44582;"><span class="pln">            </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">cache</span><span class="pun">[</span><span class="kwd">self</span><span class="pun">.</span><span class="pln">cache_index </span><span class="pun">-</span><span class="pln"> </span><span class="lit">1</span><span class="pun">]</span><span class="pln">     </span><span class="u"><span class="pun">①</span></span></a><span class="pln"><br/><br/>        </span><span class="kwd">if</span><span class="pln"> </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">pattern_file</span><span class="pun">.</span><span class="pln">closed</span><span class="pun">:</span><span class="pln"><br/></span><a style="color: #b44582;"><span class="pln">            </span><span class="kwd">raise</span><span class="pln"> </span><span class="typ">StopIteration</span><span class="pln">                         </span><span class="u"><span class="pun">②</span></span></a><span class="pln"><br/>        </span><span class="pun">.</span><span class="pln"><br/>        </span><span class="pun">.</span><span class="pln"><br/>        </span><span class="pun">.</span></code></div></pre>
-<table style="width:100%;border-collapse:collapse;margin:0;border:0"><tbody><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">①</span></td><td style="vertical-align: top; margin: 0px; padding: 0px; width: auto; border: 0px none; background-color: inherit; cursor: inherit;"><code>self.cache</code>será uma lista das funções de que precisamos para combinar e aplicar regras individuais. (Pelo menos <em>isso</em> deve soar familiar!) <code>self.cache_index</code>Mantém registro de qual item em cache devemos retornar em seguida. Se ainda não esgotamos o cache ( <i>ou seja,</i> se o comprimento de <code>self.cache</code>é maior que <code>self.cache_index</code>), ocorreu um acerto no cache! Viva! Podemos retornar a correspondência e aplicar funções do cache em vez de construí-las do zero.
-</td></tr><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">②</span></td><td style="vertical-align: top; margin: 0px; padding: 0px; width: auto; border: 0px none; background-color: inherit; cursor: inherit;">Por outro lado, se não obtivermos um acerto do cache, <em>e</em> o objeto de arquivo tiver sido fechado (o que poderia acontecer, mais adiante no método, como você viu no trecho de código anterior), então não há mais nada que possamos Faz. Se o arquivo estiver fechado, significa que o esgotamos - já lemos todas as linhas do arquivo de padrão e já construímos e armazenamos em cache as funções de correspondência e aplicação para cada padrão. O arquivo está esgotado; o cache está esgotado; Estou exausto. Espere o que? Aguente firme, estamos quase terminando.
-</td></tr></tbody></table>
-<p>Juntando tudo, eis o que acontece quando:
+    <ol>
+        <li>
+            <code>self.cache</code> será uma lista das funções de que precisamos para combinar e aplicar regras individuais. (Pelo menos <em>isso</em> deve soar familiar!). <code>self.cache_index</code> mantém registro de qual item em cache devemos retornar em seguida. Se ainda não esgotamos o cache (<i>ou seja</i>, se o comprimento de <code>self.cache</code> é maior que <code>self.cache_index</code>), ocorreu um acerto no cache! Viva! Podemos retornar a correspondência e aplicar funções do cache em vez de construí-las do zero.
+        </li>
+        <li>
+            Por outro lado, se não obtivermos um acerto do cache, <em>e</em> o objeto de arquivo tiver sido fechado (o que poderia acontecer, mais adiante no método, como você viu no trecho de código anterior), então não há mais nada que possamos Faz. Se o arquivo estiver fechado, significa que o esgotamos - já lemos todas as linhas do arquivo de padrão e já construímos e armazenamos em cache as funções de correspondência e aplicação para cada padrão. O arquivo está esgotado; o cache está esgotado; Estou exausto. Espere, o que? Aguente firme, estamos quase terminando.
+        </li>
+    </ol>
+    <p>
+        Juntando tudo, eis o que acontece quando:
+    </p>
+    <ul>
+        <li>
+            Quando o módulo é importado, ele cria uma única instância da classe <code>LazyRules</code>, chamada <code>rules</code>, que abre o arquivo padrão, mas não lê a partir dele.
+        </li>
+        <li>
+            Quando perguntado sobre a primeira correspondência e a função de aplicação, ele verifica seu cache, mas descobre que o cache está vazio. Portanto, ele lê uma única linha do arquivo de padrão, constrói a correspondência e aplica funções a partir desses padrões e os armazena em cache.
+        </li>
+        <li>
+            Digamos, para fins de argumentação, que a primeira regra corresponda. Nesse caso, nenhuma função adicional de correspondência e aplicação é construída e nenhuma linha adicional é lida do arquivo de padrão.
+        </li>
+        <li>
+            Além disso, para fins de argumentação, suponha que o chamador chame a função <code>plural()</code> <em>novamente</em> para pluralizar uma palavra diferente. O loop <code>for</code> na função <code>plural()</code> será chamado <code>iter(rules)</code>, o que redefinirá o índice do cache, mas não redefinirá o objeto de arquivo aberto.
+        </li>
+        <li>
+            Na primeira vez, o loop <code>for</code> pedirá um valor de <code>rules</code>, que invocará seu método <code>__next__()</code>. Desta vez, no entanto, o cache é inicializado com um único par de funções de correspondência e aplicação, correspondendo aos padrões na primeira linha do arquivo de padrão. Como foram construídos e armazenados em cache durante a pluralização da palavra anterior, eles são recuperados do cache. O índice do cache é incrementado e o arquivo aberto nunca é tocado.
+        </li>
+        <li>
+            Digamos, para fins de argumentação, que a primeira regra <em>não</em> corresponda desta vez. Assim, o loop <code>for</code> volta a ocorrer e pede outro valor de <code>rules</code>. Isso invoca o método <code>__next__()</code> uma segunda vez. Desta vez, o cache está esgotado - ele continha apenas um item e estamos pedindo um segundo - então o método <code>__next__()</code> continua. Ele lê outra linha do arquivo aberto, compila e aplica funções a partir dos padrões e os armazena em cache.
+        </li>
+        <li>
+            Este processo de leitura-construção-e-cache continuará enquanto as regras que estão sendo lidas do arquivo padrão não corresponderem à palavra que estamos tentando pluralizar. Se encontrarmos uma regra correspondente antes do final do arquivo, simplesmente a usamos e paramos, com o arquivo ainda aberto. O ponteiro do arquivo ficará onde quer que paramos de ler, esperando pelo próximo comando <code>readline()</code>. Nesse ínterim, o cache agora tem mais itens nele, e se começarmos tudo de novo tentando pluralizar uma nova palavra, cada um desses itens no cache será tentado antes de ler a próxima linha do arquivo de padrão.
+        </li>
+    </ul>
+    <p>
+        Alcançamos o nirvana da pluralização.
+    </p>
+    <ol>
+        <li>
+            <strong>Custo mínimo de inicialização.</strong> A única coisa que acontece em <code>import</code> é instanciar uma única classe e abrir um arquivo (mas não lê-lo).
+        </li>
+        <li>
+            <strong>Performance máxima.</strong> O exemplo anterior iria ler o arquivo e construir funções dinamicamente toda vez que você quisesse pluralizar uma palavra. Essa versão armazenará funções em cache assim que forem construídas e, no pior dos casos, só lerá o arquivo de padrão uma vez, não importa quantas palavras você pluralize.
+        </li>
+        <li>
+            <strong>Separação de código e dados.</strong> Todos os padrões são armazenados em um arquivo separado. Código é código e dados são dados, e nunca os dois se encontrarão.
+        </li>
+    </ol>
+    <div class="admonition note">
+        <p class="admonition-title">Observação</p>
+        <p>
+            Isso é realmente o nirvana? Bem, sim e não. Aqui está algo a considerar com o exemplo <code>LazyRules</code>: o arquivo de padrão é aberto (durante <code>__init__()</code>) e permanece aberto até que a regra final seja alcançada. O Python acabará fechando o arquivo quando ele sair ou depois que a última instanciação da classe <code>LazyRules</code> for destruída, mas ainda assim, isso pode levar <em>muito</em> tempo. Se esta classe fizer parte de um processo Python de longa execução, o interpretador Python pode nunca sair e o objeto <code>LazyRules</code> nunca pode ser destruído.
+        </p>
+        <p>
+            Existem maneiras de contornar isso. Em vez de abrir o arquivo durante <code>__init__()</code> e deixá-lo aberto enquanto lê as regras, uma linha por vez, você pode abrir o arquivo, ler todas as regras e fechá-lo imediatamente. Ou você pode abrir o arquivo, ler uma regra, salvar a posição do arquivo com o método <a href="files.html#read" style="color: #b44582;"><code>tell()</code></a>, fechar o arquivo e depois abri-lo novamente e usar o método <a href="files.html#read" style="color: #b44582;"><code>seek()</code></a> para continuar lendo de onde parou. Ou você não poderia se preocupar com isso e apenas deixar o arquivo aberto, como este código de exemplo faz. Programação é design, e design é tudo sobre trade-offs e restrições. Deixar um arquivo aberto por muito tempo pode ser um problema; tornar seu código mais complicado pode ser um problema. Qual deles é o maior problema depende de sua equipe de desenvolvimento, seu aplicativo e seu ambiente de execução.
+        </p>
+    </div>
 
-</p><ul>
-<li>Quando o módulo é importado, ele cria uma única instância da <code>LazyRules</code>classe, chamada <code>regras</code> , que abre o arquivo padrão, mas não lê a partir dele.
-</li><li>Quando perguntado sobre a primeira correspondência e a função de aplicação, ele verifica seu cache, mas descobre que o cache está vazio. Portanto, ele lê uma única linha do arquivo de padrão, constrói a correspondência e aplica funções a partir desses padrões e os armazena em cache.
-</li><li>Digamos, para fins de argumentação, que a primeira regra corresponda. Nesse caso, nenhuma função adicional de correspondência e aplicação é construída e nenhuma linha adicional é lida do arquivo de padrão.
-</li><li>Além disso, para fins de argumentação, suponha que o chamador chame a <code>plural()</code>função <em>novamente</em> para pluralizar uma palavra diferente. O loop <code>for</code> na <code>plural()</code>função será chamado <code>iter(rules)</code>, o que redefinirá o índice do cache, mas não redefinirá o objeto de arquivo aberto.
-</li><li>Na primeira vez, o loop <code>for</code> pedirá um valor das <code>regras</code> , que invocará seu método <code>__next__()</code>. Desta vez, no entanto, o cache é inicializado com um único par de funções de correspondência e aplicação, correspondendo aos padrões na primeira linha do arquivo de padrão. Como foram construídos e armazenados em cache durante a pluralização da palavra anterior, eles são recuperados do cache. O índice do cache é incrementado e o arquivo aberto nunca é tocado.
-</li><li>Digamos, para fins de argumentação, que a primeira regra <em>não</em> corresponda desta vez. Assim, o loop <code>for</code> volta a ocorrer e pede outro valor das <code>regras</code> . Isso invoca o método <code>__next__()</code> uma segunda vez. Desta vez, o cache está esgotado - ele continha apenas um item e estamos pedindo um segundo - então o método <code>__next__()</code> continua. Ele lê outra linha do arquivo aberto, compila e aplica funções a partir dos padrões e os armazena em cache.
-</li><li>Este processo de leitura-construção-e-cache continuará enquanto as regras que estão sendo lidas do arquivo padrão não corresponderem à palavra que estamos tentando pluralizar. Se encontrarmos uma regra correspondente antes do final do arquivo, simplesmente a usamos e paramos, com o arquivo ainda aberto. O ponteiro do arquivo ficará onde quer que paramos de ler, esperando pelo próximo <code>readline()</code>comando. Nesse ínterim, o cache agora tem mais itens nele, e se começarmos tudo de novo tentando pluralizar uma nova palavra, cada um desses itens no cache será tentado antes de ler a próxima linha do arquivo de padrão.
-</li></ul>
-<p>Alcançamos o nirvana da pluralização.
+    <h2 id="furtherreading">Leitura adicional</h2>
+    <ul>
+        <li>
+            <a href="http://docs.python.org/3.1/library/stdtypes.html#iterator-types" target="_blank">Tipos de iterador</a>
+        </li>
+        <li>
+            <a href="http://www.python.org/dev/peps/pep-0234/" target="_blank">PEP 234: Iteradores</a>
+        </li>
+        <li>
+            <a href="http://www.python.org/dev/peps/pep-0255/" target="_blank">PEP 255: Geradores Simples</a>
+        </li>
+        <li>
+            <a href="http://www.dabeaz.com/generators/" target="_blank">Truques do gerador para programadores de sistemas</a>
+        </li>
+    </ul>
+    <p>
+        Esse artigo é uma tradução de um capítulo do livro "Dive Into Python 3" escrito por Mark Pilgrim. Você pode ler o livro desde o início em português clicando <a href="https://www.acervolima.com.br/2021/05/o-que-ha-de-novo-em-dive-into-python-3.html">aqui</a>.
+    </p>
+    <p>
+        Traduzido por Acervo Lima. O original pode ser acessado <a href="https://diveintopython3.problemsolving.io/iterators.html" target="_blank">aqui</a>.
+    </p>
+    <h2>Licença</h2>
+    <ul>
+        <li><a href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank">Creative Commons Attribution Share-Alike</a></li>
+    </ul>
 
-</p><ol>
-<li><strong>Custo mínimo de inicialização. </strong>A única coisa que acontece <code>import</code>é instanciar uma única classe e abrir um arquivo (mas não lê-lo).
-</li><li><strong>Performance máxima. </strong>O exemplo anterior iria ler o arquivo e construir funções dinamicamente toda vez que você quisesse pluralizar uma palavra. Essa versão armazenará funções em cache assim que forem construídas e, no pior dos casos, só lerá o arquivo de padrão uma vez, não importa quantas palavras você pluralize.
-</li><li><strong>Separação de código e dados. </strong>Todos os padrões são armazenados em um arquivo separado. Código é código e dados são dados, e nunca os dois se encontrarão.
-</li></ol>
-<blockquote class="note">
-<p><span class="u">☞</span>Isso é realmente o nirvana? Bem, sim e não. Aqui está algo a considerar com o <code>LazyRules</code>exemplo: o arquivo de padrão é aberto (durante <code>__init__()</code>) e permanece aberto até que a regra final seja alcançada. O Python acabará fechando o arquivo quando ele sair ou depois que a última instanciação da <code>LazyRules</code>classe for destruída, mas ainda assim, isso pode levar <em>muito</em> tempo. Se esta classe fizer parte de um processo Python de longa execução, o interpretador Python pode nunca sair e o <code>LazyRules</code>objeto nunca pode ser destruído.
-</p><p>Existem maneiras de contornar isso. Em vez de abrir o arquivo durante <code>__init__()</code>e deixá-lo aberto enquanto lê as regras, uma linha por vez, você pode abrir o arquivo, ler todas as regras e fechá-lo imediatamente. Ou você pode abrir o arquivo, ler uma regra, salvar a posição do arquivo com o <a href="files.html#read" style="color: #b44582;"><code>tell()</code>método</a> , fechar o arquivo e depois abri-lo novamente e usar o <a href="files.html#read" style="color: #b44582;"><code>seek()</code>método</a> para continuar lendo de onde parou. Ou você não poderia se preocupar com isso e apenas deixar o arquivo aberto, como este código de exemplo faz. Programação é design, e design é tudo sobre trade-offs e restrições. Deixar um arquivo aberto por muito tempo pode ser um problema; tornar seu código mais complicado pode ser um problema. Qual deles é o maior problema depende de sua equipe de desenvolvimento, seu aplicativo e seu ambiente de execução.
-</p></blockquote>
-<p class="a">⁂
-
-</p><h2 id="furtherreading">Leitura adicional <a class="hl" href="#furtherreading" style="color: #b44582;">#</a></h2>
-<ul>
-<li><a href="http://docs.python.org/3.1/library/stdtypes.html#iterator-types" style="color: #b44582;">Tipos de iterador</a>
-</li><li><a href="http://www.python.org/dev/peps/pep-0234/" style="color: #b44582;">PEP 234: Iteradores</a>
-</li><li><a href="http://www.python.org/dev/peps/pep-0255/" style="color: #b44582;">PEP 255: Geradores Simples</a>
-</li><li><a href="http://www.dabeaz.com/generators/" style="color: #b44582;">Truques do gerador para programadores de sistemas</a>
-</li></ul>
-
-
-<p>
-     Esse artigo é uma tradução de um capítulo do livro "Dive Into Python 3" escrito por Mark Pilgrim. Você pode ler o livro desde o início em português clicando <a href="https://www.acervolima.com.br/2021/05/o-que-ha-de-novo-em-dive-into-python-3.html">aqui</a>.
-</p>
-<p>
-    Traduzido por Acervo Lima. O original pode ser acessado <a href="https://diveintopython3.problemsolving.io/iterators.html" target="_blank">aqui</a>.
-</p>
-<h2>Licença</h2>
-<ul>
-    <li><a href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank">Creative Commons Attribution Share-Alike</a></li>
-</ul>
-
-<div class="prev-next-div">
-    <a class="prev" href="#">&lt;&lt; Anterior</a>
-    <a class="next" href="#">Próximo &gt;&gt;</a>
-</div>
-
-
+    <div class="prev-next-div">
+        <a class="prev" href="https://www.acervolima.com.br/2021/05/closures-e-geradores-em-python.html">&lt;&lt; Anterior</a>
+        <a class="next" href="#">Próximo &gt;&gt;</a>
+    </div>
 
 </body>
 </html>
