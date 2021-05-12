@@ -1,3 +1,4 @@
 .git/
 .ipynb_checkpoints/
-*.log
+geckodriver.log
+*.py
