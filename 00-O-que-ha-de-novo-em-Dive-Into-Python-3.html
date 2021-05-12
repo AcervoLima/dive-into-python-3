@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documento</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+<body>
+
+    <h1>O que há de novo em “Dive Into Python 3”</h1>
+    <blockquote class="q">
+        <p>
+            <span class="u">❝</span>Não é aqui que entramos?<span class="u">❞</span><br/> - Pink Floyd, The Wall
+        </p>
+    </blockquote>
+
+    <h2 id="divingin"><i>também conhecido como</i> “o nível negativo”</h2>
+    <p class="f">
+        Você já é um programador Python? Você leu o “<a href="http://diveintopython.org/" style="color: #b44582;">Dive Into Python</a>” original? Você comprou no papel? (Em caso afirmativo, obrigado!) Você está pronto para mergulhar no Python 3? … Se sim, continue lendo. (Se nada disso for verdade, seria melhor <a href="installing-python.html" style="color: #b44582;">começar do início</a>).
+    </p>
+    <p>
+        Python 3 vem com um script chamado <code>2to3</code>. Aprenda. Adore. Use-o. <a href="porting-code-to-python-3-with-2to3.html" style="color: #b44582;">Portar código para Python 3 com <code>2to3</code></a> é uma referência de todas as coisas que a ferramenta <code>2to3</code> pode consertar automaticamente. Uma vez que muitas dessas coisas são mudanças da sintaxe, é um bom ponto de partida para aprender sobre um monte de mudanças de sintaxe em Python 3. (<code>print</code> agora é uma função, <code>`x`</code> não funciona, <i class="baa">&amp;</i> c.).
+    </p>
+    <p>
+        <a href="case-study-porting-chardet-to-python-3.html" style="color: #b44582;">Estudo de caso: Portar <code>chardet</code> para Python 3</a> documenta meu esforço (finalmente bem-sucedido) para portar uma biblioteca não trivial de Python 2 para Python 3. Isso pode ajudá-lo; pode não ser. Há uma curva de aprendizado bastante íngreme, já que você precisa entender a biblioteca primeiro, para que possa entender por que ela quebrou e como eu consertei. Muitas das rupturas giram em torno das strings. Falando nisso…
+    </p>
+    <p>Strings. Uau. Onde começar. Python 2 tinha “strings” e “strings Unicode”. Python 3 tem “bytes” e “strings”. Ou seja, todas as strings são agora strings Unicode e, se você quiser lidar com um pacote de bytes, use o novo tipo <code>bytes</code>. O Python 3 <em>nunca</em> converterá implicitamente entre strings e bytes, portanto, se você não tiver certeza de qual possui em um determinado momento, seu código quase certamente falhará. Leia o <a href="strings.html" style="color: #b44582;">capítulo Strings</a> para mais detalhes.
+    </p>
+    <p>
+        Bytes vs. strings surge repetidamente ao longo do livro.
+    </p>
+    <ul>
+        <li>
+            Em <a href="files.html" style="color: #b44582;">Arquivos</a>, você aprenderá a diferença entre ler arquivos
+            nos modos “binário” e “texto”. Ler (e gravar!) Arquivos em modo de texto requer um parâmetro <code>encoding</code>. Alguns métodos de arquivo de texto contam caracteres, mas outros métodos contam bytes. Se o seu código assume que um caractere é igual a um byte, ele <em>será</em> interrompido em caracteres multibyte.
+        </li>
+        <li>
+            Em <a href="http-web-services.html" style="color: #b44582;"><abbr>HTTP</abbr> Web Services</a>, o módulo <code>httplib2</code> busca cabeçalhos e dados em <abbr>HTTP</abbr>. Os cabeçalhos <abbr>HTTP</abbr> são retornados como strings, mas o corpo <abbr>HTTP</abbr> é retornado como bytes.
+        </li>
+        <li>
+            Em <a href="serializing.html" style="color: #b44582;">Serializando objetos Python</a>, você aprenderá por que o módulo <code>pickle</code> em Python 3 define um novo formato de dados que é incompatível com versões anteriores do Python 2. (Dica: é por causa de bytes e strings.) Além disso, Python 3 oferece suporte à serialização de objetos de e para <abbr>JSON</abbr>, que nem mesmo tem um tipo <code>bytes</code>. Vou te mostrar como contornar isso.
+        </li>
+        <li>
+            No <a href="case-study-porting-chardet-to-python-3.html" style="color: #b44582;">estudo de caso: portar <code>chardet</code> para Python 3</a>, é apenas uma confusão sangrenta de bytes e strings em todos os lugares.
+        </li>
+    </ul>
+    <p>
+        Mesmo que você não se importe com o Unicode (ah, mas você se importará), você vai querer ler sobre a <a href="strings.html#formatting-strings" style="color: #b44582;">formatação de strings no Python 3</a>, que é completamente diferente do Python 2.
+    </p>
+    <p>
+        Os iteradores estão por toda parte no Python 3 e eu os entendo muito melhor do que há cinco anos, quando escrevi “Dive Into Python”. Você precisa entendê-los também, porque muitas funções que costumavam retornar listas no Python 2 agora retornarão iteradores no Python 3. No mínimo, você deve ler <a href="iterators.html#a-fibonacci-iterator" style="color: #b44582;">a segunda metade do capítulo Iteradores</a> e <a href="advanced-iterators.html#generator-expressions" style="color: #b44582;">a segunda metade do capítulo Iteradores avançados</a>.
+    </p>
+    <p>
+        Por solicitação popular, adicionei um apêndice sobre <a href="special-method-names.html" style="color: #b44582;">nomes de métodos especiais</a>, que é parecido com <a href="http://www.python.org/doc/3.1/reference/datamodel.html#special-method-names">o capítulo “Modelo de dados” da documentação do Python</a>, mas com mais detalhes.
+    </p>
+    <p>
+        Quando eu estava escrevendo “Dive Into Python”, todas as bibliotecas XML disponíveis eram péssimas. Então Fredrik Lundh escreveu <a href="http://effbot.org/zone/element-index.htm">ElementTree</a>, que não é nada. Os deuses do Python sabiamente <a href="http://docs.python.org/3.1/library/xml.etree.elementtree.html">incorporaram ElementTree à biblioteca padrão</a> e agora ele forma a base para <a href="xml.html" style="color: #b44582;">meu novo capítulo XML</a>. As velhas maneiras de analisar XML ainda existem, mas você deve evitá-las, porque elas são uma merda!
+    </p>
+    <p>
+        Outra novidade em Python - não na linguagem, mas na comunidade - é o surgimento de repositórios de código como o <a href="http://pypi.python.org/">Python Package Index</a> (PyPI). Python vem com utilitários para empacotar seu código em formatos padrão e distribuir esses pacotes no PyPI. Leia <a href="packaging.html" style="color: #b44582;">Empacotamento de bibliotecas Python</a> para obter detalhes.
+    </p>
+
+<p>
+     Esse artigo é uma tradução de um capítulo do livro "Dive Into Python 3" escrito por Mark Pilgrim.
+</p>
+<p>
+    Traduzido por Acervo Lima. O original pode ser acessado <a href="https://diveintopython3.problemsolving.io/whats-new.html">aqui</a>.
+</p>
+<h2>Licença</h2>
+<ul>
+    <li><a href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution Share-Alike</a></li>
+</ul>
+
+<div class="prev-next-div">
+    <a class="next" href="#">Próximo &gt;&gt;</a>
+</div>
+
+</body>
+</html>

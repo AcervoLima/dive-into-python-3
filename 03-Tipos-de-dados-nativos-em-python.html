@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documento</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+<body>
+
+    <h1>Tipos de dados nativos em Python</h1>
+    <blockquote class="q">
+        <p>
+            ❝A admiração é o fundamento de toda filosofia, a investigação de seu progresso, a ignorância seu fim.❞<br/>
+             - Michel de Montaigne
+        </p>
+    </blockquote>
+    
+    <h2 id="divingin">Mergulho</h2>
+    <p>
+        Tipos de dados. Deixe de lado <a href="https://www.acervolima.com.br/2021/05/seu-primeiro-programa-python.html">seu primeiro programa Python</a> por apenas um minuto e vamos falar sobre tipos de dados. Em Python, <a href="https://www.acervolima.com.br/2021/05/seu-primeiro-programa-python.html#declaringfunctions">todo valor tem um tipo de dados</a>, mas você não precisa declarar o tipo de dados das variáveis. Como isso funciona? Com base na atribuição original de cada variável, o Python descobre que tipo é e mantém o controle disso internamente.
+    </p>
+    <p>
+        Python tem muitos tipos de dados nativos. Aqui estão os mais importantes:
+    </p>
+    <ol>
+      <li>
+        <b>Os booleanos</b> são <code>True</code> ou <code>False</code>.
+      </li>
+      <li>
+        <b>Os números</b> podem ser inteiros (<code>1</code> e <code>2</code>), flutuantes (<code>1.1</code> e <code>1.2</code>), frações (<code>1/2</code> e <code>2/3</code>) ou até mesmo <a
+          href="http://en.wikipedia.org/wiki/Complex_number" target="_blank">números complexos</a>.
+      </li>
+      <li>
+        <b>Strings</b> são sequências de caracteres Unicode, <i>por exemplo</i>, um documento HTML.
+      </li>
+      <li>
+        <b>Bytes</b> e <b>matrizes de bytes</b>, <i>por exemplo</i>, um arquivo de imagem JPEG.
+      </li>
+      <li>
+        <b>As listas</b> são sequências ordenadas de valores.
+      </li>
+      <li>
+        <b>As tuplas</b> são sequências ordenadas e imutáveis ​​de valores.
+      </li>
+      <li>
+        <b>Conjuntos (sets)</b> são pacotes não ordenados de valores.
+      </li>
+      <li>
+        <b>Os dicionários</b> são pacotes não ordenados de pares de chave-valores.
+      </li>
+    </ol>
+    <p>
+        Claro, existem mais tipos do que estes. <a href="https://www.acervolima.com.br/2021/05/seu-primeiro-programa-python.html#everythingisanobject">Tudo é um objeto</a> em Python, portanto, existem tipos como <i>módulo</i>, <i>função</i>, <i>classe</i> , <i>método</i>, <i>arquivo</i> e até mesmo <i>código compilado</i>. Você já viu alguns destes: <a href="https://www.acervolima.com.br/2021/05/seu-primeiro-programa-python.html#runningscripts">módulos têm nomes</a>, <a href="https://www.acervolima.com.br/2021/05/seu-primeiro-programa-python.html#docstrings">funções têm <code>docstrings</code></a>, <i class="baa">&amp;</i> c. Você aprenderá sobre classes em <a href="iterators.html" style="color: #b44582;">Classes <i class="baa">&amp;</i> Iterators</a> e sobre arquivos em <a href="files.html" style="color: #b44582;">Files</a>.
+    </p>
+    <p>
+        Strings e bytes são importantes o suficiente - e complicados o suficiente - para que tenham seu próprio capítulo. Vamos examinar os outros primeiro.
+    </p>
+    
+    <h2 id="booleans">Boolean</h2>
+    <blockquote>
+      <p>
+        Você pode usar virtualmente qualquer expressão em um contexto booleano.
+      </p>
+    </blockquote>
+    <p>
+        Os booleanos são verdadeiros ou falsos. Python tem duas constantes, habilmente nomeadas <code>True</code>e <code>False</code>, que podem ser usadas para atribuir valores booleanos diretamente. As expressões também podem ser avaliadas como um valor booleano. Em certos lugares (como instruções <code>if</code>), Python espera que uma expressão seja avaliada como um valor booleano. Esses locais são chamados de <i>contextos booleanos</i>. Você pode usar virtualmente qualquer expressão em um contexto booleano, e o Python tentará determinar seu valor verdadeiro. Tipos de dados diferentes têm regras diferentes sobre quais valores são verdadeiros ou falsos em um contexto booleano. (Isso fará mais sentido quando você ver alguns exemplos concretos posteriormente neste capítulo.)
+    </p>
+    <p>
+      Por exemplo, pegue este snippet de <a href="https://www.acervolima.com.br/2021/05/seu-primeiro-programa-python.html#divingin"><code>teste.py</code></a>:
+    </p>
+
+    <pre><code class="language-python">if tamanho &lt; 0:
+    raise ValueError('O número não deve ser negativo')</code></pre>
+
+    <p>
+        tamanho é um número inteiro, 0 é um número inteiro e <code>&lt;</code> é um operador numérico. O resultado da expressão <code>tamanho &lt; 0</code> é sempre um booleano. Você mesmo pode testar isso no shell interativo do Python:
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; tamanho = 1
+&gt;&gt;&gt; tamanho &lt; 0
+False
+&gt;&gt;&gt; tamanho = 0
+&gt;&gt;&gt; tamanho &lt; 0
+False
+&gt;&gt;&gt; tamanho = -1
+&gt;&gt;&gt; tamanho &lt; 0
+True</code></pre>
+
+    <p>
+        Devido a alguns problemas herdados que sobraram do Python 2, os booleanos podem ser tratados como números. <code>True</code> é <code>1</code>; <code>False</code> é 0.
+    </p>
+    
+    <pre><code class="language-python-repl">&gt;&gt;&gt; True + True
+2
+&gt;&gt;&gt; True - False
+1
+&gt;&gt;&gt; True * False
+0
+&gt;&gt;&gt; True / False
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ZeroDivisionError: division by zero</code></pre>
+
+    <p>
+        Eca, Eca, Eca! Não faça isso. Esqueça que eu mencionei isso.
+    </p>
+
+    <h2 id="numbers">Números</h2>
+    <p>
+        Os números são fantásticos. Existem tantos para escolher Python suporta tanto números inteiros quanto números de ponto flutuante. Não há declaração de tipo para distingui-los; Python os diferencia pela presença ou ausência de um ponto decimal.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; type(1)                 ①
+&lt;class 'int'&gt;
+&gt;&gt;&gt; isinstance(1, int)      ②
+True
+&gt;&gt;&gt; 1 + 1                   ③
+2
+&gt;&gt;&gt; 1 + 1.0                 ④
+2.0
+&gt;&gt;&gt; type(2.0)
+&lt;class 'float'&gt;</code></pre>
+
+    <ol>
+      <li>
+          Você pode usar a função <code>type()</code> para verificar o tipo de qualquer valor ou variável. Como você pode esperar, <code>1</code> é um <code>int</code>.
+        </li>
+      <li>
+          Da mesma forma, você pode usar a função <code>isinstance()</code> para verificar se um valor ou variável é de um determinado tipo.
+      </li>
+      <li>
+          Adicionar um <code>int</code> a um <code>int</code> resulta em um <code>int</code>.
+      </li>
+      <li>
+          Adicionando um <code>int</code> a um <code>float</code> resulta um <code>float</code>. Python força o <code>int</code> num <code>float</code> para realizar a adição e retorna um <code>float</code> como resultado.
+      </li>
+    </ol>
+
+    <h3 id="number-coercion">Coagindo inteiros para floats e vice-versa</h3>
+    <p>
+        Como você acabou de ver, alguns operadores (como adição) forçarão os inteiros a números de ponto flutuante conforme necessário. Você também pode coagi-los por si mesmo.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; float(2)                ①
+2.0
+&gt;&gt;&gt; int(2.0)                ②
+2
+&gt;&gt;&gt; int(2.5)                ③
+2
+&gt;&gt;&gt; int(-2.5)               ④
+-2
+&gt;&gt;&gt; 1.12345678901234567890  ⑤
+1.1234567890123457
+&gt;&gt;&gt; type(1000000000000000)  ⑥
+&lt;class 'int'&gt;</code></pre>
+
+    <ol>
+      <li>
+          Você pode coagir explicitamente um <code>int</code> para um <code>float</code> chamando a função <code>float()</code>.
+      </li>
+      <li>
+          Sem surpresa, você também pode coagir a <code>float</code> para um <code>int</code> chamando a função <code>int()</code>.
+      </li>
+      <li>
+          A função <code>int()</code> irá truncar, não arredondar.
+      </li>
+      <li>
+          A função <code>int()</code> trunca números negativos em direção a 0. É uma verdadeira função de truncar, não uma função de piso.
+      </li>
+      <li>
+          Os números de vírgula flutuante têm precisão de 15 casas decimais.
+      </li>
+      <li>
+          Os inteiros podem ser arbitrariamente grandes.
+      </li>
+    </ol>
+
+    <div class="admonition note">
+        <p class="admonition-title">Observação</p>
+        <p>
+            Python 2 tinha tipos separados para <code>int</code> e <code>long</code>. O tipo de dados <code>int</code> era limitado por <code>sys.maxint</code>, que variava de acordo com a plataforma, mas geralmente era 2<sup>32</sup>-1. O Python 3 tem apenas um tipo inteiro, que se comporta principalmente como o tipo antigo <code>long</code> do Python 2. Consulte <a href="http://www.python.org/dev/peps/pep-0237" target="_blank"><abbr>PEP 237</a> para obter detalhes.
+        </p>
+    </div>
+
+    <h3 id="common-numerical-operations">Operações Numéricas Comuns</h3>
+    <p>
+        Você pode fazer todo tipo de coisa com números.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; 11 / 2      ①
+5.5
+&gt;&gt;&gt; 11 // 2     ②
+5
+&gt;&gt;&gt; −11 // 2    ③
+−6
+&gt;&gt;&gt; 11.0 // 2   ④
+5.0
+&gt;&gt;&gt; 11 ** 2     ⑤
+121
+&gt;&gt;&gt; 11 % 2      ⑥
+1</code></pre>
+
+    <ol>
+      <li>
+          O operador <code>/</code> realiza a divisão de ponto flutuante. Ele retorna um <code>float</code> mesmo se o numerador e o denominador forem <code>int</code>s.
+      </li>
+      <li>
+          O operador <code>//</code> realiza um tipo peculiar de divisão inteira. Quando o resultado for positivo, você pode pensar nisso como um truncamento (não um arredondamento) para 0 casas decimais, mas tenha cuidado com isso.
+      </li>
+      <li>
+          Ao dividir números negativos inteiros, o operador <code>//</code> arredonda “para cima” para o inteiro mais próximo. Matematicamente falando, está arredondando “para baixo”, uma vez que <code>−6</code> é menor que <code>−5</code>, mas pode truncá-lo se você estiver esperando que trunque para <code>−5</code>.
+      </li>
+      <li>
+          O operador <code>//</code> nem sempre retorna um número inteiro. Se o numerador ou denominador for um <code>float</code>, ele ainda será arredondado para o inteiro mais próximo, mas o valor de retorno real será um <code>float</code>.
+      </li>
+      <li>
+          O operador <code>**</code> significa "elevado à potência de." 11<sup>2</sup> é 121.
+      </li>
+      <li>
+          O operador <code>%</code> dá o resto após realizar a divisão inteira. <code>11</code> dividido por <code>2</code> é <code>5</code> com um resto de <code>1</code>, então o resultado aqui é <code>1</code>.
+      </li>
+    </ol>
+
+    <div class="admonition note">
+        <p class="admonition-title">Observação</p>
+        <p>
+            No Python 2, o operador <code>/</code> geralmente significa divisão inteira, mas você pode fazer com que ele se comporte como uma divisão de ponto flutuante incluindo uma diretiva especial em seu código. No Python 3, o operador <code>/</code> sempre significa divisão de ponto flutuante. Veja <a href="http://www.python.org/dev/peps/pep-0238/" target="_blank">PEP 238</a> para detalhes.
+          
+        </p>
+    </div>
+
+    <h3 id="fractions">Frações</h3>
+    <p>
+        Python não se limita a números inteiros e números de ponto flutuante. Ele também pode fazer toda a matemática sofisticada que você aprendeu no colégio e rapidamente se esqueceu dela.
+    </p>
+    
+    <pre><code class="language-python-repl">&gt;&gt;&gt; import fractions              ①
+&gt;&gt;&gt; x = fractions.Fraction(1, 3)  ②
+&gt;&gt;&gt; x
+Fraction(1, 3)
+&gt;&gt;&gt; x * 2                         ③
+Fraction(2, 3)
+&gt;&gt;&gt; fractions.Fraction(6, 4)      ④
+Fraction(3, 2)
+&gt;&gt;&gt; fractions.Fraction(0, 0)      ⑤
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+  File "fractions.py", line 96, in __new__
+    raise ZeroDivisionError('Fraction(%s, 0)' % numerator)
+ZeroDivisionError: Fraction(0, 0)</code></pre>
+
+    <ol>
+      <li>
+        Para começar a usar frações, importe o módulo <code>fractions</code>.
+      </li>
+      <li>
+        Para definir uma fração, crie um objeto <code>Fraction</code> e passe o numerador e o denominador.
+      </li>
+      <li>
+        Você pode realizar todas as operações matemáticas usuais com frações. As operações retornam um novo objeto <code>Fraction</code>. <code>2 * (1/3) = (2/3)</code>
+      </li>
+      <li>
+        O objeto <code>Fraction</code> irá reduzir automaticamente as frações. <code>(6/4) = (3/2)</code>
+      </li>
+      <li>
+        Python tem o bom senso de não criar uma fração com denominador zero.
+      </li>
+    </ol>
+
+    <h3 id="trig">Trigonometria</h3>
+    <p>
+        Você também pode fazer trigonometria básica em Python.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; import math
+&gt;&gt;&gt; math.pi                ①
+3.1415926535897931
+&gt;&gt;&gt; math.sin(math.pi / 2)  ②
+1.0
+&gt;&gt;&gt; math.tan(math.pi / 4)  ③
+0.99999999999999989</code></pre>
+
+    
+    <ol>
+      <li>
+        O módulo <code>math</code> tem uma constante para π, a razão entre a circunferência de um círculo e seu diâmetro.
+      </li>
+      <li>
+        O módulo <code>math</code> possui todas as funções trigonométricas básicas, incluindo <code>sin()</code>, <code>cos()</code>, <code>tan()</code>, e variantes como <code>asin()</code>.
+      </li>
+      <li>
+        Observe, no entanto, que Python não tem precisão infinita. <code>tan(π / 4)</code> deve retornar <code>1.0</code>, não <code>0.99999999999999989</code>.
+      </li>
+    </ol>
+
+    <h3 id="numbers-in-a-boolean-context">Números em um contexto booleano</h3>
+    <blockquote>
+      <p>
+        Os valores zero são falsos e os valores diferentes de zero são verdadeiros.
+      </p>
+    </blockquote>
+    <p>
+      Você pode usar números <a href="#booleans">em um contexto booleano</a>, como uma instrução <code>if</code>. Os valores zero são falsos e os valores diferentes de zero são verdadeiros.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; def eh_verdadeiro(qualquer_coisa):       ①
+...   if qualquer_coisa:
+...     print("sim, é verdadeiro")
+...   else:
+...     print("não, é verdadeiro")
+...
+&gt;&gt;&gt; eh_verdadeiro(1)                         ②
+sim, é verdadeiro
+&gt;&gt;&gt; eh_verdadeiro(-1)
+sim, é verdadeiro
+&gt;&gt;&gt; eh_verdadeiro(0)
+não, é verdadeiro
+&gt;&gt;&gt; eh_verdadeiro(0.1)                       ③
+sim, é verdadeiro
+&gt;&gt;&gt; eh_verdadeiro(0.0)
+não, é verdadeiro
+&gt;&gt;&gt; import fractions
+&gt;&gt;&gt; eh_verdadeiro(fractions.Fraction(1, 2))  ④
+sim, é verdadeiro
+&gt;&gt;&gt; eh_verdadeiro(fractions.Fraction(0, 1))
+não, é verdadeiro</code></pre>
+
+    <ol>
+      <li>
+        Você sabia que pode definir suas próprias funções no shell interativo do Python? Basta pressionar <kbd>ENTER</kbd> no final de cada linha e <kbd>ENTER</kbd> em uma linha em branco para finalizar.
+      </li>
+      <li>
+        Em um contexto booleano, inteiros diferentes de zero são verdadeiros; 0 é falso.
+      </li>
+      <li>
+        Números de ponto flutuante diferentes de zero são verdadeiros; <code>0.0</code> é falso. Tenha cuidado com este! Se houver o menor erro de arredondamento (não impossível, como você viu na seção anterior), o Python estará testando <code>0.0000000000001</code> em vez de 0 e retornará <code>True</code>.
+      </li>
+      <li>
+        As frações também podem ser usadas em um contexto booleano. <code>Fraction(0, n)</code> é falso para todos os valores de n. Todas as outras frações são verdadeiras.
+      </li>
+    </ol>
+    
+    <h2 id="lists">Listas</h2>
+    <p>
+      Listas são o tipo de dados mais poderoso do Python. Quando eu digo “ lista ”, você pode estar pensando “array cujo tamanho que tem que declarar de antemão, que só pode conter itens do mesmo tipo, <i class="baa">e</i> c.” Não pense assim. Listas são muito mais legais do que isso.
+    </p>
+
+    <div class="admonition note">
+      <p class="admonition-title">Observação</p>
+      <p>
+        Uma lista em Python é como um array em Perl 5. No Perl 5, as variáveis ​​que armazenam arrays sempre começam com o caractere <code>@</code>; no Python, as variáveis ​​podem ter qualquer nome, e o Python rastreia o tipo de dados internamente.
+      </p>
+  </div>
+  <div class="admonition note">
+    <p class="admonition-title">Observação</p>
+    <p>
+      Uma lista em Python é muito mais do que um array em Java (embora possa ser usada como um se isso for realmente tudo o que você deseja da vida). Uma analogia melhor seria com a classe <code>ArrayList</code>, que pode conter objetos arbitrários e pode se expandir dinamicamente à medida que novos itens são adicionados.
+    </p>
+  </div>
+
+  <h3 id="creatinglists">Criando uma lista</h3>
+  <p>
+    Criar uma lista é fácil: use colchetes para envolver uma lista de valores separados por vírgulas.
+  </p>
+
+  <pre><code class="language-python-repl">&gt;&gt;&gt; uma_lista = ['a', 'b', 'mpilgrim', 'z', 'example']  ①
+    &gt;&gt;&gt; uma_lista
+['a', 'b', 'mpilgrim', 'z', 'example']
+&gt;&gt;&gt; uma_lista[0]                                        ②
+'a'
+&gt;&gt;&gt; uma_lista[4]                                        ③
+'example'
+&gt;&gt;&gt; uma_lista[-1]                                       ④
+'example'
+&gt;&gt;&gt; uma_lista[-3]                                       ⑤
+'mpilgrim'</code></pre>
+
+    <ol>
+      <li>
+        Primeiro, você define uma lista de cinco itens. Observe que eles mantêm sua ordem original. Isso não é um acidente. Uma lista é um set ordenado de itens.
+      </li>
+      <li>
+        Uma lista pode ser usada como uma matriz baseada em zero. O primeiro item de qualquer lista não vazia é sempre <code>uma_lista[0]</code>.
+      </li>
+      <li>
+        O último item desta lista de cinco itens é <code>uma_lista[4]</code> porque as listas são sempre baseadas em zero.
+      </li>
+      <li>
+        Um índice negativo acessa itens do final da lista em contagem regressiva. O último item de qualquer lista não vazia é sempre <code>uma_lista[-1]</code>.
+      </li>
+      <li>
+        Se o índice negativo é confuso para você, pense nisso desta maneira: <code>uma_lista[-n] == uma_lista[len(uma_lista) - n]</code>. Portanto, nesta lista, <code>uma_lista[-3] == uma_lista[5 - 3] == uma_lista[2]</code>.
+      </li>
+    </ol>
+
+    <h3 id="slicinglists">Slicing uma lista</h3>
+    <blockquote>
+      <p>
+        uma_lista[0] é o primeiro item de uma_lista.
+      </p>
+    </blockquote>
+    <p>
+      Depois de definir uma lista, você pode obter qualquer parte dela como uma nova lista. Isso é chamado de <i>fatiar (slicing)</i> a lista.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; uma_lista
+['a', 'b', 'mpilgrim', 'z', 'example']
+&gt;&gt;&gt; uma_lista[1:3]            ①
+['b', 'mpilgrim']
+&gt;&gt;&gt; uma_lista[1:-1]           ②
+['b', 'mpilgrim', 'z']
+&gt;&gt;&gt; uma_lista[0:3]            ③
+['a', 'b', 'mpilgrim']
+&gt;&gt;&gt; uma_lista[:3]             ④
+['a', 'b', 'mpilgrim']
+&gt;&gt;&gt; uma_lista[3:]             ⑤
+['z', 'example']
+&gt;&gt;&gt; uma_lista[:]              ⑥
+['a', 'b', 'mpilgrim', 'z', 'example']</code></pre>
+
+    <ol>
+      <li>
+        Você pode obter uma parte de uma lista, chamada de “slicing”, especificando dois índices. O valor de retorno é uma nova lista contendo todos os itens da lista, em ordem, começando com o índice da primeira fatia (neste caso <code>uma_lista[1]</code>), até mas não incluindo o índice da segunda fatia (neste caso <code>uma_lista[3]</code>).
+      </li>
+      <li>
+        O fatiamento funciona se um ou ambos os índices de fatia forem negativos. Se ajudar, você pode pensar da seguinte maneira: lendo a lista da esquerda para a direita, o índice da primeira fatia especifica o primeiro item que você deseja e o índice da segunda fatia especifica o primeiro item que você não deseja. O valor de retorno é tudo o que está entre os dois.
+      </li>
+      <li>
+        As listas são baseadas em zero, portanto, <code>uma_lista[0:3]</code> retorna os três primeiros itens da lista, começando em <code>uma_lista[0]</code>, até, mas não incluindo <code>uma_lista[3]</code>.
+      </li>
+      <li>
+        Se o índice da fatia esquerda for 0, você pode deixá-lo de fora e 0 está implícito. Então <code>uma_lista[:3]</code> é o mesmo que <code>uma_lista[0:3]</code>, porque o 0 inicial está implícito.
+      </li>
+      <li>
+        Da mesma forma, se o índice de fatia correto for o comprimento da lista, você pode deixá-lo de fora. Então <code>uma_lista[3:]</code> é o mesmo que <code>uma_lista[3:5]</code>, porque essa lista tem cinco itens. Há uma simetria agradável aqui. Nesta lista de cinco itens, <code>uma_lista[:3]</code> retorna os 3 primeiros itens e <code>uma_lista[3:]</code> retorna os dois últimos itens. Na verdade, <code>uma_lista[:n]</code> sempre retornará os primeiros n itens e <code>uma_lista[n:]</code> retornará os demais, independentemente do comprimento da lista.
+      </li>
+      <li>
+        Se ambos os índices de fatias forem omitidos, todos os itens da lista serão incluídos. Mas isso não é o mesmo que a variável uma_lista original. É uma nova lista que contém todos os mesmos itens. <code>uma_lista[:]</code> é uma abreviatura para fazer uma cópia completa de uma lista.
+      </li>
+    </ol>
+
+    <h3 id="extendinglists">Adicionando itens a uma lista</h3>
+    <p>
+      Existem quatro maneiras de adicionar itens a uma lista.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; uma_lista = ['a']
+&gt;&gt;&gt; uma_lista = uma_lista + [2.0, 3] ①
+&gt;&gt;&gt; uma_lista                        ②
+['a', 2.0, 3]
+&gt;&gt;&gt; uma_lista.append(True)           ③
+&gt;&gt;&gt; uma_lista
+['a', 2.0, 3, True]
+&gt;&gt;&gt; uma_lista.extend(['four', 'Ω'])  ④
+&gt;&gt;&gt; uma_lista
+['a', 2.0, 3, True, 'four', 'Ω']
+&gt;&gt;&gt; uma_lista.insert(0, 'Ω')         ⑤
+&gt;&gt;&gt; uma_lista
+['Ω', 'a', 2.0, 3, True, 'four', 'Ω']</code></pre>
+
+    <ol>
+      <li>
+        O operador <code>+</code> concatena listas para criar uma nova lista. Uma lista pode conter qualquer número de itens; não há limite de tamanho (além da memória disponível). No entanto, se a memória for uma preocupação, você deve estar ciente de que a concatenação de lista cria uma segunda lista na memória. Nesse caso, essa nova lista é imediatamente atribuída à variável <code>uma_lista</code> existente. Portanto, essa linha de código é realmente um processo de duas etapas - concatenação e atribuição - que pode (temporariamente) consumir muita memória quando você está lidando com listas grandes.
+      </li>
+      <li>
+        Uma lista pode conter itens de qualquer tipo de dados, e os itens em uma única lista não precisam ser todos do mesmo tipo. Aqui temos uma lista contendo uma string, um número de ponto flutuante e um inteiro.
+      </li>
+      <li>
+        O método <code>append()</code> adiciona um único item ao final da lista. (Agora temos <em>quatro</em> tipos de dados diferentes na lista!).
+      </li>
+      <li>
+        As listas são implementadas como classes. “Criar” uma lista é, na verdade, instanciar uma classe. Como tal, uma lista possui métodos que operam nela. O método <code>extend()</code> pega um argumento, uma lista, e acrescenta cada um dos itens do argumento à lista original.
+      </li>
+      <li>
+        O método <code>insert()</code> insere um único item em uma lista. O primeiro argumento é o índice do primeiro item da lista que sairá da posição. Os itens da lista não precisam ser exclusivos; por exemplo, agora existem dois itens separados com o valor <code>'Ω'</code>: o primeiro item <code>uma_lista[0]</code>, e o último item <code>uma_lista[6]</code>.
+      </li>
+    </ol>
+
+    <div class="admonition note">
+      <p class="admonition-title">Observação</p>
+      <p>
+        <code>uma_lista.insert(0, value)</code> é como a função <code>unshift()</code> em Perl. Ele adiciona um item ao início da lista e todos os outros itens têm seu índice posicional aumentado para abrir espaço.
+      </p>
+    </div>
+
+    <p>
+      Vamos examinar mais de perto a diferença entre <code>append()</code> e <code>extend()</code>.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; uma_lista = ['a', 'b', 'c']
+&gt;&gt;&gt; uma_lista.extend(['d', 'e', 'f'])  ①
+&gt;&gt;&gt; uma_lista
+['a', 'b', 'c', 'd', 'e', 'f']
+&gt;&gt;&gt; len(uma_lista)                     ②
+6
+&gt;&gt;&gt; uma_lista[-1]
+'f'
+&gt;&gt;&gt; uma_lista.append(['g', 'h', 'i'])  ③
+&gt;&gt;&gt; uma_lista
+['a', 'b', 'c', 'd', 'e', 'f', ['g', 'h', 'i']]
+&gt;&gt;&gt; len(uma_lista)                     ④
+7
+&gt;&gt;&gt; uma_lista[-1]
+['g', 'h', 'i']</code></pre>
+
+    <ol>
+      <li>
+        O método <code>extend()</code> recebe um único argumento, que é sempre uma lista, e adiciona cada um dos itens dessa lista a uma_lista.
+      </li>
+      <li>
+        Se você começar com uma lista de três itens e estendê-la com uma lista de outros três itens, terminará com uma lista de seis itens.
+      </li>
+      <li>
+        Por outro lado, o método <code>append()</code> recebe um único argumento, que pode ser qualquer tipo de dados. Aqui, você está chamando o método <code>append()</code> com uma lista de três itens.
+      </li>
+      <li>
+        Se você começar com uma lista de seis itens e anexar uma lista a ela, acabará com... uma lista de sete itens. Por que sete? Porque o último item (que você acabou de anexar) <em>é uma lista</em>. As listas podem conter qualquer tipo de dados, incluindo outras listas. Isso pode ser o que você deseja ou não. Mas é o que você pediu e é o que você conseguiu.
+      </li>
+    </ol>
+
+    <h3 id="searchinglists">Pesquisa de valores em uma lista</h3>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; uma_lista = ['a', 'b', 'new', 'mpilgrim', 'new']
+&gt;&gt;&gt; uma_lista.count('new')       ①
+2
+&gt;&gt;&gt; 'new' in uma_lista           ②
+True
+&gt;&gt;&gt; 'c' in uma_lista
+False
+&gt;&gt;&gt; uma_lista.index('mpilgrim')  ③
+3
+&gt;&gt;&gt; uma_lista.index('new')       ④
+2
+&gt;&gt;&gt; uma_lista.index('c')         ⑤
+Traceback (innermost last):
+  File "&lt;interactive input&gt;", line 1, in ?
+ValueError: list.index(x): x not in list</code></pre>
+    
+    <ol>
+      <li>
+        Como você pode esperar, o método <code>count()</code> retorna o número de ocorrências de um valor específico em uma lista.
+      </li>
+      <li>
+        Se tudo o que você deseja saber é se um valor está na lista ou não, o operador <code>in</code> é um pouco mais rápido do que usar o método <code>count()</code>. O operador <code>in</code> sempre retorna <code>True</code> ou <code>False</code>; ele não dirá quantas vezes o valor aparece na lista.
+      </li>
+      <li>
+        Nem o operador <code>in</code> nem o método <code>count()</code> informarão <em>onde</em> um valor aparece na lista. Se você precisa saber em que lugar da lista está um valor, chame o método <code>index()</code>. Por padrão, ele pesquisará a lista inteira, embora você possa especificar um segundo argumento opcional do índice (baseado em 0) para começar, e até mesmo um terceiro argumento opcional do índice (baseado em 0) para parar a pesquisa.
+      </li>
+      <li>
+        O método <code>index()</code> encontra a <em>primeira</em> ocorrência de um valor na lista. Nesse caso, ocorre <code>'new'</code> duas vezes na lista, em <code>uma_lista[2]</code> e <code>uma_lista[4]</code>, mas o método <code>index()</code> retornará apenas o índice da primeira ocorrência.
+      </li>
+      <li>
+        Como você <em>não</em> pode esperar, se o valor não for encontrado na lista, o método <code>index()</code> gerará uma exceção.
+      </li>
+    </ol>
+    <p>
+      Espere o que? Isso mesmo: o método <code>index()</code> levanta uma exceção se não encontrar o valor na lista. Isso é notavelmente diferente da maioria das linguagens, que retornará algum índice inválido (como <code>-1</code>). Embora isso possa parecer irritante no início, acho que você vai gostar. Isso significa que seu programa irá travar na origem do problema, em vez de falhar estranha e silenciosamente mais tarde. Lembre-se, <a href="#creatinglists"><code>-1</code> é um índice de lista válido</a>. Se o método <code>index()</code> retornasse <code>-1</code>, isso poderia levar a algumas sessões de depuração não tão divertidas!
+    </p>
+
+    <h3 id="removingfromlists">Removendo itens de uma lista</h3>
+    <blockquote>
+      <p>
+        As listas nunca têm lacunas.
+      </p>
+    </blockquote>
+
+    <p>
+      As listas podem se expandir e se contrair automaticamente. Você viu a parte da expansão. Existem várias maneiras diferentes de remover itens de uma lista também.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; uma_lista = ['a', 'b', 'new', 'mpilgrim', 'new']
+&gt;&gt;&gt; uma_lista[1]
+'b'
+&gt;&gt;&gt; del uma_lista[1]         ①
+&gt;&gt;&gt; uma_lista
+['a', 'new', 'mpilgrim', 'new']
+&gt;&gt;&gt; uma_lista[1]             ②
+'new'</code></pre>
+
+    <ol>
+      <li>
+        Você pode usar a instrução <code>del</code> para excluir um item específico de uma lista.
+      </li>
+      <li>
+        Acessando o índice <code>1</code> após a exclusão do índice  <code>1</code> <em>não</em> resultar em um erro. Todos os itens após o item excluído mudam seu índice posicional para “preencher a lacuna” criada ao excluir o item.
+      </li>
+    </ol>
+    <p>
+      Não sabe o índice posicional? Não é um problema; você pode remover itens por valor.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; uma_lista.remove('new')  ①
+&gt;&gt;&gt; uma_lista
+['a', 'mpilgrim', 'new']
+&gt;&gt;&gt; uma_lista.remove('new')  ②
+&gt;&gt;&gt; uma_lista
+['a', 'mpilgrim']
+&gt;&gt;&gt; uma_lista.remove('new')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ValueError: list.remove(x): x not in list</code></pre>
+    
+    <ol>
+      <li>
+        Você também pode remover um item de uma lista com o método <code>remove()</code>. O método <code>remove()</code> pega um <em>valor</em> e remove a primeira ocorrência desse valor da lista. Novamente, todos os itens após o item excluído terão seus índices de posição reduzidos para "preencher a lacuna". As listas nunca têm lacunas.
+      </li>
+      <li>
+        Você pode chamar o método <code>remove()</code> com a frequência que desejar, mas isso gerará uma exceção se você tentar remover um valor que não está na lista.
+      </li>
+    </ol>
+
+    <h3 id="popgoestheweasel">Removendo itens de uma lista: Rodada bônus</h3>
+    <p>
+      Outro método de lista interessante é o <code>pop()</code>. O método <code>pop()</code> é outra maneira de <a href="#removingfromlists">remover itens de uma lista</a>, mas com uma diferença.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; uma_lista = ['a', 'b', 'new', 'mpilgrim']
+&gt;&gt;&gt; uma_lista.pop()   ①
+'mpilgrim'
+&gt;&gt;&gt; uma_lista
+['a', 'b', 'new']
+&gt;&gt;&gt; uma_lista.pop(1)  ②
+'b'
+&gt;&gt;&gt; uma_lista
+['a', 'new']
+&gt;&gt;&gt; uma_lista.pop()
+'new'
+&gt;&gt;&gt; uma_lista.pop()
+'a'
+&gt;&gt;&gt; uma_lista.pop()   ③
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+IndexError: pop from empty list</code></pre>
+
+    <ol>
+      <li>
+        Quando chamado sem argumentos, o método <code>pop()</code> da lista remove o último item da lista <em>e retorna o valor removido</em>.
+      </li>
+      <li>
+        Você pode destacar itens arbitrários de uma lista. Basta passar um índice posicional para o método <code>pop()</code>. Ele removerá esse item, mudará todos os itens posteriores para “preencher a lacuna” e retornará o valor removido.
+      </li>
+      <li>
+        Chamar <code>pop()</code> numa lista vazia gera uma exceção.
+      </li>
+    </ol>
+
+    <div class="admonition note">
+      <p class="admonition-title">Observação</p>
+      <p>
+        Chamar o método <code>pop()</code> da lista sem um argumento é como a função <code>pop()</code> em Perl. Ele remove o último item da lista e retorna o valor do item removido. Perl tem outra função, <code>shift()</code>, que remove o primeiro item e retorna seu valor; em Python, isso é equivalente a <code>uma_lista.pop(0)</code>.
+      </p>
+    </div>
+
+    <h3 id="lists-in-a-boolean-context">Listas em um contexto booleano</h3>
+    <blockquote>
+      <p>
+        Listas vazias são falsas; todas as outras listas são verdadeiras.
+      </p>
+    </blockquote>
+    <p>
+      Você também pode usar uma lista em <a href="#booleans">um contexto booleano</a>, como uma instrução <code>if</code>.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; def eh_verdadeiro(qualquer_coisa):
+...   if qualquer_coisa:
+...     print("sim, é verdadeiro")
+...   else:
+...     print("não, é verdadeiro")
+...
+&gt;&gt;&gt; eh_verdadeiro([])             ①
+não, é verdadeiro
+&gt;&gt;&gt; eh_verdadeiro(['a'])          ②
+sim, é verdadeiro
+&gt;&gt;&gt; eh_verdadeiro([False])        ③
+sim, é verdadeiro</code></pre>
+
+    <ol>
+      <li>
+        Em um contexto booleano, uma lista vazia é falsa.
+      </li>
+      <li>
+        Qualquer lista com pelo menos um item é verdadeira.
+      </li>
+      <li>
+        Qualquer lista com pelo menos um item é verdadeira. O valor dos itens é irrelevante.
+      </li>
+    </ol>
+
+    <h2 id="tuples">Tuplas</h2>
+    <p>
+      Uma tupla é uma lista imutável. Uma tupla não pode ser alterada de nenhuma maneira depois de criada.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; a_tuple = ("a", "b", "mpilgrim", "z", "example")  ①
+&gt;&gt;&gt; a_tuple
+('a', 'b', 'mpilgrim', 'z', 'example')
+&gt;&gt;&gt; a_tuple[0]                                        ②
+'a'
+&gt;&gt;&gt; a_tuple[-1]                                       ③
+'example'
+&gt;&gt;&gt; a_tuple[1:3]                                      ④
+('b', 'mpilgrim')</code></pre>
+
+    <ol>
+      <li>
+        Uma tupla é definida da mesma maneira que uma lista, exceto que todo o set de elementos é colocado entre parênteses em vez de colchetes.
+      </li>
+      <li>
+        Os elementos de uma tupla têm uma ordem definida, assim como uma lista. Os índices de tupla são baseados em zero, assim como uma lista, então o primeiro elemento de uma tupla não vazia é sempre <code>a_tuple[0]</code>.
+      </li>
+      <li>
+        Índices negativos contam a partir do final da tupla, assim como uma lista.
+      </li>
+      <li>
+        O fatiamento também funciona, como uma lista. Ao fatiar uma lista, você obtém uma nova lista; quando você corta uma tupla, obtém uma nova tupla.
+      </li>
+    </ol>
+
+    <p>
+      A principal diferença entre tuplas e listas é que as tuplas não podem ser alteradas. Em termos técnicos, as tuplas são imutáveis. Em termos práticos, eles não têm métodos que permitam alterá-los. Listas têm métodos como <code>append()</code>, <code>extend()</code>, <code>insert()</code>, <code>remove()</code>, e <code>pop()</code>. As tuplas não possuem nenhum desses métodos. Você pode fatiar uma tupla (porque isso cria uma nova tupla) e pode verificar se uma tupla contém um valor específico (porque isso não muda a tupla) e... é sobre isso.
+    </p>
+
+    <pre><code class="language-python-repl"># continuação do exemplo anterior
+&gt;&gt;&gt; a_tuple
+('a', 'b', 'mpilgrim', 'z', 'example')
+&gt;&gt;&gt; a_tuple.append("new")               ①
+Traceback (innermost last):
+  File "<interactive input>", line 1, in ?
+AttributeError: 'tuple' object has no attribute 'append'
+&gt;&gt;&gt; a_tuple.remove("z")                 ②
+Traceback (innermost last):
+  File "<interactive input>", line 1, in ?
+AttributeError: 'tuple' object has no attribute 'remove'
+&gt;&gt;&gt; a_tuple.index("example")            ③
+4
+&gt;&gt;&gt; "z" in a_tuple                      ④
+True</code></pre>
+
+    <ol>
+      <li>
+        Você não pode adicionar elementos a uma tupla. Tuples não têm método <code>append()</code> ou <code>extend()</code>.
+      </li>
+      <li>
+        Você não pode remover elementos de uma tupla. Tuples não têm método <code>remove()</code> ou <code>pop()</code>.
+      </li>
+      <li>
+        Você <em>pode</em> encontrar elementos em uma tupla, pois isso não altera a tupla.
+      </li>
+      <li>
+        Você também pode usar o operador <code>in</code> para verificar se um elemento existe na tupla.
+      </li>
+    </ol>
+    <p>
+      Então, para que servem as tuplas?
+    </p>
+    <ul>
+      <li>
+        Tuplas são mais rápidas do que listas. Se você está definindo um set constante de valores e tudo o que vai fazer com ele é iterar por ele, use uma tupla em vez de uma lista.
+      </li>
+      <li>
+        Isso torna seu código mais seguro se você “protege contra gravação” os dados que não precisam ser alterados. Usar uma tupla em vez de uma lista é como ter uma declaração <code>assert</code> implícita que mostra que esses dados são constantes e que um pensamento especial (e uma função específica) é necessário para substituí-lo.
+      </li>
+      <li>
+        Algumas tuplas podem ser usadas como chaves de dicionário (especificamente, tuplas que contêm valores <i>imutáveis</i> como strings, números e outras tuplas). As listas nunca podem ser usadas como chaves de dicionário, porque as listas não são imutáveis.
+      </li>
+    </ul>
+    <div class="admonition note">
+      <p class="admonition-title">Observação</p>
+      <p>
+        Tuplas podem ser convertidas em listas e vice-versa. A função <code>tuple()</code> embutida pega uma lista e retorna uma tupla com os mesmos elementos, e a função <code>list()</code> pega uma tupla e retorna uma lista. Na verdade, <code>tuple()</code> congela uma lista e <code>list()</code> descongela uma tupla.
+      </p>
+    </div>
+
+    <h3 id="tuples-in-a-boolean-context">Tuplas em um contexto booleano</h3>
+    <p>
+      Você pode usar tuplas em um <a href="#booleans">contexto booleano</a>, como uma instrução <code>if</code>.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; def eh_verdadeiro(qualquer_coisa):
+...   if qualquer_coisa:
+...     print("sim, é verdadeiro")
+...   else:
+...     print("não, é verdadeiro")
+...
+&gt;&gt;&gt; eh_verdadeiro(())             ①
+não, é verdadeiro
+&gt;&gt;&gt; eh_verdadeiro(('a', 'b'))     ②
+sim, é verdadeiro
+&gt;&gt;&gt; eh_verdadeiro((False,))       ③
+sim, é verdadeiro
+&gt;&gt;&gt; type((False))                 ④
+&lt;class 'bool'&gt;
+&gt;&gt;&gt; type((False,))
+&lt;class 'tuple'&gt;</code></pre>
+
+  <ol>
+    <li>
+      Em um contexto booleano, uma tupla vazia é falsa.
+    </li>
+    <li>
+      Qualquer tupla com pelo menos um item é verdadeira.
+    </li>
+    <li>
+      Qualquer tupla com pelo menos um item é verdadeira. O valor dos itens é irrelevante. Mas o que aquela vírgula está fazendo aí?
+    </li>
+    <li>
+      Para criar uma tupla de um item, você precisa de uma vírgula após o valor. Sem a vírgula, o Python apenas assume que você tem um par extra de parênteses, o que é inofensivo, mas não cria uma tupla.
+    </li>
+  </ol>
+
+  <h3 id="multivar">Atribuição de vários valores de uma vez</h3>
+  <p>
+    Aqui está um atalho de programação legal: no Python, você pode usar uma tupla para atribuir vários valores de uma vez.
+  </p>
+
+  <pre><code class="language-python-repl">&gt;&gt;&gt; v = ('a', 2, True)
+&gt;&gt;&gt; (x, y, z) = v       ①
+&gt;&gt;&gt; x
+'a'
+&gt;&gt;&gt; y
+2
+&gt;&gt;&gt; z
+True</code></pre>
+
+  <ol>
+    <li>
+      <code>v</code> é uma tupla de três elementos e <code>(x, y, z)</code> é uma tupla de três variáveis. Atribuir um ao outro atribui cada um dos valores de <code>v</code> a cada uma das variáveis, em ordem.
+    </li>
+  </ol>
+
+  <p>
+    Isso tem todos os tipos de uso. Suponha que você queira atribuir nomes a um intervalo de valores. Você pode usar a função <code>range()</code> incorporada com atribuição de várias variáveis ​​para atribuir rapidamente valores consecutivos.
+  </p>
+
+  <pre><code class="language-python-repl">&gt;&gt;&gt; (MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY) = range(7)  ①
+&gt;&gt;&gt; MONDAY                                                                       ②
+0
+&gt;&gt;&gt; TUESDAY
+1
+&gt;&gt;&gt; SUNDAY
+6</code></pre>
+
+    <ol>
+      <li>
+        A função <code>range()</code> embutida constrói uma sequência de inteiros. (Tecnicamente, a função <code>range()</code> retorna um <a href="iterators.html" style="color: #b44582;">iterador</a>, não uma lista ou tupla, mas você aprenderá sobre essa distinção mais tarde.) MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, e SUNDAY são as variáveis ​​que você está definindo. (Este exemplo veio do módulo <code>calendar</code>, um pequeno módulo divertido que imprime calendários, como o programa <abbr>UNIX</abbr> <code>cal</code>. O módulo <code>calendar</code> define constantes inteiras para os dias da semana.)
+      </li>
+      <li>
+        Agora, cada variável tem seu valor: MONDAY é 0, TUESDAY é <code>1</code> e assim por diante.
+      </li>
+    </ol>
+    <p>
+      Você também pode usar a atribuição de várias variáveis ​​para criar funções que retornam vários valores, simplesmente retornando uma tupla de todos os valores. O chamador pode tratá-lo como uma única tupla ou pode atribuir os valores a variáveis ​​individuais. Muitas bibliotecas Python padrão fazem isso, incluindo o módulo <code>os</code>, sobre o qual você aprenderá no <a href="comprehensions.html#os" style="color: #b44582;">próximo capítulo</a>.
+    </p>
+    
+    <h2 id="sets">Conjuntos (sets)</h2>
+    <p>
+      Um set é uma “bolsa” não ordenada de valores únicos. Um único set pode conter valores de qualquer tipo de dados imutável. Depois de ter dois sets, você pode fazer operações de set padrão, como união, interseção e diferença de set.
+    </p>
+
+    <h3 id="creating-a-set">Criando um Conjunto</h3>
+    <p>
+      Primeiras coisas primeiro. Criar um set é fácil.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; um_conjunto = {1}     ①
+&gt;&gt;&gt; um_conjunto
+{1}
+&gt;&gt;&gt; type(um_conjunto)     ②
+&lt;class 'set'&gt;
+&gt;&gt;&gt; um_conjunto = {1, 2}  ③
+&gt;&gt;&gt; um_conjunto
+{1, 2}</code></pre>
+
+    <ol>
+      <li>
+        Para criar um set com um valor, coloque o valor entre chaves (<code>{}</code>).
+      </li>
+      <li>
+        Os sets são realmente implementados como <a href="iterators.html#defining-classes" style="color: #b44582;">classes</a>, mas não se preocupe com isso por enquanto.
+      </li>
+      <li>
+        Para criar um set com vários valores, separe os valores com vírgulas e envolva tudo com chaves.
+      </li>
+    </ol>
+    <p>
+      Você também pode criar um set de uma <a href="#lists">lista</a>.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; uma_lista = ['a', 'b', 'mpilgrim', True, False, 42]
+&gt;&gt;&gt; um_conjunto = set(uma_lista)                     ①
+&gt;&gt;&gt; um_conjunto                                      ②
+{'a', False, 'b', True, 'mpilgrim', 42}
+&gt;&gt;&gt; uma_lista                                        ③
+['a', 'b', 'mpilgrim', True, False, 42]</code></pre>
+
+    <ol>
+      <li>
+        Para criar um set a partir de uma lista, use a <code>set()</code>função. (Pedantes que sabem sobre como os sets são implementados irão apontar que isso não é realmente chamar uma função, mas instanciar uma classe. Eu <em>prometo que</em> você aprenderá a diferença mais tarde neste livro. Por enquanto, apenas saiba que isso <code>set()</code>atua como uma função, e ele retorna um set.)
+      </li>
+      <li>
+        Como mencionei anteriormente, um único set pode conter valores de qualquer tipo de dados. E, como mencionei anteriormente, os sets <em>não</em> são <em>ordenados</em> . Este set não lembra a ordem original da lista que foi usada para criá-lo. Se você fosse adicionar itens a este set, ele não se lembraria da ordem em que você os adicionou.
+      </li>
+      <li>
+        A lista original não foi alterada.
+      </li>
+    </ol>
+    <p id="emptyset">
+      Ainda não tem valores? Não é um problema. Você pode criar um set vazio.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; um_conjunto = set()    ①
+&gt;&gt;&gt; um_conjunto            ②
+set()
+&gt;&gt;&gt; type(um_conjunto)      ③
+&lt;class 'set'&gt;
+&gt;&gt;&gt; len(um_conjunto)       ④
+0
+&gt;&gt;&gt; not_sure = {}          ⑤
+&gt;&gt;&gt; type(not_sure)
+&lt;class 'dict'&gt;</code></pre>
+
+    <ol>
+      <li>
+        Para criar um set vazio, chame <code>set()</code> sem argumentos.
+      </li>
+      <li>
+        A representação impressa de um set vazio parece um pouco estranha. Você estava esperando <code>{}</code>, talvez? Isso denotaria um dicionário vazio, não um set vazio. Você aprenderá sobre dicionários posteriormente neste capítulo.
+      </li>
+      <li>
+        Apesar da estranha representação impressa, este <em>é</em> um set…
+      </li>
+      <li>
+        …E este set não tem membros.
+      </li>
+      <li>
+        Devido a peculiaridades históricas transportadas do Python 2, você não pode criar um set vazio com duas chaves. Na verdade, isso cria um dicionário vazio, não um set vazio.
+      </li>
+    </ol>
+
+    <h3 id="modifying-sets">Modificando um set (Conjunto)</h3>
+    <p>
+      Existem duas maneiras diferentes de adicionar valores a um set existente: o método <code>add()</code> e o método <code>update()</code>.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; um_conjunto = {1, 2}
+&gt;&gt;&gt; um_conjunto.add(4)  ①
+&gt;&gt;&gt; um_conjunto
+{1, 2, 4}
+&gt;&gt;&gt; len(um_conjunto)    ②
+3
+&gt;&gt;&gt; um_conjunto.add(1)  ③
+&gt;&gt;&gt; um_conjunto
+{1, 2, 4}
+&gt;&gt;&gt; len(um_conjunto)    ④
+3</code></pre>
+
+    <ol>
+      <li>
+        O método <code>add()</code> usa um único argumento, que pode ser qualquer tipo de dados, e adiciona o valor fornecido ao set.
+      </li>
+      <li>
+        Este set agora tem 3 membros.
+      </li>
+      <li>
+        Sets são bolsas de <em>valores únicos</em>. Se você tentar adicionar um valor que já existe no set, não fará nada. Não gerará um erro; é apenas um ambiente autônomo.
+      </li>
+      <li>
+        Este set <em>ainda</em> tem 3 membros.
+      </li>
+    </ol>
+    
+    <pre><code class="language-python-repl">&gt;&gt;&gt; um_conjunto = {1, 2, 3}
+&gt;&gt;&gt; um_conjunto
+{1, 2, 3}
+&gt;&gt;&gt; um_conjunto.update({2, 4, 6})                       ①
+&gt;&gt;&gt; um_conjunto                                         ②
+{1, 2, 3, 4, 6}
+&gt;&gt;&gt; um_conjunto.update({3, 6, 9}, {1, 2, 3, 5, 8, 13})  ③
+&gt;&gt;&gt; um_conjunto
+{1, 2, 3, 4, 5, 6, 8, 9, 13}
+&gt;&gt;&gt; um_conjunto.update([10, 20, 30])                    ④
+&gt;&gt;&gt; um_conjunto
+{1, 2, 3, 4, 5, 6, 8, 9, 10, 13, 20, 30}</code></pre>
+
+    <ol>
+      <li>
+        O método <code>update()</code> pega um argumento, um set, e adiciona todos os seus membros ao set original. É como se você chamasse o método <code>add()</code> com cada membro do set.
+      </li>
+      <li>
+        Valores duplicados são ignorados, pois os sets não podem conter duplicatas.
+      </li>
+      <li>
+        Você pode realmente chamar o método <code>update()</code> com qualquer número de argumentos. Quando chamado com dois sets, o método <code>update()</code> adiciona todos os membros de cada set ao set original (eliminando duplicatas).
+      </li>
+      <li>
+        O método <code>update()</code> pode pegar objetos de vários tipos de dados diferentes, incluindo listas. Quando chamado com uma lista, o método <code>update()</code> adiciona todos os itens da lista ao set original.
+      </li>
+    </ol>
+
+    <h3 id="removing-from-sets">Removendo itens de um set</h3>
+    <p>
+      Existem três maneiras de remover valores individuais de um set. Os dois primeiros, <code>discard()</code> e <code>remove()</code>, têm uma diferença sutil.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; um_conjunto = {1, 3, 6, 10, 15, 21, 28, 36, 45}
+&gt;&gt;&gt; um_conjunto
+{1, 3, 36, 6, 10, 45, 15, 21, 28}
+&gt;&gt;&gt; um_conjunto.discard(10)                        ①
+&gt;&gt;&gt; um_conjunto
+{1, 3, 36, 6, 45, 15, 21, 28}
+&gt;&gt;&gt; um_conjunto.discard(10)                        ②
+&gt;&gt;&gt; um_conjunto
+{1, 3, 36, 6, 45, 15, 21, 28}
+&gt;&gt;&gt; um_conjunto.remove(21)                         ③
+&gt;&gt;&gt; um_conjunto
+{1, 3, 36, 6, 45, 15, 28}
+&gt;&gt;&gt; um_conjunto.remove(21)                         ④
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+KeyError: 21</code></pre>
+
+    <ol>
+      <li>
+        O método <code>discard()</code> usa um único valor como argumento e remove esse valor do set.
+      </li>
+      <li>
+        Se você chamar o método <code>discard()</code> com um valor que não existe no set, ele não fará nada. Sem erro; é apenas um ambiente autônomo.
+      </li>
+      <li>
+        O método <code>remove()</code> também aceita um único valor como argumento e também remove esse valor do set.
+      </li>
+      <li>
+        Aqui está a diferença: se o valor não existir no set, o método <code>remove()</code> gerará uma exceção <code>KeyError</code>.
+      </li>
+    </ol>
+    <p>
+      Como as listas, os sets têm um método <code>pop()</code>.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; um_conjunto = {1, 3, 6, 10, 15, 21, 28, 36, 45}
+&gt;&gt;&gt; um_conjunto.pop()                                ①
+1
+&gt;&gt;&gt; um_conjunto.pop()
+3
+&gt;&gt;&gt; um_conjunto.pop()
+36
+&gt;&gt;&gt; um_conjunto
+{6, 10, 45, 15, 21, 28}
+&gt;&gt;&gt; um_conjunto.clear()                              ②
+&gt;&gt;&gt; um_conjunto
+set()
+&gt;&gt;&gt; um_conjunto.pop()                                ③
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+KeyError: 'pop from an empty set'</code></pre>
+
+    <ol>
+      <li>
+        O método <code>pop()</code> remove um único valor de um set e retorna o valor. No entanto, como os sets não são ordenados, não há "último" valor em um set, portanto, não há como controlar qual valor é removido. É completamente arbitrário.
+      </li>
+      <li>
+        O método <code>clear()</code> remove <em>todos os</em> valores de um set, deixando você com um set vazio. Isso é equivalente a <code>um_conjunto = set()</code>, o que criaria um novo set vazio e sobrescreveria o valor anterior da variável <code>um_conjunto</code>.
+      </li>
+      <li>
+        A tentativa de retirar um valor de um set vazio levantará uma exceção <code>KeyError</code>.
+      </li>
+    </ol>
+
+    <h3 id="common-set-operations">Operações comuns com set (conjuntos)</h3>
+    <p>
+      O tipo <code>set</code> do Python oferece suporte a várias operações comuns com conjuntos.
+    </p>
+
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; um_conjunto = {2, 4, 5, 9, 12, 21, 30, 51, 76, 127, 195}
+&gt;&gt;&gt; 30 in um_conjunto                                                     ①
+True
+&gt;&gt;&gt; 31 in um_conjunto
+False
+&gt;&gt;&gt; b_set = {1, 2, 3, 5, 6, 8, 9, 12, 15, 17, 18, 21}
+&gt;&gt;&gt; um_conjunto.union(b_set)                                              ②
+{1, 2, 195, 4, 5, 6, 8, 12, 76, 15, 17, 18, 3, 21, 30, 51, 9, 127}
+&gt;&gt;&gt; um_conjunto.intersection(b_set)                                       ③
+{9, 2, 12, 5, 21}
+&gt;&gt;&gt; um_conjunto.difference(b_set)                                         ④
+{195, 4, 76, 51, 30, 127}
+&gt;&gt;&gt; um_conjunto.symmetric_difference(b_set)                               ⑤
+{1, 3, 4, 6, 8, 76, 15, 17, 18, 195, 127, 30, 51}</code></pre>
+
+    <ol>
+      <li>
+        Para testar se um valor é membro de um set, use o operador <code>in</code>. Isso funciona da mesma forma que listas.
+      </li>
+      <li>
+        O método <code>union()</code> retorna um novo set contendo todos os elementos que estão em <em>qualquer um dos</em> sets.
+      </li>
+      <li>
+        O método <code>intersection()</code> retorna um novo set contendo todos os elementos que estão em <em>ambos os</em> sets.
+      </li>
+      <li>
+        O método <code>difference()</code> retorna um novo set contendo todos os elementos que estão em <code>um_conjunto</code>, mas não em <code>b_set</code>.
+      </li>
+      <li>
+        O método <code>symmetric_difference()</code> retorna um novo set contendo todos os elementos que estão em <em>exatamente</em> um dos sets.
+      </li>
+    </ol>
+    <p>
+      Três desses métodos são simétricos.
+    </p>
+
+    <pre><code class="language-python-repl"># continuação do exemplo anterior
+&gt;&gt;&gt; b_set.symmetric_difference(um_conjunto)                                             ①
+{3, 1, 195, 4, 6, 8, 76, 15, 17, 18, 51, 30, 127}
+&gt;&gt;&gt; b_set.symmetric_difference(um_conjunto) == um_conjunto.symmetric_difference(b_set)  ②
+True
+&gt;&gt;&gt; b_set.union(um_conjunto) == um_conjunto.union(b_set)                                ③
+True
+&gt;&gt;&gt; b_set.intersection(um_conjunto) == um_conjunto.intersection(b_set)                  ④
+True
+&gt;&gt;&gt; b_set.difference(um_conjunto) == um_conjunto.difference(b_set)                      ⑤
+False</code></pre>
+
+    <ol>
+      <li>
+        A diferença simétrica de <code>um_conjunto</code> de <code>b_set</code>  <em>parece</em> diferente da diferença simétrica de <code>b_set</code> de <code>um_conjunto</code>, mas lembre-se, os sets não são ordenados. Quaisquer dois sets que contenham todos os mesmos valores (sem nenhum restante) são considerados iguais.
+      </li>
+      <li>
+        E é exatamente isso que acontece aqui. Não se deixe enganar pela representação impressa do Python Shell desses sets. Eles contêm os mesmos valores, portanto, são iguais.
+      </li>
+      <li>
+        A união de dois sets também é simétrica.
+      </li>
+      <li>
+        A interseção de dois sets também é simétrica.
+      </li>
+      <li>
+        A diferença de dois sets não é simétrica. Isso faz sentido; é análogo a subtrair um número de outro. A ordem dos operandos é importante.
+      </li>
+    </ol>
+
+    <p>
+      Finalmente, existem algumas perguntas que você pode fazer aos sets.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; um_conjunto = {1, 2, 3}
+&gt;&gt;&gt; b_set = {1, 2, 3, 4}
+&gt;&gt;&gt; um_conjunto.issubset(b_set)    ①
+True
+&gt;&gt;&gt; b_set.issuperset(um_conjunto)  ②
+True
+&gt;&gt;&gt; um_conjunto.add(5)             ③
+&gt;&gt;&gt; um_conjunto.issubset(b_set)
+False
+&gt;&gt;&gt; b_set.issuperset(um_conjunto)
+False</code></pre>
+
+    <ol>
+      <li>
+        <code>um_conjunto</code> é um subconjunto de <code>b_set</code>  - todos os membros de <code>um_conjunto</code> também são membros de <code>b_set</code>.
+      </li>
+      <li>
+        Fazendo a mesma pergunta ao contrário, <code>b_set</code> é um superconjunto de <code>um_conjunto</code>, porque todos os membros de <code>um_conjunto</code> também são membros de <code>b_set</code>.
+      </li>
+      <li>
+        Assim que você adiciona um valor a <code>um_conjunto</code> que não está em <code>b_set</code>, ambos os testes retornam <code>False</code>.
+      </li>
+    </ol>
+
+    <h3 id="sets-in-a-boolean-context">Conjuntos em um contexto booleano</h3>
+    <p>
+      Você pode usar sets em um <a href="#booleans">contexto booleano</a>, como uma instrução <code>if</code>.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; def eh_verdadeiro(qualquer_coisa):
+...   if qualquer_coisa:
+...     print("sim, é verdadeiro")
+...   else:
+...     print("não, é verdadeiro")
+...
+&gt;&gt;&gt; eh_verdadeiro(set())          ①
+não, é verdadeiro
+&gt;&gt;&gt; eh_verdadeiro({'a'})          ②
+sim, é verdadeiro
+&gt;&gt;&gt; eh_verdadeiro({False})        ③
+sim, é verdadeiro</code></pre>
+
+    <ol>
+      <li>
+        Em um contexto booleano, um set vazio é falso.
+      </li>
+      <li>
+        Qualquer set com pelo menos um item é verdadeiro.
+      </li>
+      <li>
+        Qualquer set com pelo menos um item é verdadeiro. O valor dos itens é irrelevante.
+      </li>
+    </ol>
+
+
+    <h2 id="dictionaries">Dicionários</h2>
+    <p>
+      Um dicionário é um set não ordenado de pares chave-valor. Ao adicionar uma chave a um dicionário, você também deve adicionar um valor para essa chave. (Você sempre pode alterar o valor posteriormente). Os dicionários Python são otimizados para recuperar o valor quando você conhece a chave, mas não o contrário.
+    </p>
+
+    <div class="admonition note">
+      <p class="admonition-title">Observação</p>
+      <p>
+        Um dicionário em Python é como um hash em Perl 5. Em Perl 5, as variáveis ​​que armazenam hashes sempre começam com um caractere <code>%</code>. No Python, as variáveis ​​podem ter qualquer nome, e o Python rastreia o tipo de dados internamente.
+      </p>
+    </div>
+
+    <h3 id="creating-dictionaries">Criando um Dicionário</h3>
+    <p>
+      Criar um dicionário é fácil. A sintaxe é semelhante a criação de <a href="#sets">sets</a>, mas em vez de valores, você tem pares de chave-valores. Depois de ter um dicionário, você pode pesquisar os valores por sua chave.
+    </p>
+    
+    <pre><code class="language-python-repl">&gt;&gt;&gt; um_dicionario = {'server': 'db.diveintopython3.org', 'database': 'mysql'}  ①
+&gt;&gt;&gt; um_dicionario
+{'server': 'db.diveintopython3.org', 'database': 'mysql'}
+&gt;&gt;&gt; um_dicionario['server']                                                    ②
+'db.diveintopython3.org'
+&gt;&gt;&gt; um_dicionario['database']                                                  ③
+'mysql'
+&gt;&gt;&gt; um_dicionario['db.diveintopython3.org']                                    ④
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+KeyError: 'db.diveintopython3.org'</code></pre>
+
+    <ol>
+      <li>
+        Primeiro, você cria um novo dicionário com dois itens e o atribui à variável <code>um_dicionario</code>. Cada item é um par de chave-valores e todo o conjunto de itens está entre chaves.
+      </li>
+      <li>
+        <code>'server'</code> é uma chave e seu valor associado, referenciado por <code>um_dicionario['server']</code>, é <code>'db.diveintopython3.org'</code>.
+      </li>
+      <li>
+        <code>'database'</code> é uma chave e seu valor associado, referenciado por <code>um_dicionario['database']</code>, é <code>'mysql'</code>.
+      </li>
+      <li>
+        Você pode obter valores por chave, mas não pode obter chaves por valor. Então <code>um_dicionario['server']</code> é <code>'db.diveintopython3.org'</code>, mas <code>um_dicionario['db.diveintopython3.org']</code> levanta uma exceção, porque <code>'db.diveintopython3.org'</code> não é uma chave.
+      </li>
+    </ol>
+
+    <h3 id="modifying-dictionaries">Modificando um Dicionário</h3>
+    <p>
+      Os dicionários não têm nenhum limite de tamanho predefinido. Você pode adicionar novos pares de chave-valores a um dicionário a qualquer momento ou pode modificar o valor de uma chave existente. Continuando com o exemplo anterior:
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; um_dicionario
+{'server': 'db.diveintopython3.org', 'database': 'mysql'}
+&gt;&gt;&gt; um_dicionario['database'] = 'blog'  ①
+&gt;&gt;&gt; um_dicionario
+{'server': 'db.diveintopython3.org', 'database': 'blog'}
+&gt;&gt;&gt; um_dicionario['user'] = 'mark'      ②
+&gt;&gt;&gt; um_dicionario                       ③
+{'server': 'db.diveintopython3.org', 'user': 'mark', 'database': 'blog'}
+&gt;&gt;&gt; um_dicionario['user'] = 'dora'      ④
+&gt;&gt;&gt; um_dicionario
+{'server': 'db.diveintopython3.org', 'user': 'dora', 'database': 'blog'}
+&gt;&gt;&gt; um_dicionario['User'] = 'mark'      ⑤
+&gt;&gt;&gt; um_dicionario
+{'User': 'mark', 'server': 'db.diveintopython3.org', 'user': 'dora', 'database': 'blog'}</code></pre>
+
+    <ol>
+      <li>
+        Você não pode ter chaves duplicadas em um dicionário. Atribuir um valor a uma chave existente apagará o valor antigo.
+      </li>
+      <li>
+        Você pode adicionar novos pares de chave-valores a qualquer momento. Essa sintaxe é idêntica à modificação de valores existentes.
+      </li>
+      <li>
+        O novo item do dicionário (chave <code>'user'</code>, valor <code>'mark'</code>) parece estar no meio. Na verdade, foi apenas uma coincidência que os itens parecessem estar em ordem no primeiro exemplo; é uma coincidência que eles pareçam estar fora de ordem agora.
+      </li>
+      <li>
+        Atribuir um valor a uma chave de dicionário existente simplesmente substitui o valor antigo pelo novo.
+      </li>
+      <li>
+        Isso mudará o valor da chave <code>user</code> de volta para "mark"? Não! Observe a chave de perto - é uma capital <kbd>U</kbd> em <kbd>"User"</kbd>. As chaves de dicionário diferenciam maiúsculas de minúsculas, portanto, esta instrução está criando um novo par chave-valor, não substituindo um existente. Pode ser parecido com você, mas no que diz respeito ao Python, é completamente diferente.
+      </li>
+    </ol>
+
+    <h3 id="mixed-value-dictionaries">Dicionários de valores mistos</h3>
+    <p>
+      Dicionários não são apenas para strings. Os valores do dicionário podem ser qualquer tipo de dados, incluindo inteiros, booleanos, objetos arbitrários ou até mesmo outros dicionários. E dentro de um único dicionário, os valores não precisam ser todos do mesmo tipo; você pode misturar e combinar conforme necessário. As chaves de dicionário são mais restritas, mas podem ser strings, inteiros e alguns outros tipos. Você também pode misturar e combinar os principais tipos de dados em um dicionário.
+    </p>
+    <p>
+      Na verdade, você já viu um dicionário com chaves e valores que não sejam strings, em <a href="https://www.acervolima.com.br/2021/05/seu-primeiro-programa-python.html#divingin">seu primeiro programa Python</a>.
+    </p>
+    
+    <pre><code class="language-python">SUFFIXES = {1000: ['KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+            1024: ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']}</code></pre>
+    
+    <p>
+      Vamos separar isso no shell interativo.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; SUFFIXES = {1000: ['KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+...             1024: ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']}
+&gt;&gt;&gt; len(SUFFIXES)      ①
+2
+&gt;&gt;&gt; 1000 in SUFFIXES   ②
+True
+&gt;&gt;&gt; SUFFIXES[1000]     ③
+['KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+&gt;&gt;&gt; SUFFIXES[1024]     ④
+['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
+&gt;&gt;&gt; SUFFIXES[1000][3]  ⑤
+'TB'</code></pre>
+
+    <ol>
+      <li>
+        Como <a href="#lists">listas</a> e <a href="#sets">sets</a>, a função <code>len()</code> fornece o número de chaves em um dicionário.
+      </li>
+      <li>
+        E como listas e sets, você pode usar o operador <code>in</code> para testar se uma chave específica está definida em um dicionário.
+      </li>
+      <li>
+        <code>1000</code> <em>é</em> uma chave no dicionário <code>SUFFIXES</code>; seu valor é uma lista de oito itens (oito strings, para ser mais preciso).
+      </li>
+      <li>
+        Da mesma forma, <code>1024</code> é uma chave no dicionário <code>SUFFIXES</code>; seu valor também é uma lista de oito itens.
+      </li>
+      <li>
+        Como <code>SUFFIXES[1000]</code> é uma lista, você pode endereçar itens individuais na lista por seu índice baseado em 0.
+      </li>
+    </ol>
+
+    <h3 id="dictionaries-in-a-boolean-context">Dicionários em um contexto booleano</h3>
+    <blockquote>
+      <p>
+        Dicionários vazios são falsos; todos os outros dicionários são verdadeiros.
+      </p>
+    </blockquote>
+    <p>
+      Você também pode usar um dicionário em <a href="#booleans">um contexto booleano</a>, como uma instrução <code>if</code>.
+    </p>
+    
+    <pre><code class="language-python-repl">&gt;&gt;&gt; def eh_verdadeiro(qualquer_coisa):
+...   if qualquer_coisa:
+...     print("sim, é verdadeiro")
+...   else:
+...     print("não, é verdadeiro")
+...
+&gt;&gt;&gt; eh_verdadeiro({})             ①
+não, é verdadeiro
+&gt;&gt;&gt; eh_verdadeiro({'a': 1})       ②
+sim, é verdadeiro</code></pre>
+
+    <ol>
+      <li>
+        Em um contexto booleano, um dicionário vazio é falso.
+      </li>
+      <li>
+        Qualquer dicionário com pelo menos um par de chave-valores é verdadeiro.
+      </li>
+    </ol>
+
+    <h2 id="none"><code>None</code></h2>
+    <p>
+      <code>None</code> é uma constante especial em Python. É um valor nulo. <code>None</code> não é o mesmo que <code>False</code>. <code>None</code>não é 0. <code>None</code> não é uma string vazia. Comparando <code>None</code> com qualquer coisa diferente de <code>None</code> sempre retornará <code>False</code>.
+    </p>
+    <p>
+      <code>None</code> é o único valor nulo. Ele tem seu próprio tipo de dados (<code>NoneType</code>). Você pode atribuir <code>None</code> a qualquer variável, mas não pode criar outros objetos <code>NoneType</code>. Todas as variáveis ​​cujo valor é <code>None</code> são iguais entre si.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; type(None)
+&lt;class 'NoneType'&gt;
+&gt;&gt;&gt; None == False
+False
+&gt;&gt;&gt; None == 0
+False
+&gt;&gt;&gt; None == ''
+False
+&gt;&gt;&gt; None == None
+True
+&gt;&gt;&gt; x = None
+&gt;&gt;&gt; x == None
+True
+&gt;&gt;&gt; y = None
+&gt;&gt;&gt; x == y
+True</code></pre>
+
+    <h3 id="none-in-a-boolean-context"><code>None</code> num contexto booleano</h3>
+    <p>
+      Em um <a href="#booleans">contexto booleano</a>, <code>None</code> é falso e <code>not None</code> é verdadeiro.
+    </p>
+    
+    <pre><code class="language-python-repl">&gt;&gt;&gt; def eh_verdadeiro(qualquer_coisa):
+...   if qualquer_coisa:
+...     print("sim, é verdadeiro")
+...   else:
+...     print("não, é verdadeiro")
+...
+&gt;&gt;&gt; eh_verdadeiro(None)
+não, é verdadeiro
+&gt;&gt;&gt; eh_verdadeiro(not None)
+sim, é verdadeiro</code></pre>
+
+  <h2 id="furtherreading">Leitura Adicional</h2>
+  <ul>
+    <li>
+      <a href="http://docs.python.org/3.1/library/stdtypes.html#boolean-operations-and-or-not" target="_blank">Operações booleanas</a>
+    </li>
+    <li>
+      <a href="http://docs.python.org/3.1/library/stdtypes.html#numeric-types-int-float-long-complex" target="_blank">Tipos numéricos</a>
+    </li>
+    <li>
+      <a href="http://docs.python.org/3.1/library/stdtypes.html#sequence-types-str-unicode-list-tuple-buffer-xrange" target="_blank">Tipos de sequência</a>
+    </li>
+    <li><a href="http://docs.python.org/3.1/library/stdtypes.html#set-types-set-frozenset"
+      target="_blank">Definir tipos</a>
+    </li>
+    <li>
+      <a href="http://docs.python.org/3.1/library/stdtypes.html#mapping-types-dict" target="_blank">Tipos de
+        mapeamento</a>
+    </li>
+    <li>
+      <a href="http://docs.python.org/3.1/library/fractions.html" target="_blank">módulo <code>fractions</code>
+        </a>
+    </li>
+    <li>
+      <a href="http://docs.python.org/3.1/library/math.html" target="_blank">módulo <code>math</code></a>
+    </li>
+    <li>
+      <a href="http://www.python.org/dev/peps/pep-0237/" target="_blank">PEP 237: Unificando
+        inteiros longos e inteiros</a>
+    </li>
+    <li>
+      <a href="http://www.python.org/dev/peps/pep-0238/" target="_blank">PEP 238: Mudando o
+        Operador da Divisão</a>
+    </li>
+  </ul>
+
+<p>
+     Esse artigo é uma tradução de um capítulo do livro "Dive Into Python 3" escrito por Mark Pilgrim. Você pode ler o livro desde o início em português clicando <a href="https://www.acervolima.com.br/2021/05/o-que-ha-de-novo-em-dive-into-python-3.html">aqui</a>.
+</p>
+<p>
+    Traduzido por Acervo Lima. O original pode ser acessado <a href="https://diveintopython3.problemsolving.io/native-datatypes.html" target="_blank">aqui</a>.
+</p>
+<h2>Licença</h2>
+<ul>
+    <li><a href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank">Creative Commons Attribution Share-Alike</a></li>
+</ul>
+
+<div class="prev-next-div">
+    <a class="prev" href="https://www.acervolima.com.br/2021/05/seu-primeiro-programa-python.html">&lt;&lt; Anterior</a>
+    <a class="next" href="#">Próximo &gt;&gt;</a>
+</div>
+
+
+
+</body>
+</html>

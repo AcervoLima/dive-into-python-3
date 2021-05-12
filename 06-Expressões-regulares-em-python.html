@@ -1,0 +1,732 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documento</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+<body>
+
+    <h1>Expressões regulares</h1>
+    <blockquote>
+        <p>
+            ❝Algumas pessoas, quando confrontadas com um problema, pensam “Eu sei, usarei expressões regulares”. Agora eles tem dois problemas.❞<br/>
+             - <a href="http://www.jwz.org/hacks/marginal.html" target="_blank">Jamie Zawinski</a>
+        </p>
+    </blockquote>
+
+    <h2 id="divingin">Mergulho</h2>
+    <p>
+        Tirar um pequeno trecho de um grande bloco de texto é um desafio. Em Python, strings têm métodos para pesquisa e substituição: <code>index()</code>, <code>find()</code>, <code>split()</code>, <code>count()</code>, <code>replace()</code>. Mas esses métodos são limitados aos casos mais simples. Por exemplo, o método <code>index()</code> procura uma única substring codificada e a pesquisa sempre diferencia maiúsculas de minúsculas. Para fazer pesquisas que não diferenciam maiúsculas de minúsculas de uma string <code>s</code>, você deve chamar <code>s.lower()</code> ou <code>s.upper()</code> e certificar-se de que suas strings de pesquisa são as maiúsculas e minúsculas apropriadas. Os métodos <code>replace()</code> e <code>split()</code> têm as mesmas limitações.
+    </p>
+    <p>
+        Se seu objetivo pode ser alcançado com métodos de string, você deve usá-los. Eles são rápidos, simples e fáceis de ler, e há muito a ser dito sobre um código rápido, simples e legível. Mas se você estiver usando várias funções de string diferentes com instruções <code>if</code> para lidar com casos especiais, ou se estiver encadeando chamadas para <code>split()</code> e <code>join()</code> para fatiar e dividir suas strings, pode ser necessário passar para as expressões regulares.
+    </p>
+    <p>
+        As expressões regulares são uma forma poderosa e (principalmente) padronizada de pesquisar, substituir e analisar texto com padrões complexos de caracteres. Embora a sintaxe da expressão regular seja restrita e diferente do código normal, o resultado pode acabar sendo <em>mais</em> legível do que uma solução enrolada à mão que usa uma longa cadeia de funções de string. Existem até maneiras de incorporar comentários em expressões regulares, para que você possa incluir documentação refinada neles.
+    </p>
+    <div class="admonition note">
+        <p class="admonition-title">Observação</p>
+        <p>
+            Se você usou expressões regulares em outras linguagens (como Perl, JavaScript ou PHP), a sintaxe do Python será muito familiar. Leia o resumo do módulo <a href="http://docs.python.org/dev/library/re.html#module-contents" target="_blank"><code>re</code></a> para obter uma visão geral das funções disponíveis e seus argumentos.
+        </p>
+    </div>
+    
+    <h2 id="streetaddresses">Estudo de caso: Nº de endereços de rua</h2>
+    <p>
+        Esta série de exemplos foi inspirada por um problema da vida real que tive em meu trabalho diário há vários anos, quando precisei limpar e padronizar endereços de rua exportados de um sistema legado antes de importá-los para um sistema mais novo. (Veja, eu não apenas invento essas coisas; elas são realmente úteis). Este exemplo mostra como abordei o problema.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; s = '100 NORTH MAIN ROAD'
+&gt;&gt;&gt; s.replace('ROAD', 'RD.')                ①
+'100 NORTH MAIN RD.'
+&gt;&gt;&gt; s = '100 NORTH BROAD ROAD'
+&gt;&gt;&gt; s.replace('ROAD', 'RD.')                ②
+'100 NORTH BRD. RD.'
+&gt;&gt;&gt; s[:-4] + s[-4:].replace('ROAD', 'RD.')  ③
+'100 NORTH BROAD RD.'
+&gt;&gt;&gt; import re                               ④
+&gt;&gt;&gt; re.sub('ROAD$', 'RD.', s)               ⑤
+'100 NORTH BROAD RD.'</code></pre>
+
+    <ol>
+        <li>
+            Meu objetivo é padronizar um endereço de rua para que <code>'ROAD'</code> seja sempre abreviado como <code>'RD.'</code>. À primeira vista, pensei que era simples o suficiente para que pudesse usar apenas o método string <code>replace()</code>. Afinal, todos os dados já estavam em maiúsculas, portanto, as incompatibilidades de maiúsculas e minúsculas não seriam um problema. E a string de pesquisa, <code>'ROAD'</code>, era uma constante. E neste exemplo aparentemente simples, <code>s.replace()</code> realmente funciona.
+        </li>
+        <li>
+            A vida, infelizmente, está cheia de contra-exemplos, e eu rapidamente descobri este. O problema aqui é que <code>'ROAD'</code> aparece duas vezes no endereço, uma vez como parte do nome da rua <code>'BROAD'</code> e outra como sua própria palavra. O método <code>replace()</code> vê essas duas ocorrências e substitui cegamente as duas; enquanto isso, vejo meus endereços sendo destruídos.
+        </li>
+        <li>
+            Para resolver o problema de endereços com mais de uma substring <code>'ROAD'</code>, você poderia recorrer a algo assim: apenas pesquise e substitua <code>'ROAD'</code> nos últimos quatro caracteres do endereço (<code>s[-4:]</code>), e deixe a string sozinha (<code>s[:-4]</code>). Mas você pode ver que isso já está ficando complicado. Por exemplo, o padrão depende do comprimento da string que você está substituindo. (Se você estivesse substituindo <code>'STREET'</code> com <code>'ST.'</code>, você precisaria usar <code>s[:-6]</code> e <code>s[-6:].replace(...)</code>). Você gostaria de voltar em seis meses e depurar isso? Eu sei que não.
+        </li>
+        <li>
+            É hora de passar para as expressões regulares. Em Python, todas as funcionalidades relacionadas às expressões regulares estão contidas no módulo <code>re</code>.
+        </li>
+        <li>
+            Dê uma olhada no primeiro parâmetro: <code>'ROAD$'</code>. Esta é uma expressão regular simples que corresponde <code>'ROAD'</code> apenas quando ocorre no final de uma string. O <code>$</code> significa “fim da cadeia.” (Há um caractere correspondente, o circunflexo <code>^</code>, que significa “início da string”). Usando a função <code>re.sub()</code>, você pesquisa a string <code>s</code> para a expressão regular <code>'ROAD$'</code> e a substitui por <code>'RD.'</code>. Corresponde ao <code>ROAD</code> no final da string <code>s</code>, mas <em>não</em> corresponde ao <code>ROAD</code> que é parte da palavra <code>BROAD</code>, porque está no meio de <code>s</code>.
+        </li>
+    </ol>
+    <blockquote>
+        <p>
+            ^ corresponde ao início de uma string. $ corresponde ao final de uma string.
+        </p>
+    </blockquote>
+    <p>
+        Continuando com minha história de limpeza de endereços, logo descobri que o exemplo anterior, correspondendo <code>'ROAD'</code> no final do endereço, não era bom o suficiente, porque nem todos os endereços incluíam uma designação de rua. Alguns endereços simplesmente terminavam com o nome da rua. Eu fugia com isso na maioria das vezes, mas se o nome da rua fosse <code>'BROAD'</code>, a expressão regular corresponderia <code>'ROAD'</code> ao final da string como parte da palavra <code>'BROAD'</code>, o que não é o que eu queria.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; s = '100 BROAD'
+&gt;&gt;&gt; re.sub('ROAD$', 'RD.', s)
+'100 BRD.'
+&gt;&gt;&gt; re.sub('\\bROAD$', 'RD.', s)   ①
+'100 BROAD'
+&gt;&gt;&gt; re.sub(r'\bROAD$', 'RD.', s)   ②
+'100 BROAD'
+&gt;&gt;&gt; s = '100 BROAD ROAD APT. 3'
+&gt;&gt;&gt; re.sub(r'\bROAD$', 'RD.', s)   ③
+'100 BROAD ROAD APT. 3'
+&gt;&gt;&gt; re.sub(r'\bROAD\b', 'RD.', s)  ④
+'100 BROAD RD. APT 3'</code></pre>
+
+    <ol>
+        <li>
+            O que eu <em>realmente</em> queria era encontrar <code>'ROAD'</code> quando estava no final da string <em>e</em> era sua própria palavra (e não uma parte de alguma palavra maior). Para expressar isso em uma expressão regular, você usa <code>\b</code>, que significa "um limite de palavra deve ocorrer bem aqui." Em Python, isso é complicado pelo fato de que o próprio caractere <code>'\'</code> em uma string deve ser ignorado. Isso às vezes é chamado de praga da barra invertida e é um dos motivos pelos quais as expressões regulares são mais fáceis em Perl do que em Python. Por outro lado, o Perl mistura expressões regulares com outra sintaxe, portanto, se você tiver um bug, pode ser difícil dizer se é um bug na sintaxe ou na sua expressão regular.
+        </li>
+        <li>
+            Para contornar a praga da barra invertida, você pode usar o que é chamado de <i>string bruta</i>, prefixando a string com a letra <code>r</code>. Isso diz ao Python que nada nesta string deve ser ignorado; <code>'\t'</code> é um caractere de tabulação, mas na verdade <code>r'\t'</code> é o caractere de barra invertida <code>\</code> seguido pela letra <code>t</code>. Eu recomendo sempre usar strings brutas ao lidar com expressões regulares; caso contrário, as coisas ficam muito confusas muito rapidamente (e as expressões regulares já são confusas o suficiente).
+        </li>
+        <li>
+            <em>*suspiro*</em> Infelizmente, logo encontrei mais casos que contradiziam minha lógica. Nesse caso, o endereço da rua continha a palavra <code>'ROAD'</code> como uma palavra inteira sozinha, mas não era no final, porque o endereço tinha um número de apartamento após a designação da rua. Como <code>'ROAD'</code> não está bem no final da string, não corresponde, então toda a chamada para <code>re.sub()</code> acaba não substituindo nada, e você recebe a string original de volta, que não é o que você quer.
+        </li>
+        <li>
+            Para resolver este problema, removi o caractere <code>$</code> e adicionei outro <code>\b</code>. Agora, a expressão regular diz “corresponde <code>'ROAD'</code> quando é uma palavra inteira sozinha em qualquer lugar da string”, seja no final, no início ou em algum lugar no meio.
+        </li>
+    </ol>
+
+    <h2 id="romannumerals">Estudo de caso: números romanos</h2>
+    <p>
+        Você provavelmente já viu algarismos romanos, mesmo que não os tenha reconhecido. Você pode tê-los visto em direitos autorais de filmes antigos e programas de televisão (“Copyright <code>MCMXLVI</code>” em vez de “Copyright <code>1946</code>”), ou nas paredes de dedicação de bibliotecas ou universidades (“estabelecido <code>MDCCCLXXXVIII</code>” em vez de “estabelecido <code>1888</code>”). Você também pode tê-los visto em esboços e referências bibliográficas. É um sistema de representação de números que realmente data do antigo Império Romano (daí o nome).
+    </p>
+    <p>
+        Em algarismos romanos, existem sete caracteres que são repetidos e combinados de várias maneiras para representar números.
+    </p>
+    <ul>
+        <li><code>I = 1</code>
+        </li>
+        <li><code>V = 5</code>
+        </li>
+        <li><code>X = 10</code>
+        </li>
+        <li><code>L = 50</code>
+        </li>
+        <li><code>C = 100</code>
+        </li>
+        <li><code>D = 500</code>
+        </li>
+        <li><code>M = 1000</code>
+        </li>
+    </ul>
+    <p>
+        A seguir estão algumas regras gerais para a construção de algarismos romanos:
+    </p>
+    <ul>
+        <li>
+            Às vezes, os caracteres são aditivos. I é 1, II é 2 e III é 3. VI é 6 (literalmente, “5 e 1”), VII é 7 e VIII é 8. 
+        </li>
+        <li>
+            Os caracteres dezenas (I, X, C, e M) podem ser repetidos até três vezes. Em 4, você precisa subtrair do próximo caractere cincos mais alto. Você não pode representar 4 como IIII; em vez disso, é representado como IV (“1 menor que 5”). 40 é escrito como XL (“10 menos que 50”), 41 como XLI, 42 como XLII, 43 como XLIII e então 44 como XLIV (“10 menos que 50, então 1 menos que 5”). 
+        </li>
+        <li>
+            Às vezes, os caracteres são... o oposto de aditivos. Ao colocar certos caracteres antes de outros, você subtrai do valor final. Por exemplo, em 9, você precisa subtrair do próximo caractere de dezenas mais alto: 8 é VIII, mas 9 é IX (“1 menor que 10”), não VIIII (já que o caractere I não pode ser repetido quatro vezes). 90 é XC, 900 é CM. 
+        </li>
+        <li>
+            Os cinco caracteres não podem ser repetidos. 10 é sempre representado como X, nunca como VV. 100 é sempre C, nunca LL.
+        </li>
+        <li>
+            Os algarismos romanos são lidos da esquerda para a direita, portanto, a ordem dos caracteres é muito importante. DC é 600; CD é um número completamente diferente ( 400, “100 menor que 500”). CI é 101; IC não é nem mesmo um algarismo romano válido (porque você não pode subtrair 1 diretamente de 100; você precisaria escrevê-lo como XCIX “10menor que 100, então 1 menor que 10”).
+        </li>
+    </ul>
+    <h3 id="thousands">Verificando Milhares</h3>
+    <p>
+        O que seria necessário para validar que uma string arbitrária é um numeral romano válido? Vamos pegar um dígito de cada vez. Como os algarismos romanos são sempre escritos da ordem superior para a inferior, vamos começar com a mais alta: a casa dos milhares. Para números 1000 e superiores, os milhares são representados por uma série de caracteres <code>M</code>.
+    </p>
+    
+    <pre><code class="language-python-repl">&gt;&gt;&gt; import re
+&gt;&gt;&gt; pattern = '^M?M?M?$'        ①
+&gt;&gt;&gt; re.search(pattern, 'M')     ②
+&lt;_sre.SRE_Match object at 0106FB58&gt;
+&gt;&gt;&gt; re.search(pattern, 'MM')    ③
+&lt;_sre.SRE_Match object at 0106C290&gt;
+&gt;&gt;&gt; re.search(pattern, 'MMM')   ④
+&lt;_sre.SRE_Match object at 0106AA38&gt;
+&gt;&gt;&gt; re.search(pattern, 'MMMM')  ⑤
+&gt;&gt;&gt; re.search(pattern, '')      ⑥
+&lt;_sre.SRE_Match object at 0106F4A8&gt;</code></pre>
+    
+    <ol>
+        <li>
+            Esse padrão tem três partes. <code>^</code> corresponde ao que segue apenas no início da string. Se isso não fosse especificado, o padrão corresponderia independentemente de onde os caracteres <code>M</code> estivessem, o que não é o que você deseja. Você quer ter certeza de que os caracteres <code>M</code>, se estiverem lá, estão no início da string. <code>M?</code> opcionalmente, corresponde a um único caractere <code>M</code>. Como isso é repetido três vezes, você está combinando de zero a três caracteres <code>M</code> em uma linha. E <code>$</code> corresponde ao final da string. Quando combinado com o caractere <code>^</code> no início, isso significa que o padrão deve corresponder a toda a string, sem outros caracteres antes ou depois dos caracteresb <code>M</code>.
+        </li>
+        <li>
+            A essência do módulo <code>re</code> é a função <code>search()</code>, que usa uma expressão regular (<code>padrão</code>) e uma string (<code>'M'</code>) para tentar fazer a correspondência com a expressão regular. Se uma correspondência for encontrada, <code>search()</code> retorna um objeto que possui vários métodos para descrever a correspondência; se nenhuma correspondência for encontrada, <code>search()</code> retorna <code>None</code> o valor nulo do Python. No momento, tudo o que você se importa é se o padrão corresponde, o que você pode dizer apenas olhando para o valor de retorno de <code>search()</code>. <code>'M'</code> corresponde a esta expressão regular, porque a primeira correspondências opcionais de <code>M</code> foi encontrada e o segundo e terceiro caracteres opcionais <code>M</code> são ignorados.
+        </li>
+        <li>
+            <code>'MM'</code> corresponde porque o primeiro e o segundo caracteres opcionais <code>M</code> correspondem e o terceiro <code>M</code> é ignorado.
+        </li>
+        <li>
+            <code>'MMM'</code> corresponde porque todos os três caracteres <code>M</code> correspondem.
+        </li>
+        <li>
+            <code>'MMMM'</code> não corresponde. Todos os três caracteres <code>M</code> combinam, mas então a expressão regular insiste no final da string (por causa do caractere <code>$</code>), e a string ainda não termina (por causa do quarto <code>M</code>). Então <code>search()</code> retorna <code>None</code>.
+        </li>
+        <li>
+            Curiosamente, uma string vazia também corresponde a essa expressão regular, uma vez que todos os caracteres <code>M</code> são opcionais.
+        </li>
+    </ol>
+    
+    <h3 id="hundreds">Verificando Centenas</h3>
+    <blockquote>
+        <p>
+            ? torna um padrão opcional.
+        </p>
+    </blockquote>
+    <p>
+        A casa das centenas é mais difícil do que a dos milhares, porque existem várias maneiras mutuamente exclusivas de expressá-la, dependendo de seu valor.
+    </p>
+    <ul>
+        <li><code>100 = C</code></li>
+        <li><code>200 = CC</code></li>
+        <li><code>300 = CCC</code></li>
+        <li><code>400 = CD</code></li>
+        <li><code>500 = D</code></li>
+        <li><code>600 = DC</code></li>
+        <li><code>700 = DCC</code></li>
+        <li><code>800 = DCCC</code></li>
+        <li><code>900 = CM</code></li>
+    </ul>
+    <p>
+        Portanto, existem quatro padrões possíveis:
+    </p>
+    <ul>
+        <li><code>CM</code></li>
+        <li><code>CD</code></li>
+        <li>De zero a três caracteres <code>C</code> (zero se a casa das centenas for 0)</li>
+        <li><code>D</code>, seguido de zero a três caracteres <code>C</code></li>
+    </ul>
+    <p>
+        Os dois últimos padrões podem ser combinados:
+    </p>
+    <ul>
+        <li>
+            um opcional <code>D</code>, seguido de zero a três caracteres <code>C</code>
+        </li>
+    </ul>
+    <p>
+        Este exemplo mostra como validar a casa das centenas de um algarismo romano.
+    </p>
+    
+    <pre><code class="language-python-repl">&gt;&gt;&gt; import re
+&gt;&gt;&gt; pattern = '^M?M?M?(CM|CD|D?C?C?C?)$'  ①
+&gt;&gt;&gt; re.search(pattern, 'MCM')             ②
+&lt;_sre.SRE_Match object at 01070390&gt;
+&gt;&gt;&gt; re.search(pattern, 'MD')              ③
+&lt;_sre.SRE_Match object at 01073A50&gt;
+&gt;&gt;&gt; re.search(pattern, 'MMMCCC')          ④
+&lt;_sre.SRE_Match object at 010748A8&gt;
+&gt;&gt;&gt; re.search(pattern, 'MCMC')            ⑤
+&gt;&gt;&gt; re.search(pattern, '')                ⑥
+&lt;_sre.SRE_Match object at 01071D98&gt;</code></pre>
+
+    <ol>
+        <li>
+            Este padrão começa igual ao anterior, verificando o início da string (<code>^</code>) e depois a casa dos milhares (<code>M?M?M?</code>). Em seguida, ele tem a nova parte, entre parêntesis, que define um conjunto de três padrões mutuamente exclusivos, separados por barras verticais: <code>CM</code>, <code>CD</code>, e <code>D?C?C?C?</code> (o que é um opcional <code>D</code> seguido por zero a três opcionais caracteres <code>C</code>). O analisador de expressão regular verifica cada um desses padrões em ordem (da esquerda para a direita), pega o primeiro que corresponde e ignora o resto.
+        </li>
+        <li>
+            <code>'MCM'</code> corresponde porque o primeiro <code>M</code> corresponde, o segundo e o terceiro caracteres <code>M</code> são ignorados e as <code>CM</code>correspondências (portanto, os padrões <code>CD</code>e <code>D?C?C?C?</code>nunca são considerados). <code>MCM</code>é a representação numérica romana de <code>1900</code>.
+        </li>
+        <li>
+            <code>'MD'</code> corresponde porque o primeiro <code>M</code> corresponde, o segundo e o terceiro caracteres <code>M</code> são ignorados e o padrão <code>D?C?C?C?</code> corresponde a <code>D</code> (cada um dos três caracteres <code>C</code> são opcionais e são ignorados). <code>MD</code> é a representação em algarismo romano de 1500.
+        </li>
+        <li>
+            <code>'MMMCCC'</code> corresponde porque todos os três caracteres <code>M</code> correspondem e o padrão <code>D?C?C?C?</code> corresponde <code>CCC</code> (o <code>D</code> é opcional e é ignorado). <code>MMMCCC</code> é a representação numérica romana de <code>3300</code>.
+        </li>
+        <li>
+            <code>'MCMC'</code> não corresponde. O primeiro <code>M</code>corresponde, o segundo e o terceiro caracteres <code>M</code> são ignorados e <code>CM</code> corresponde, mas o <code>$</code> não corresponde porque você ainda não está no final da string (ainda possui um caractere <code>C</code> sem correspondência). O <code>C</code> que <em>não</em> corresponder como parte do padrão <code>D?C?C?C?</code>, porque o mutuamente exclusivos padrão <code>CM</code> já tem correspondente.
+        </li>
+        <li>
+            Curiosamente, uma string vazia ainda corresponde a esse padrão, porque todos os caracteres <code>M</code> são opcionais e ignorados, e a string vazia corresponde ao padrão <code>D?C?C?C?</code> em que todos os caracteres são opcionais e ignorados.
+        </li>
+    </ol>
+    <p>
+        Uau! Vê com que rapidez as expressões regulares podem ficar desagradáveis? E você cobriu apenas os milhares e centenas de casas de algarismos romanos. Mas se você seguiu tudo isso, as casas das dezenas e unidades são fáceis, porque são exatamente o mesmo padrão. Mas vamos examinar outra maneira de expressar o padrão.
+    </p>
+    
+    <h2 id="nmsyntax">Usando a sintaxe <code>{n,m}</code></h2>
+    <blockquote>
+        <p>
+            {1,4} corresponde entre 1 e 4 ocorrências de um padrão.
+        </p>
+    </blockquote>
+    <p>
+        Na seção anterior, você estava lidando com um padrão em que o mesmo caractere poderia ser repetido até três vezes. Existe outra maneira de expressar isso em expressões regulares, que algumas pessoas consideram mais legíveis. Primeiro, olhe para o método que já usamos no exemplo anterior.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; import re
+&gt;&gt;&gt; pattern = '^M?M?M?$'
+&gt;&gt;&gt; re.search(pattern, 'M')     ①
+&lt;_sre.SRE_Match object at 0x008EE090&gt;
+&gt;&gt;&gt; re.search(pattern, 'MM')    ②
+&lt;_sre.SRE_Match object at 0x008EEB48&gt;
+&gt;&gt;&gt; re.search(pattern, 'MMM')   ③
+&lt;_sre.SRE_Match object at 0x008EE090&gt;
+&gt;&gt;&gt; re.search(pattern, 'MMMM')  ④
+&gt;&gt;&gt;</code></pre>
+
+    <ol>
+        <li>
+            Isso corresponde ao início da string e, em seguida, ao primeiro opcional <code>M</code>, mas não ao segundo e ao terceiro <code>M</code> (mas está tudo bem porque eles são opcionais) e, em seguida, ao final da string.
+        </li>
+        <li>
+            Isso corresponde ao início da string e, em seguida, ao primeiro e ao segundo opcionais <code>M</code>, mas não ao terceiro <code>M</code> (mas está tudo bem porque é opcional) e, em seguida, ao final da string.
+        </li>
+        <li>
+            Isso corresponde ao início da string, aos três opcionais <code>M</code> e ao final da string.
+        </li>
+        <li>
+            Isso corresponde ao início da string e, em seguida, a todos os três opcionais <code>M</code>, mas não corresponde ao final da string (porque ainda há um <code>M</code> sem correspondência), portanto, o padrão não corresponde e retorna <code>None</code>.
+        </li>
+    </ol>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; pattern = '^M{0,3}$'        ①
+&gt;&gt;&gt; re.search(pattern, 'M')     ②
+&lt;_sre.SRE_Match object at 0x008EEB48&gt;
+&gt;&gt;&gt; re.search(pattern, 'MM')    ③
+&lt;_sre.SRE_Match object at 0x008EE090&gt;
+&gt;&gt;&gt; re.search(pattern, 'MMM')   ④
+&lt;_sre.SRE_Match object at 0x008EEDA8&gt;
+&gt;&gt;&gt; re.search(pattern, 'MMMM')  ⑤
+&gt;&gt;&gt;</code></pre>
+
+    <ol>
+        <li>
+            Este padrão diz: "Combine o início da string, em qualquer lugar de zero a três caracteres <code>M</code> e, a seguir, no final da string." O 0 e o 3 podem ser quaisquer números; se quiser combinar pelo menos um, mas não mais do que três caracteres <code>M</code>, você pode dizer <code>M{1,3}</code>.
+        </li>
+        <li>
+            Isso corresponde ao início da string, depois a um <code>M</code> entre os três possíveis e, a seguir, ao final da string.
+        </li>
+        <li>
+            Isso corresponde ao início da string, depois a dois <code>M</code> dos três possíveis e, a seguir, ao final da string.
+        </li>
+        <li>
+            Isso corresponde ao início da string, depois a três <code>M</code> dos três possíveis e, a seguir, ao final da string.
+        </li>
+        <li>
+            Isso corresponde ao início da string, depois a três <code>M</code> dos três possíveis, mas <em>não corresponde</em> ao final da string. A expressão regular permite até três caracteres <code>M</code> antes do final da string, mas você tem quatro, portanto, o padrão não corresponde e retorna <code>None</code>.
+        </li>
+    </ol>
+
+    <h3 id="tensandones">Verificando Dezenas e Uns</h3>
+    <p>
+        Agora, vamos expandir a expressão regular do numeral romano para cobrir a casa das dezenas e unidades. Este exemplo mostra a verificação de dezenas.
+    </p>
+    
+    <pre><code class="language-python-repl">&gt;&gt;&gt; pattern = '^M?M?M?(CM|CD|D?C?C?C?)(XC|XL|L?X?X?X?)$'
+&gt;&gt;&gt; re.search(pattern, 'MCMXL')     ①
+&lt;_sre.SRE_Match object at 0x008EEB48&gt;
+&gt;&gt;&gt; re.search(pattern, 'MCML')      ②
+&lt;_sre.SRE_Match object at 0x008EEB48&gt;
+&gt;&gt;&gt; re.search(pattern, 'MCMLX')     ③
+&lt;_sre.SRE_Match object at 0x008EEB48&gt;
+&gt;&gt;&gt; re.search(pattern, 'MCMLXXX')   ④
+&lt;_sre.SRE_Match object at 0x008EEB48&gt;
+&gt;&gt;&gt; re.search(pattern, 'MCMLXXXX')  ⑤
+&gt;&gt;&gt; </code></pre>
+
+    <ol>
+        <li>
+            Isso coincide com o início da string, então o primeiro opcional <code>M</code> e, em seguida <code>CM</code>, em seguida <code>XL</code>, em seguida, no final da string. Lembre-se de que a sintaxe <code>(A|B|C)</code> significa “corresponder exatamente a um de A, B ou C”. Você corresponde <code>XL</code>, então você ignorar as escolhas <code>XC</code> e <code>L?X?X?X?</code>, e depois passar para o fim da string. <code>MCMXL</code> é a representação numérica romana de <code>1940</code>.
+        </li>
+        <li>
+            Isso corresponde ao início da string, depois ao primeiro opcional <code>M</code>, então <code>CM</code>, então <code>L?X?X?X?</code>. Do <code>L?X?X?X?</code>, ele corresponde ao <code>L</code> e ignora todos os três caracteres <code>X</code> opcionais. Em seguida, você se move para o final da string. <code>MCML</code> é a representação numérica romana de <code>1950</code>.
+        </li>
+        <li>
+            Isso corresponde ao início da string, depois ao primeiro opcional e <code>M</code>, a seguir <code>CM</code>, ao opcional <code>L</code> e ao primeiro opcional <code>X</code>, ignora o segundo e o terceiro opcionais <code>X</code>, a seguir, o final da string. <code>MCMLX</code> é a representação numérica romana de <code>1960</code>.
+        </li>
+        <li>
+            Isso corresponde ao início da string, depois ao primeiro opcional <code>M</code>, <code>CM</code> depois ao opcional <code>L</code> e aos três caracteres opcionais <code>X</code> e, por fim, ao final da string. <code>MCMLXXX</code> é a representação numérica romana de <code>1980</code>.
+        </li>
+        <li>
+            Isso coincide com o início da string, depois com o primeiro <code>M</code> opcional, depois com <code>CM</code>, depois com o <code>L</code> opcional e todos os três caracteres <code>X</code> opcionais e, a seguir, falha em coincidir com o final da string porque ainda há mais um <code>X</code> não contabilizado. Portanto, todo o padrão falha em corresponder e retorna Nenhum. <code>MCMLXXXX</code> não é um numeral romano válido.
+        </li>
+    </ol>
+    <blockquote>
+        <p>
+            (A|B) corresponde ao padrão A ou ao padrão B, mas não aos dois.
+        </p>
+    </blockquote>
+    <p>
+        A expressão para a casa de uns segue o mesmo padrão. Vou poupar você dos detalhes e mostrar o resultado final.
+    </p>
+    
+    <pre><code class="language-python-repl">&gt;&gt;&gt; pattern = '^M?M?M?(CM|CD|D?C?C?C?)(XC|XL|L?X?X?X?)(IX|IV|V?I?I?I?)$'</code></pre>
+
+    <p>
+        Então, como é usar essa sintaxe <code>{n,m}</code> alternativa? Este exemplo mostra a nova sintaxe.
+    </p>
+    
+    <pre><code class="language-python-repl">&gt;&gt;&gt; pattern = '^M{0,3}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$'
+&gt;&gt;&gt; re.search(pattern, 'MDLV')              ①
+&lt;_sre.SRE_Match object at 0x008EEB48&gt;
+&gt;&gt;&gt; re.search(pattern, 'MMDCLXVI')          ②
+&lt;_sre.SRE_Match object at 0x008EEB48&gt;
+&gt;&gt;&gt; re.search(pattern, 'MMMDCCCLXXXVIII')   ③
+&lt;_sre.SRE_Match object at 0x008EEB48&gt;
+&gt;&gt;&gt; re.search(pattern, 'I')                 ④
+&lt;_sre.SRE_Match object at 0x008EEB48&gt;</code></pre>
+
+    <ol>
+        <li>
+            Isso corresponde ao início da string, depois a um dos três caracteres <code>M</code> possíveis e a <code>D?C{0,3}</code>. Disto, ele corresponde ao <code>D</code> opcional e zero dos três caracteres <code>C</code> possíveis. Continuando, ele corresponde a <code>L?X{0,3}</code> combinando o <code>L</code> opcional e zero dos três caracteres <code>X</code> possíveis. Em seguida, ele corresponde a <code>V?I{0,3}</code> combinando o <code>V</code> opcional e zero dos três caracteres <code>I</code> possíveis e, finalmente, o final da string. <code>MDLV</code> é a representação numeral romana de 1555.
+        </li>
+        <li>
+            Isso corresponde ao início da string, depois a dois dos três caracteres <code>M</code> possíveis, a <code>D?C{0,3}</code> com um <code>D</code> e um dos três caracteres <code>C</code> possíveis; então <code>L?X{0,3}</code> com um <code>L</code> e um dos três caracteres <code>X</code> possíveis; então <code>V?I{0,3}</code> com um <code>V</code> e um dos três caracteres <code>I</code> possíveis; então o fim da string. <code>MMDCLXVI</code> é a representação numérica romana de 2666.
+        </li>
+        <li>
+            Isso corresponde ao início da string, então três de três caracteres <code>M</code>, então <code>D?C{0,3}</code> com um <code>D</code> e três de três caracteres <code>C</code>; então <code>L?X{0,3}</code> com um <code>L</code> e três dos três caracteres de <code>X</code>; então V? I {0,3} com um V e três dos três caracteres I; então o fim da string. <code>MMMDCCCLXXXVIII</code> é a representação em algarismo romano de 3888 e é o algarismo romano mais longo que você pode escrever sem sintaxe estendida.
+        </li>
+        <li>
+            Observe de perto. (Sinto-me um mágico. “Observem atentamente, crianças, vou tirar um coelho da cartola”). Isso corresponde ao início da string, depois a zero em três <code>M</code>, depois corresponde a <code>D?C{0,3}</code> ignorando o <code>D</code> opcional e combinando zero de três <code>C</code>, então casa <code>L?X{0,3}</code> ignorando o <code>L</code> opcional e combinando zero de três <code>X</code>, então casa <code>V?I{0,3}</code> pulando o <code>V</code> opcional e combinando um de três <code>I</code>. Em seguida, o fim da string. Uau.
+        </li>
+    </ol>
+    <p>
+        Se você acompanhou tudo isso e entendeu na primeira tentativa, está se saindo melhor do que eu. Agora imagine tentar entender as expressões regulares de outra pessoa, no meio de uma função crítica de um grande programa. Ou até imagine voltar às suas próprias expressões regulares alguns meses depois. Eu fiz isso, e não é uma visão bonita.
+    </p>
+    <p>
+        Agora vamos explorar uma sintaxe alternativa que pode ajudar a manter suas expressões sustentáveis.
+    </p>
+    
+    <h2 id="verbosere">Expressões regulares detalhadas</h2>
+    <p>
+        Até agora, você lidou apenas com o que chamarei de expressões regulares “compactas”. Como você viu, eles são difíceis de ler e, mesmo que você descubra o que um deles faz, não há garantia de que será capaz de entendê-los seis meses depois. O que você realmente precisa é de documentação embutida.
+    </p>
+    <p>
+        Python permite que você faça isso com algo chamado <i>expressões regulares detalhadas</i>. Uma expressão regular detalhada é diferente de uma expressão regular compacta de duas maneiras:
+    </p>
+    <ul>
+        <li>
+            O espaço em branco é ignorado. Espaços, tabulações e retornos de carro não são correspondidos como espaços, tabulações e retornos de carro. Eles não são compatíveis de forma alguma. (Se quiser corresponder a um espaço em uma expressão regular detalhada, você precisará escapar dele colocando uma barra invertida na frente dele).
+        </li>
+        <li>
+            Os comentários são ignorados. Um comentário em uma expressão regular detalhada é como um comentário no código Python: ele começa com um caractere <code>#</code> e vai até o final da linha. Neste caso, é um comentário dentro de uma string de várias linhas em vez de dentro do seu código-fonte, mas funciona da mesma maneira.
+        </li>
+    </ul>
+    <p>
+        Isso ficará mais claro com um exemplo. Vamos revisitar a expressão regular compacta com a qual você está trabalhando e torná-la uma expressão regular detalhada. Este exemplo mostra como.
+    </p>
+    
+    <pre><code class="language-python-repl">&gt;&gt;&gt; pattern = '''
+    ^                   # beginning of string
+    M{0,3}              # thousands - 0 to 3 Ms
+    (CM|CD|D?C{0,3})    # hundreds - 900 (CM), 400 (CD), 0-300 (0 to 3 Cs),
+                        #            or 500-800 (D, followed by 0 to 3 Cs)
+    (XC|XL|L?X{0,3})    # tens - 90 (XC), 40 (XL), 0-30 (0 to 3 Xs),
+                        #        or 50-80 (L, followed by 0 to 3 Xs)
+    (IX|IV|V?I{0,3})    # ones - 9 (IX), 4 (IV), 0-3 (0 to 3 Is),
+                        #        or 5-8 (V, followed by 0 to 3 Is)
+    $                   # end of string
+    '''
+&gt;&gt;&gt; re.search(pattern, 'M', re.VERBOSE)                 ①
+&lt;_sre.SRE_Match object at 0x008EEB48&gt;
+&gt;&gt;&gt; re.search(pattern, 'MCMLXXXIX', re.VERBOSE)         ②
+&lt;_sre.SRE_Match object at 0x008EEB48&gt;
+&gt;&gt;&gt; re.search(pattern, 'MMMDCCCLXXXVIII', re.VERBOSE)   ③
+&lt;_sre.SRE_Match object at 0x008EEB48&gt;
+&gt;&gt;&gt; re.search(pattern, 'M')                             ④</code></pre>
+
+    <ol>
+        <li>
+            A coisa mais importante a se lembrar ao usar expressões regulares verbosas é que você precisa passar um argumento extra ao trabalhar com elas: <code>re.VERBOSE</code> é uma constante definida no módulo <code>re</code> que sinaliza que o padrão deve ser tratado como uma expressão regular detalhada. Como você pode ver, esse padrão tem um pouco de espaço em branco (todos eles são ignorados) e vários comentários (todos eles são ignorados). Depois de ignorar o espaço em branco e os comentários, esta é exatamente a mesma expressão regular que você viu na seção anterior, mas é muito mais legível.
+        </li>
+        <li>
+            Isso corresponde ao início da string, depois a um dos três possíveis <code>M</code>, então <code>CM</code>, <code>L</code> e a três dos três possíveis <code>X</code>, então <code>IX</code>, ao final da string.
+        </li>
+        <li>
+            Isso corresponde ao início da string, então três de três possíveis <code>M</code>, então <code>D</code> e três de um possível três <code>C</code>, então <code>L</code> e três de um possível três <code>X</code>, então <code>V</code> e três de um possível três <code>I</code>, então o final de a string.
+        </li>
+        <li>
+            Isso não corresponde. Por quê? Como não tem o sinalizador <code>re.VERBOSE</code>, a função <code>re.search</code> está tratando o padrão como uma expressão regular compacta, com espaços em branco significativos e marcas de hash literais. Python não consegue detectar automaticamente se uma expressão regular é prolixa ou não. Python assume que toda expressão regular é compacta, a menos que você declare explicitamente que ela é detalhada.
+        </li>
+    </ol>
+    
+    <h2 id="phonenumbers">Estudo de caso: análise de números de telefone</h2>
+    <blockquote>
+        <p>
+            \d corresponde a qualquer dígito numérico (0–9). \D corresponde a qualquer coisa, exceto dígitos.
+        </p>
+    </blockquote>
+    <p>
+        Até agora, você se concentrou em combinar padrões inteiros. Ou o padrão corresponde ou não. Mas as expressões regulares são muito mais poderosas do que isso. Quando uma expressão regular <em>faz</em> jogo, você pode escolher partes específicas do mesmo. Você pode descobrir o que combinou onde.
+    </p>
+    <p>
+        Este exemplo veio de outro problema do mundo real que encontrei, novamente em um trabalho do dia anterior. O problema: analisar um número de telefone americano. O cliente queria poder inserir o número de forma livre (em um único campo), mas depois queria armazenar o código de área, tronco, número e, opcionalmente, um ramal separadamente no banco de dados da empresa. Eu vasculhei a web e encontrei muitos exemplos de expressões regulares que pretendiam fazer isso, mas nenhuma delas era permissiva o suficiente.
+    </p>
+    <p>
+        Aqui estão os números de telefone de que eu precisava para aceitar:
+    </p>
+    <ul>
+        <li><code>800-555-1212</code></li>
+        <li><code>800 555 1212</code></li>
+        <li><code>800.555.1212</code></li>
+        <li><code>(800) 555-1212</code></li>
+        <li><code>1-800-555-1212</code></li>
+        <li><code>800-555-1212-1234</code></li>
+        <li><code>800-555-1212x1234</code></li>
+        <li><code>800-555-1212 ext. 1234</code></li>
+        <li><code>work 1-(800) 555.1212 #1234</code></li>
+    </ul>
+    <p>
+        Bastante variedade! Em cada um desses casos, preciso saber se o código de área era <code>800</code>, o tronco era <code>555</code> e o restante do número de telefone era <code>1212</code>. Para quem tem uma extensão, preciso saber se a extensão era <code>1234</code>.
+    </p>
+    <p>
+        Vamos trabalhar no desenvolvimento de uma solução para análise de número de telefone. Este exemplo mostra a primeira etapa.
+    </p>
+    
+    <pre><code class="language-python-repl">&gt;&gt;&gt; phonePattern = re.compile(r'^(\d{3})-(\d{3})-(\d{4})$')  ①
+&gt;&gt;&gt; phonePattern.search('800-555-1212').groups()             ②
+('800', '555', '1212')
+&gt;&gt;&gt; phonePattern.search('800-555-1212-1234')                 ③
+&gt;&gt;&gt; phonePattern.search('800-555-1212-1234').groups()        ④
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+AttributeError: 'NoneType' object has no attribute 'groups'</code></pre>
+
+    <ol>
+        <li>
+            Sempre leia as expressões regulares da esquerda para a direita. Este corresponde ao início da string, e então <code>(\d{3})</code>. O que é <code>\d{3}</code>? Bem, <code>\d</code> significa “qualquer dígito numérico” (0 a 9). O <code>{3}</code> no meio “corresponde exatamente a três dígitos numéricos”; é uma variação da sintaxe <a href="#nmsyntax"><code>{n,m}</code></a> que você viu antes. Colocar tudo entre parênteses significa “combine exatamente três dígitos numéricos, <em>e então lembre-os como um grupo que eu posso pedir mais tarde</em> ”. Em seguida, combine um hífen literal. Em seguida, combine outro grupo de exatamente três dígitos. Em seguida, outro hífen literal. Em seguida, outro grupo de exatamente quatro dígitos. Em seguida, combine o final da string.
+        </li>
+        <li>
+            Para obter acesso aos grupos que o analisador de expressão regular lembrou ao longo do caminho, use o método <code>groups()</code> no objeto que o método <code>search()</code> retorna. Ele retornará uma tupla de quantos grupos foram definidos na expressão regular. Nesse caso, você definiu três grupos, um com três dígitos, um com três dígitos e um com quatro dígitos.
+        </li>
+        <li>
+            Essa expressão regular não é a resposta final, porque não trata um número de telefone com um ramal no final. Para isso, você precisará expandir a expressão regular.
+        </li>
+        <li>
+            E é por isso que você nunca deve “encadear” os métodos <code>search()</code> e <code>groups()</code> no código de produção. Se o método <code>search()</code> não retornar nenhuma correspondência, ele retornará <a href="https://www.acervolima.com.br/2021/05/tipos-de-dados-nativos-em-python.html#none"><code>None</code></a>, não um objeto de correspondência de expressão regular. Chamar <code>None.groups()</code> levanta uma exceção perfeitamente óbvia: <code>None</code> não tem um método <code>groups()</code>. (Claro, é um pouco menos óbvio quando você obtém essa exceção nas profundezas do seu código. Sim, falo por experiência própria aqui).
+        </li>
+    </ol>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; phonePattern = re.compile(r'^(\d{3})-(\d{3})-(\d{4})-(\d+)$')  ①
+&gt;&gt;&gt; phonePattern.search('800-555-1212-1234').groups()              ②
+('800', '555', '1212', '1234')
+&gt;&gt;&gt; phonePattern.search('800 555 1212 1234')                       ③
+&gt;&gt;&gt; 
+&gt;&gt;&gt; phonePattern.search('800-555-1212')                            ④
+&gt;&gt;&gt;</code></pre>
+
+    <ol>
+        <li>
+            Esta expressão regular é quase idêntica à anterior. Assim como antes, você corresponde ao início da string, a um grupo lembrado de três dígitos, a um hífen, a um grupo de três dígitos lembrado, a um hífen e a um grupo de quatro dígitos lembrado. A novidade é que você combina outro hífen e um grupo lembrado de um ou mais dígitos e, em seguida, o final da string.
+        </li>
+        <li>
+            O método <code>groups()</code> agora retorna uma tupla de quatro elementos, uma vez que a expressão regular agora define quatro grupos a serem lembrados.
+        </li>
+        <li>
+            Infelizmente, essa expressão regular também não é a resposta final, porque presume que as diferentes partes do número de telefone estão separadas por hífens. E se eles estiverem separados por espaços, vírgulas ou pontos? Você precisa de uma solução mais geral para combinar vários tipos diferentes de separadores.
+        </li>
+        <li>
+            Ops! Essa expressão regular não apenas não faz tudo o que você deseja, como também é um retrocesso, porque agora você não pode analisar números de telefone <em>sem</em> um ramal. Não era isso que você queria; se a extensão estiver lá, você quer saber o que é, mas se não estiver, você ainda quer saber quais são as diferentes partes do número principal.
+        </li>
+    </ol>
+    <p>
+        O próximo exemplo mostra a expressão regular para lidar com separadores entre as diferentes partes do número de telefone.
+    </p>
+    
+    <pre><code class="language-python-repl">&gt;&gt;&gt; phonePattern = re.compile(r'^(\d{3})\D+(\d{3})\D+(\d{4})\D+(\d+)$')  ①
+&gt;&gt;&gt; phonePattern.search('800 555 1212 1234').groups()  ②
+('800', '555', '1212', '1234')
+&gt;&gt;&gt; phonePattern.search('800-555-1212-1234').groups()  ③
+('800', '555', '1212', '1234')
+&gt;&gt;&gt; phonePattern.search('80055512121234')              ④
+&gt;&gt;&gt; 
+&gt;&gt;&gt; phonePattern.search('800-555-1212')                ⑤
+&gt;&gt;&gt; </code></pre>
+
+    <ol>
+        <li>
+            Segure seu chapéu. Você está combinando o início da string, um grupo de três dígitos, então <code>\D+</code>. Que raio é aquilo? Bem, <code>\D</code> corresponde a qualquer caractere, <em>exceto</em> um dígito numérico e <code>+</code> significa “1 ou mais”. Portanto, <code>\D+</code> corresponde a um ou mais caracteres que não são dígitos. Isso é o que você está usando em vez de um hífen literal, para tentar combinar diferentes separadores.
+        </li>
+        <li>
+            Usando <code>\D+</code> em vez de <code>-</code> significa, agora você pode combinar números de telefone onde as partes são separadas por espaços em vez de hifens.
+        </li>
+        <li>
+            É claro que os números de telefone separados por hífens também funcionam.
+        </li>
+        <li>
+            Infelizmente, essa ainda não é a resposta final, porque pressupõe que haja um separador. E se o número de telefone for inserido sem nenhum espaço ou hífen?
+        </li>
+        <li>
+            Ups! Isso ainda não resolveu o problema de exigir extensões. Agora você tem dois problemas, mas pode resolvê-los com a mesma técnica.
+        </li>
+    </ol>
+    <p>
+        O próximo exemplo mostra a expressão regular para lidar com números de telefone <em>sem</em> separadores.
+    </p>
+    
+    <pre><code class="language-python-repl">&gt;&gt;&gt; phonePattern = re.compile(r'^(\d{3})\D*(\d{3})\D*(\d{4})\D*(\d*)$')  ①
+&gt;&gt;&gt; phonePattern.search('80055512121234').groups()      ②
+('800', '555', '1212', '1234')
+&gt;&gt;&gt; phonePattern.search('800.555.1212 x1234').groups()  ③
+('800', '555', '1212', '1234')
+&gt;&gt;&gt; phonePattern.search('800-555-1212').groups()        ④
+('800', '555', '1212', '')
+&gt;&gt;&gt; phonePattern.search('(800)5551212 x1234')           ⑤</code></pre>
+
+    <ol>
+        <li>
+            A única alteração que você fez desde a última etapa foi alterar todos os <code>+</code> para <code>*</code>. Em vez de <code>\D+</code> entre as partes do número de telefone, agora você combina em <code>\D*</code>. Lembra que <code>+</code> significa “1 ou mais”? Bem, <code>*</code>significa “zero ou mais”. Portanto, agora você deve ser capaz de analisar números de telefone mesmo quando não há nenhum caractere separador.
+        </li>
+        <li>
+            Eis que realmente funciona. Por quê? Você combinou o início da string, depois um grupo lembrado de três dígitos (<code>800</code>), depois zero caracteres não numéricos, um grupo lembrado de três dígitos (<code>555</code>), depois zero caracteres não numéricos e um grupo lembrado de quatro dígitos (<code>1212</code>), em seguida, zero caracteres não numéricos, um grupo lembrado de um número arbitrário de dígitos (<code>1234</code>) e, em seguida, o final da string.
+        </li>
+        <li>
+            Outras variações também funcionam agora: pontos em vez de hífens e um espaço e um <code>x</code> antes da extensão.
+        </li>
+        <li>
+            Finalmente, você resolveu o outro problema antigo: as extensões são opcionais novamente. Se nenhuma extensão for encontrada, o método <code>groups()</code> ainda retorna uma tupla de quatro elementos, mas o quarto elemento é apenas uma string vazia.
+        </li>
+        <li>
+            Odeio ser o portador de más notícias, mas você ainda não acabou. Qual é o problema aqui? Há um caractere extra antes do código de área, mas a expressão regular assume que o código de área é a primeira coisa no início da string. Não tem problema, você pode usar a mesma técnica de “zero ou mais caracteres não numéricos” para pular os caracteres iniciais antes do código de área.
+        </li>
+    </ol>
+    <p>
+        O próximo exemplo mostra como lidar com os caracteres principais em números de telefone.
+    </p>
+    
+    <pre><code class="language-python-repl">&gt;&gt;&gt; phonePattern = re.compile(r'^\D*(\d{3})\D*(\d{3})\D*(\d{4})\D*(\d*)$')  ①
+&gt;&gt;&gt; phonePattern.search('(800)5551212 ext. 1234').groups()                  ②
+('800', '555', '1212', '1234')
+&gt;&gt;&gt; phonePattern.search('800-555-1212').groups()                            ③
+('800', '555', '1212', '')
+&gt;&gt;&gt; phonePattern.search('work 1-(800) 555.1212 #1234')                      ④</code></pre>
+
+    <ol>
+        <li>
+            Este é o mesmo que no exemplo anterior, exceto que agora você está combinando <code>\D*</code> zero ou mais caracteres não numéricos antes do primeiro grupo lembrado (o código de área). Observe que você não está se lembrando desses caracteres não numéricos (eles não estão entre parênteses). Se você encontrá-los, simplesmente os pule e comece a lembrar o código de área sempre que chegar a ele.
+        </li>
+        <li>
+            Você pode analisar o número de telefone com êxito, mesmo com o primeiro parêntese esquerdo antes do código de área. (O parêntese direito após o código de área já foi tratado; é tratado como um separador não numérico e correspondido pelo <code>\D*</code> após o primeiro grupo lembrado).
+        </li>
+        <li>
+            Apenas uma verificação de sanidade para ter certeza de que você não quebrou nada que funcionava antes. Como os caracteres iniciais são totalmente opcionais, isso corresponde ao início da string, depois a zero caracteres não numéricos, a um grupo lembrado de três dígitos (<code>800</code>), a um caractere não numérico (o hífen) e a um grupo de três lembrado dígitos (<code>555</code>), um caractere não numérico (o hífen), um grupo lembrado de quatro dígitos (<code>1212</code>), zero caracteres não numéricos, um grupo lembrado de zero dígitos e o final da string.
+        </li>
+        <li>
+            É aqui que as expressões regulares me fazem querer arrancar os olhos com um objeto rombudo. Por que este número de telefone não corresponde? Porque existe um <code>1</code> antes do código de área, mas você presumiu que todos os caracteres iniciais antes do código de área eram caracteres não numéricos (<code>\D*</code>). Aargh.
+        </li>
+    </ol>
+    <p>
+        Vamos voltar por um segundo. Até agora, todas as expressões regulares corresponderam desde o início da string. Mas agora você vê que pode haver uma quantidade indeterminada de coisas no início da string que você deseja ignorar. Em vez de tentar combinar tudo apenas para pular, vamos adotar uma abordagem diferente: não combine explicitamente o início da string. Essa abordagem é mostrada no próximo exemplo.
+    </p>
+    
+    <pre><code class="language-python-repl">&gt;&gt;&gt; phonePattern = re.compile(r'(\d{3})\D*(\d{3})\D*(\d{4})\D*(\d*)$')  ①
+&gt;&gt;&gt; phonePattern.search('work 1-(800) 555.1212 #1234').groups()         ②
+('800', '555', '1212', '1234')
+&gt;&gt;&gt; phonePattern.search('800-555-1212').groups()                        ③
+('800', '555', '1212', '')
+&gt;&gt;&gt; phonePattern.search('80055512121234').groups()                      ④
+('800', '555', '1212', '1234')</code></pre>
+
+    <ol>
+        <li>
+            Observe a falta de <code>^</code> nesta expressão regular. Você não está mais correspondendo ao início da string. Não há nada que diga que você precisa combinar toda a entrada com sua expressão regular. O mecanismo de expressão regular fará o trabalho árduo de descobrir onde a string de entrada começa a corresponder e partir daí.
+        </li>
+        <li>
+            Agora você pode analisar com êxito um número de telefone que inclui caracteres e um dígito à esquerda, além de qualquer número de qualquer tipo de separador em torno de cada parte do número de telefone.
+        </li>
+        <li>
+            Verificação de sanidade. Isso ainda funciona.
+        </li>
+        <li>
+            Isso ainda funciona também.
+        </li>
+    </ol>
+    <p>
+        Vê com que rapidez uma expressão regular pode ficar fora de controle? Dê uma olhada rápida em qualquer uma das iterações anteriores. Você pode dizer a diferença entre um e o outro?
+    </p>
+    <p>
+        Enquanto você ainda entende a resposta final (e é a resposta final; se você descobriu um caso que não resolve, não quero saber sobre isso), vamos escrevê-la como uma expressão regular detalhada, antes você esquece por que fez as escolhas que fez.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; phonePattern = re.compile(r'''
+        # don't match beginning of string, number can start anywhere
+(\d{3})     # area code is 3 digits (e.g. '800')
+\D*         # optional separator is any number of non-digits
+(\d{3})     # trunk is 3 digits (e.g. '555')
+\D*         # optional separator
+(\d{4})     # rest of number is 4 digits (e.g. '1212')
+\D*         # optional separator
+(\d*)       # extension is optional and can be any number of digits
+$           # end of string
+''', re.VERBOSE)
+&gt;&gt;&gt; phonePattern.search('work 1-(800) 555.1212 #1234').groups()  ①
+('800', '555', '1212', '1234')
+&gt;&gt;&gt; phonePattern.search('800-555-1212')                          ②
+('800', '555', '1212', '')</code></pre>
+
+    <ol>
+        <li>
+            Além de estar espalhada por várias linhas, esta é exatamente a mesma expressão regular da última etapa, portanto, não é surpresa que analise as mesmas entradas.
+        </li>
+        <li>
+            Verificação final de sanidade. Sim, ainda funciona. Você Terminou.
+        </li>
+    </ol>
+    
+    <h2 id="summary">Resumo</h2>
+    <p>
+        Esta é apenas a ponta do iceberg do que as expressões regulares podem fazer. Em outras palavras, mesmo que você esteja completamente dominado por eles agora, acredite em mim, você não viu nada ainda.
+    </p>
+    <p>
+        Agora você deve estar familiarizado com as seguintes técnicas:
+    </p>
+    <ul>
+        <li><code>^</code> corresponde ao início de uma string.</li>
+        <li><code>$</code> corresponde ao final de uma string.</li>
+        <li><code>\b</code> corresponde a um limite de palavra.</li>
+        <li><code>\d</code> corresponde a qualquer dígito numérico.</li>
+        <li><code>\D</code> corresponde a qualquer caractere não numérico.</li>
+        <li><code>x?</code> corresponde a um caractere <code>x</code> opcional (em outras palavras, corresponde a <code>x</code> zero ou uma vez).</li>
+        <li><code>x*</code> corresponde a <code>x</code> zero ou mais vezes.</li>
+        <li><code>x+</code> corresponde <code>x</code> uma ou mais vezes. </li>
+        <li><code>x{n,m}</code> corresponde a um caractere <code>x</code> pelo menos <code>n</code> vezes, mas não mais do que <code>m</code> vezes.</li>
+        <li><code>(a|b|c)</code> corresponde exatamente a um de <code>a</code>, <code>b</code> ou <code>c</code>.</li>
+        <li><code>(x)</code> em geral, é um <em>grupo lembrado</em>. Você pode obter o valor da correspondência usando o método <code>groups()</code> do objeto retornado por <code>re.search</code>.</li>
+    </ul>
+    <p>
+        As expressões regulares são extremamente poderosas, mas não são a solução correta para todos os problemas. Você deve aprender o suficiente sobre eles para saber quando são apropriados, quando resolverão seus problemas e quando causarão mais problemas do que soluções.
+    </p>
+    <p>
+        Esse artigo é uma tradução de um capítulo do livro "Dive Into Python 3" escrito por Mark Pilgrim. Você pode ler o livro desde o início em português clicando <a href="https://www.acervolima.com.br/2021/05/o-que-ha-de-novo-em-dive-into-python-3.html">aqui</a>.
+    </p>
+    <p>
+        Traduzido por Acervo Lima. O original pode ser acessado <a href="https://diveintopython3.problemsolving.io/regular-expressions.html" target="_blank">aqui</a>.
+    </p>
+    <h2>Licença</h2>
+    <ul>
+        <li><a href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank">Creative Commons Attribution Share-Alike</a></li>
+    </ul>
+
+    <div class="prev-next-div">
+        <a class="prev" href="https://www.acervolima.com.br/2021/05/strings-em-python-3.html">&lt;&lt; Anterior</a>
+        <a class="next" href="#">Próximo &gt;&gt;</a>
+    </div>
+
+
+
+</body>
+</html>

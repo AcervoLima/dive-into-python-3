@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documento</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+<body>
+    <h1>Closures e geradores em python</h1>
+    <blockquote>
+        <p>
+            ❝Minha ortografia é instável. É boa ortografia, mas oscila e as letras ficam nos lugares errados.❞<br/>
+             - Ursinho Pooh
+        </p>
+    </blockquote>
+    
+    <h2 id="divingin">Mergulho</h2>
+    <p>
+        Tendo crescido como filho de um bibliotecário e formado em inglês, sempre fui fascinado por línguas. Não são linguagens de programação. Bem, sim, linguagens de programação, mas também linguagens naturais. Faça o inglês. O inglês é uma língua esquizofrênica que empresta palavras do alemão, francês, espanhol e latim (para citar alguns). Na verdade, “pede emprestado” é a palavra errada; “Pilhagens” é mais parecido. Ou talvez “assimila” - como os Borg. Sim eu gosto disso.
+    </p>
+    <p>
+        <code>We are the Borg. Your linguistic and etymological distinctiveness will be added to our own. Resistance is futile.</code>
+    </p>
+    <p>
+        Neste capítulo, você aprenderá sobre substantivos no plural. Além disso, funções que retornam outras funções, expressões regulares avançadas e geradores. Mas primeiro, vamos falar sobre como fazer substantivos no plural. (Se você ainda não leu <a href="https://www.acervolima.com.br/2021/05/expressoes-regulares-em-python.html"> o capítulo sobre expressões regulares</a>, agora seria uma boa hora. Este capítulo pressupõe que você entende os fundamentos das expressões regulares e rapidamente desce para usos mais avançados).
+    </p>
+    <p>
+        Se você cresceu em um país onde se fala inglês ou aprendeu inglês em uma escola formal, provavelmente você está familiarizado com as regras básicas:
+    </p>
+    <ul>
+        <li>
+            Se uma palavra terminar em S, X ou Z, adicione ES. <i>Bass</i> torna-se <i>Basses</i>, <i>fax</i> torna-se
+            <i>faxes</i>, e <i>waltz</i> se torna <i>waltzes</i>.
+        </li>
+        <li>
+            Se uma palavra terminar em um H barulhento, adicione ES; se terminar em H silencioso, basta adicionar S. O que é um H barulhento? Um que se combina com outras letras para fazer um som que você pode ouvir. Assim, o <i>coach</i> se torna um <i>coaches</i> e a <i>rash</i> se transforma em <i>rashes</i>, porque você pode ouvir os sons de CH e SH quando os diz. Mas <i>cheetah</i> torna-se <i>cheetahs</i>, porque o H é silenciosa.
+        </li>
+        <li>
+            Se uma palavra terminar em Y que soe como I, altere Y para IES; se o Y é combinado com uma vogal a soar como algo mais, basta adicionar S. Então <i>vacancy</i> se torna <i>vacancies</i>, mas <i>day</i> se torna <i>days</i>.
+        </li>
+        <li>
+            Se tudo mais falhar, basta adicionar S e esperar o melhor.
+        </li>
+    </ul>
+    <p>
+        (Eu sei, há uma série de exceções. <i>Man</i> se torna <i>men</i> e <i>woman</i> se torna <i>women</i>, mas <i>human</i> se torna <i>humans</i>. <i>Mouse</i> torna-se <i>mice</i> e <i>louse</i> torna-se <i>lice</i>, mas <i>house</i> torna-se <i>houses</i>. <i>Knife</i> torna-se <i>knives</i> e <i>wife</i> torna-se <i>wives</i>, mas <i>lowlife</i> se torna <i>lowlifes</i>. E nem me fale em palavras que estão no seu próprio plural, como <i>sheep</i>, <i>deer</i> e <i>haiku</i>).
+    </p>
+    <p>
+        Outras línguas, é claro, são completamente diferentes.
+    </p>
+    <p>
+        Vamos projetar uma biblioteca Python que pluraliza automaticamente os substantivos em inglês. Começaremos apenas com essas quatro regras, mas lembre-se de que você inevitavelmente precisará adicionar mais.
+    </p>
+    
+    <h2 id="i-know">Eu sei, vamos usar expressões regulares!</h2>
+    <p>
+        Então você está olhando para palavras, o que, pelo menos em inglês, significa que você está olhando para cadeias de caracteres. Você tem regras que dizem que você precisa encontrar diferentes combinações de caracteres e, em seguida, fazer coisas diferentes com eles. Isso parece um trabalho para expressões regulares!
+    </p>
+    
+    <pre><code class="language-python">import re
+
+def plural(noun):          
+    if re.search('[sxz]$', noun):             ①
+        return re.sub('$', 'es', noun)        ②
+    elif re.search('[^aeioudgkprt]h$', noun):
+        return re.sub('$', 'es', noun)       
+    elif re.search('[^aeiou]y$', noun):      
+        return re.sub('y$', 'ies', noun)     
+    else:
+        return noun + 's'</code></pre>
+    
+    <ol>
+        <li>
+            Esta é uma expressão regular, mas usa uma sintaxe que você não viu nas <a href="https://www.acervolima.com.br/2021/05/expressoes-regulares-em-python.html"><i>Expressões regulares</i></a>. Os colchetes significam "corresponder exatamente a um desses caracteres". Então <code>[sxz]</code> significa “<code>s</code>, ou <code>x</code>, ou <code>z</code>”, mas apenas um deles. O <code>$</code> deve ser familiar; ele corresponde ao final da string. Combinadas, isso testa expressão regulares, se <code>substantivo</code> termina com <code>s</code>, <code>x</code> ou <code>z</code>.
+        </li>
+        <li>
+            Esta função <code>re.sub()</code> executa substituições de string baseadas em expressões regulares.
+        </li>
+    </ol>
+    <p>
+        Vejamos as substituições de expressões regulares com mais detalhes.
+    </p>
+    
+    <pre><code class="language-python-repl">&gt;&gt;&gt; import re
+&gt;&gt;&gt; re.search('[abc]', 'Mark')    ①
+&lt;_sre.SRE_Match object at 0x001C1FA8&gt;
+&gt;&gt;&gt; re.sub('[abc]', 'o', 'Mark')  ②
+'Mork'
+&gt;&gt;&gt; re.sub('[abc]', 'o', 'rock')  ③
+'rook'
+&gt;&gt;&gt; re.sub('[abc]', 'o', 'caps')  ④
+'oops'</code></pre>
+
+    <ol>
+        <li>
+            Será que a string <code>Mark</code> conter <code>a</code>, <code>b</code> ou <code>c</code>? Sim, contém <code>a</code>.
+        </li>
+        <li>
+            OK, agora encontre <code>a</code>, <code>b</code> ou <code>c</code> e substitua-o por <code>o</code>. <code>Mark</code> torna-se <code>Mork</code>.
+        </li>
+        <li>
+            A mesma função transforma <code>rock</code> em <code>rook</code>.
+        </li>
+        <li>
+            Você pode pensar que isso iria transformar <code>caps</code> em <code>oaps</code>, mas isso não acontece. <code>re.sub</code> substitui <em>todas</em> as correspondências, não apenas a primeira. Portanto, essa expressão regular transforma <code>caps</code> em <code>oops</code>, porque tanto o <code>c</code> quanto o <code>a</code> são transformados em <code>o</code>.
+        </li>
+    </ol>
+    <p>
+        E agora, de volta à função <code>plural()</code>...
+    </p>
+    
+    <pre><code class="language-python">def plural(noun):          
+    if re.search('[sxz]$', noun):            
+        return re.sub('$', 'es', noun)         ①
+    elif re.search('[^aeioudgkprt]h$', noun):  ②
+        return re.sub('$', 'es', noun)
+    elif re.search('[^aeiou]y$', noun):        ③
+        return re.sub('y$', 'ies', noun)     
+    else:
+        return noun + 's'</code></pre>
+
+    <ol>
+        <li>
+            Aqui, você está substituindo o final da string (combinada por <code>$</code>) pela string <code>es</code>. Em outras palavras, adicionando <code>es</code> à string. Você poderia realizar a mesma coisa com a concatenação de strings, por exemplo <code>noun + 'es'</code>, mas optei por usar expressões regulares para cada regra, por motivos que ficarão claros posteriormente neste capítulo.
+        </li>
+        <li>
+            Olhe bem, esta é outra nova variação. O <code>^</code> como o primeiro caractere dentro dos colchetes significa algo especial: negação. <code>[^abc]</code> significa “qualquer caractere único, <em>exceto</em> <code>a</code> , <code>b</code> ou <code>c</code>”. Então, <code>[^aeioudgkprt]</code> significa qualquer caractere, exceto <code>a</code>, <code>e</code>, <code>i</code>, <code>o</code>, <code>u</code>, <code>d</code>, <code>g</code>, <code>k</code>, <code>p</code>, <code>r</code>, ou <code>t</code>. Então, esse caractere precisa ser seguido por <code>h</code>, seguido pelo final da string. Você está procurando palavras que terminam em H, onde o H pode ser ouvido.
+        </li>
+        <li>
+            Mesmo padrão aqui: coincidem com as palavras que terminam em Y, onde o caractere antes do Y é <em>qualquer</em> caracter diferente  de <code>a</code>, <code>e</code>, <code>i</code>, <code>o</code>, ou <code>u</code>. Você está procurando palavras que terminam em Y que soam como I.
+        </li>
+    </ol>
+    <p>
+        Vejamos as expressões regulares de negação com mais detalhes.
+    </p>
+    
+    <pre><code class="language-python-repl">&gt;&gt;&gt; import re
+&gt;&gt;&gt; re.search('[^aeiou]y$', 'vacancy')  ①
+&lt;_sre.SRE_Match object at 0x001C1FA8&gt;
+&gt;&gt;&gt; re.search('[^aeiou]y$', 'boy')      ②
+&gt;&gt;&gt; 
+&gt;&gt;&gt; re.search('[^aeiou]y$', 'day')
+&gt;&gt;&gt; 
+&gt;&gt;&gt; re.search('[^aeiou]y$', 'pita')     ③</code></pre>
+
+    <ol>
+        <li>
+            <code>vacancy</code> corresponde a esta expressão regular, porque termina no <code>cy</code>, e <code>c</code> não é <code>a</code>, <code>e</code>, <code>i</code>, <code>o</code>, ou <code>u</code>.
+        </li>
+        <li>
+            <code>boy</code> não corresponde, porque termina em <code>oy</code>, e você disse especificamente que o caractere anterior ao <code>y</code> não poderia ser <code>o</code>. <code>day</code> não corresponde, porque termina em <code>ay</code>.
+        </li>
+        <li>
+            <code>pita</code> não corresponde, porque não termina em <code>y</code>.
+        </li>
+    </ol>
+    
+    <pre><code class="language-python-repl">&gt;&gt;&gt; re.sub('y$', 'ies', 'vacancy')               ①
+'vacancies'
+&gt;&gt;&gt; re.sub('y$', 'ies', 'agency')
+'agencies'
+&gt;&gt;&gt; re.sub('([^aeiou])y$', r'\1ies', 'vacancy')  ②
+'vacancies'</code></pre>
+
+    <ol>
+        <li>
+            Essa expressão regular transforma <code>vacancy</code> em <code>vacancies</code> e <code>agency</code> em <code>agencies</code>, que é o que você queria. Observe que também transformaria <code>boy</code> em <code>boies</code>, mas isso nunca acontecerá na função porque você chamou <code>re.search</code> primeiro para descobrir se deveria fazer essa substituição (<code>re.sub</code>).
+        </li>
+        <li>
+            De passagem, quero salientar que é possível combinar essas duas expressões regulares (uma para descobrir se a regra se aplica e outra para aplicá-la de fato) em uma única expressão regular. É assim que ficaria. A maior parte deve parecer familiar: você está usando um grupo lembrado, que aprendeu no <a href="https://www.acervolima.com.br/2021/05/expressoes-regulares-em-python.html#phonenumbers">Estudo de caso: análise de números de telefone</a>. O grupo é usado para lembrar o caractere antes da letra <code>y</code>. Então, na string de substituição, você usa uma nova sintaxe <code>\1</code>, que significa “ei, aquele primeiro grupo que você lembrou? coloque bem aqui”. Neste caso, você se lembra de <code>c</code> antes do <code>y</code>; quando você faz a substituição, você substitui <code>c</code> no lugar de <code>c</code>, e <code>ies</code> no lugar de <code>y</code>. (Se você tiver mais de um grupo lembrado, você pode usar <code>\2</code> e <code>\3</code> e assim por diante).
+        </li>
+    </ol>
+    <p>
+        As substituições de expressões regulares são extremamente poderosas e a sintaxe <code>\1</code> as torna ainda mais poderosas. Mas combinar a operação inteira em uma expressão regular também é muito mais difícil de ler e não mapeia diretamente para a maneira como você descreveu pela primeira vez as regras de pluralização. Você originalmente estabeleceu regras como “se a palavra terminar em S, X ou Z, adicione ES”. Se você olhar para esta função, terá duas linhas de código que dizem “se a palavra terminar em S, X ou Z, adicione ES”. Não fica muito mais direto do que isso.
+    </p>
+    
+    <h2 id="a-list-of-functions">Uma lista de funções</h2>
+    <p>
+        Agora você vai adicionar um nível de abstração. Você começou definindo uma lista de regras: se isso, faça aquilo, caso contrário, vá para a próxima regra. Vamos complicar temporariamente parte do programa para que você possa simplificar outra parte.
+    </p>
+    
+    <pre><code class="language-python">import re
+
+def match_sxz(noun):
+    return re.search('[sxz]$', noun)
+
+def apply_sxz(noun):
+    return re.sub('$', 'es', noun)
+
+def match_h(noun):
+    return re.search('[^aeioudgkprt]h$', noun)
+
+def apply_h(noun):
+    return re.sub('$', 'es', noun)
+
+def match_y(noun):                             ①
+    return re.search('[^aeiou]y$', noun)
+        
+def apply_y(noun):                             ②
+    return re.sub('y$', 'ies', noun)
+
+def match_default(noun):
+    return True
+
+def apply_default(noun):
+    return noun + 's'
+
+rules = ((match_sxz, apply_sxz),               ③
+         (match_h, apply_h),
+         (match_y, apply_y),
+         (match_default, apply_default)
+         )
+
+def plural(noun):           
+    for matches_rule, apply_rule in rules:       ④
+        if matches_rule(noun):
+            return apply_rule(noun)</code></pre>
+
+    
+    <ol>
+        <li>
+            Agora, cada regra de correspondência é sua própria função, que retorna os resultados da chamada da função <code>re.search()</code>.
+        </li>
+        <li>
+            Cada regra de aplicação também é sua própria função, que chama a função <code>re.sub()</code> para aplicar a regra de pluralização apropriada.
+        </li>
+        <li>
+            Em vez de ter uma função (<code>plural()</code>) com várias regras, você tem a estrutura de dados, <code>rules</code>, que é uma sequência de pares de funções.
+        </li>
+        <li>
+            Como as regras foram divididas em uma estrutura de dados separada, a nova função <code>plural()</code> pode ser reduzida a algumas linhas de código. Usando um loop <code>for</code>, você pode retirar a correspondência e aplicar duas regras por vez (uma correspondência, uma aplicação) da estrutura de <code>rules</code>. Na primeira iteração do loop <code>for</code>, <code>match_rule</code> será obtido <code>match_sxz</code> e <code>apply_rule</code> será obtido <code>apply_sxz</code>. Na segunda iteração (presumindo que você tenha chegado tão longe), <code>match_rule</code> será atribuído <code>match_h</code>, e <code>apply_rule</code> será atribuído <code>apply_h</code>. A função tem a garantia de retornar algo eventualmente, porque a regra de correspondência final (<code>match_default</code>) simplesmente retorna <code>True</code>, o que significa que a regra de aplicação correspondente (<code>apply_default</code>) sempre será aplicado.
+        </li>
+    </ol>
+    <blockquote>
+        <p>
+            A variável “rules” é uma sequência de pares de funções.
+        </p>
+    </blockquote>
+    <p>
+        O motivo pelo qual essa técnica funciona é que <a href="https://www.acervolima.com.br/2021/05/seu-primeiro-programa-python.html#everythingisanobject">tudo em Python é um objeto</a>, incluindo funções. A estrutura de dados das <code>rules</code> contém funções - não nomes de funções, mas objetos de função reais. Quando eles são atribuídos no loop <code>for</code>, <code>match_rule</code> e <code>apply_rule</code> são funções reais que você pode chamar. Na primeira iteração do loop <code>for</code>, isso equivale a chamar <code>matches_sxz(noun)</code> e, se retornar uma correspondência, chamar <code>apply_sxz(noun)</code>.
+    </p>
+    <p>
+        Se esse nível adicional de abstração for confuso, tente desenrolar a função para ver a equivalência. Todo o loop <code>for</code> é equivalente ao seguinte:
+    </p>
+    
+    <pre><code class="language-python">def plural(noun):
+    if match_sxz(noun):
+        return apply_sxz(noun)
+    if match_h(noun):
+        return apply_h(noun)
+    if match_y(noun):
+        return apply_y(noun)
+    if match_default(noun):
+        return apply_default(noun)</code></pre>
+
+    <p>
+        A vantagem aqui é que a função <code>plural()</code> agora foi simplificada. Ele pega uma sequência de regras, definida em outro lugar, e itera por meio delas de maneira genérica.
+    </p>
+    <ol>
+        <li>Obtenha uma regra de correspondência.</li>
+        <li>Combina? Em seguida, chame a regra de aplicação e retorne o resultado.</li>
+        <li>Sem correspondência? Vá para a etapa 1.</li>
+    </ol>
+    <p>
+        As regras podem ser definidas em qualquer lugar, de qualquer maneira. A função <code>plural()</code> não importa.
+    </p>
+    <p>
+        Agora, adicionar esse nível de abstração. Valeu a pena? Bem, ainda não. Vamos considerar o que seria necessário para adicionar uma nova regra à função. No primeiro exemplo, seria necessário adicionar uma instrução <code>if</code> à função <code>plural()</code>. Neste segundo exemplo, seria necessário adicionar duas funções <code>match_foo()</code> e <code>apply_foo()</code>, em seguida, atualizar a sequência de <code>rules</code> para especificar onde, na ordem, as novas funções de correspondência e aplicação devem ser chamadas em relação às outras regras.
+    </p>
+    <p>
+        Mas este é realmente apenas um trampolim para a próxima seção. Vamos continuar…
+    </p>
+    
+    <h2 id="a-list-of-patterns">Uma lista de padrões</h2>
+    <p>
+        Definir funções nomeadas separadas para cada correspondência e aplicar regra não é realmente necessário. Você nunca liga para eles diretamente; você os adiciona à sequência de <code>rules</code> e os chama por lá. Além disso, cada função segue um de dois padrões. Todas as funções de correspondência são chamadas <code>re.search()</code>e todas as funções de aplicação são chamadas <code>re.sub()</code>. Vamos fatorar os padrões para que seja mais fácil definir novas regras.
+    </p>
+    
+    <pre><code class="language-python">import re
+
+def build_match_and_apply_functions(pattern, search, replace):
+    def matches_rule(word):                                     ①
+        return re.search(pattern, word)
+    def apply_rule(word):                                       ②
+        return re.sub(search, replace, word)
+    return (matches_rule, apply_rule)                           ③</code></pre>
+    
+    <ol>
+        <li>
+            <code>build_match_and_apply_functions()</code> é uma função que cria outras funções dinamicamente. Ela pega <code>pattern</code>, <code>search</code> e <code>substitui</code>, então define uma função <code>matches_rule()</code> que chama <code>re.search()</code> com o <code>pattern</code> que foi passado para a função <code>build_match_and_apply_functions()</code> e a <code>word</code> que foi passada para a função <code>matches_rule()</code> que você está construindo. Uau.
+        </li>
+        <li>
+            Construir a função <code>apply_rule</code> funciona da mesma maneira. A função <code>apply_rule</code> é uma função que recebe um parâmetro e chama <code>re.sub()</code> com os parâmetros de <code>search</code> e <code>replace</code> que foram passados ​​para a função <code>build_match_and_apply_functions()</code> e a <code>word</code> que foi passada para a função <code>apply_rule()</code> que você está construindo. Essa técnica de usar os valores de parâmetros externos dentro de uma função dinâmica é chamada de <em>closures</em>. Você está essencialmente definindo constantes dentro de <code><code>apply_rule</code></code> que você está construindo: leva um parâmetro (<code>word</code>), mas então atua sobre ele mais dois outros valores (<code>search</code> e <code>replace</code>) que foram configurados quando você definiu a função de aplicação.
+        </li>
+        <li>
+            Finalmente, a função <code>build_match_and_apply_functions()</code> retorna uma tupla de dois valores: as duas funções que você acabou de criar. As constantes que você definiu nessas funções (<code>pattern</code> dentro da função <code>matches_rule()</code> e <code>search</code> e <code>replace</code> dentro da função <code>apply_rule()</code>) permanecem com essas funções, mesmo depois de retornar de <code>build_match_and_apply_functions()</code>. Isso é incrivelmente legal.
+        </li>
+    </ol>
+    <p>
+        Se isso é incrivelmente confuso (e deveria ser, isso é coisa esquisita), pode ficar mais claro quando você vir como usá-lo.
+    </p>
+    
+    <pre><code class="language-python">patterns = \                                                        ①
+  (
+    ('[sxz]$',           '$',  'es'),
+    ('[^aeioudgkprt]h$', '$',  'es'),
+    ('(qu|[^aeiou])y$',  'y$', 'ies'),
+    ('$',                '$',  's')                                 ②
+  )
+rules = [build_match_and_apply_functions(pattern, search, replace)  ③
+         for (pattern, search, replace) in patterns]</code></pre>
+    
+    <ol>
+        <li>
+            Nossas “regras” de pluralização são agora definidas como uma tupla de tuplas de <em>strings</em> (não funções). A primeira string em cada grupo é o padrão de expressão regular que você usaria <code>re.search()</code> para ver se essa regra corresponde. A segunda e a terceira strings em cada grupo são as expressões de pesquisa e substituição que você usaria <code>re.sub()</code> para realmente aplicar a regra para transformar um substantivo em seu plural.
+        </li>
+        <li>
+            Há uma pequena mudança aqui, na regra de fallback. No exemplo anterior, a função <code>match_default()</code> simplesmente retornou <code>True</code>, o que significa que se nenhuma das regras mais específicas correspondesse, o código simplesmente adicionaria um <code>s</code> ao final da palavra dada. Este exemplo faz algo funcionalmente equivalente. A expressão regular final pergunta se a palavra tem um final (<code>$</code> corresponde ao final de uma string). É claro que toda string tem um fim, até mesmo uma string vazia, portanto, essa expressão sempre corresponde. Assim, ele tem o mesmo propósito que a função <code>match_default()</code> que sempre retornou <code>True</code>: ele garante que, se nenhuma regra mais específica corresponder, o código adiciona um <code>s</code> ao final da palavra dada.
+        </li>
+        <li>
+            Esta linha é mágica. Ele pega a sequência de strings em <code>patterns</code> e os transforma em uma sequência de funções. Como? Ao “mapear” as strings para a função <code>build_match_and_apply_functions()</code>. Ou seja, ele pega cada trinca de strings e chama a função <code>build_match_and_apply_functions()</code> com essas três strings como argumentos. A função <code>build_match_and_apply_functions()</code> retorna uma tupla de duas funções. Isso significa que as <code>rules</code> acabam sendo funcionalmente equivalentes ao exemplo anterior: uma lista de tuplas, onde cada tupla é um par de funções. A primeira função é a função de correspondência que chama <code>re.search()</code> e a segunda função é a função de aplicação que chama <code>re.sub()</code>.
+        </li>
+    </ol>
+    <p>
+        Completando esta versão do script está o principal ponto de entrada, a função <code>plural()</code>.
+    </p>
+    
+    <pre><code class="language-python">def plural(noun):
+    for matches_rule, apply_rule in rules:  ①
+        if matches_rule(noun):
+            return apply_rule(noun)</code></pre>
+    
+    <ol>
+        <li>
+            Como a lista de <code>rules</code> é a mesma do exemplo anterior (realmente é), não deve ser surpresa que a função <code>plural()</code> não tenha mudado em nada. É completamente genérico; ele pega uma lista de funções de regra e as chama em ordem. Não importa como as regras são definidas. No exemplo anterior, eles foram definidos como funções nomeadas separadas. Agora eles são construídos dinamicamente mapeando a saída da função <code>build_match_and_apply_functions()</code> em uma lista de strings brutas. Não importa; a função <code>plural()</code> ainda funciona da mesma maneira.
+        </li>
+    </ol>
+
+    <h2 id="a-file-of-patterns">Um arquivo de padrões</h2>
+    <p>
+        Você fatorou todo o código duplicado e adicionou abstrações suficientes para que as regras de pluralização sejam definidas em uma lista de strings. A próxima etapa lógica é pegar essas strings e colocá-las em um arquivo separado, onde podem ser mantidas separadamente do código que as usa.
+    </p>
+    <p>
+        Primeiro, vamos criar um arquivo de texto que contém as regras que você deseja. Nenhuma estrutura de dados extravagante, apenas strings delimitadas por espaços em branco em três colunas. Vamos chamá-lo <code>plural4-rules.txt</code>.
+    </p>
+    
+    <pre>[sxz]$               $    es
+[^aeioudgkprt]h$     $    es
+[^aeiou]y$          y$    ies
+$                    $    s</pre>
+
+    <p>
+        Agora vamos ver como você pode usar este arquivo de regras.
+    </p>
+    
+    <pre><code class="language-python">import re
+
+def build_match_and_apply_functions(pattern, search, replace):  ①
+    def matches_rule(word):
+        return re.search(pattern, word)
+    def apply_rule(word):
+        return re.sub(search, replace, word)
+    return (matches_rule, apply_rule)
+
+rules = []
+with open('plural4-rules.txt', encoding='utf-8') as pattern_file:  ②
+    for line in pattern_file:                                      ③
+        pattern, search, replace = line.split(None, 2)             ④
+        rules.append(build_match_and_apply_functions(              ⑤
+                pattern, search, replace))</code></pre>
+    
+    <ol>
+        <li>
+            A função <code>build_match_and_apply_functions()</code> não mudou. Você ainda está usando closures para construir duas funções dinamicamente que usam variáveis ​​definidas na função externa.
+        </li>
+        <li>
+            A função global <code>open()</code> abre um arquivo e retorna um objeto de arquivo. Nesse caso, o arquivo que estamos abrindo contém as strings de padrão para substantivos pluralizantes. A instrução <code>with</code> cria o que é chamado de <i>contexto</i>: quando o bloco <code>with</code> termina, o Python fecha automaticamente o arquivo, mesmo se uma exceção for levantada dentro do bloco <code>with</code>. Você aprenderá mais sobre blocos <code>with</code> e objetos de arquivo no capítulo <a href="files.html" style="color: #b44582;">Arquivos</a>.
+        </li>
+        <li>
+            <code>for line in &lt;fileobject&gt;</code> lê os dados do arquivo aberto, uma linha por vez, e atribui o texto à variável <code>line</code>. Você aprenderá mais sobre como ler arquivos no capítulo <a href="files.html" style="color: #b44582;">Arquivos</a>.
+        </li>
+        <li>
+            Cada linha do arquivo realmente tem três valores, mas eles são separados por espaços em branco (tabulações ou espaços, não faz diferença). Para dividir, use o método <code>split()</code> das strings. O primeiro argumento do método <code>split()</code> é <code>None</code>, que significa “dividir em qualquer espaço em branco (tabulações ou espaços, não faz diferença)”. O segundo argumento é <code>2</code>, que significa "dividir em espaços em branco 2 vezes (dividir uma vez retorna dois valores, dividir duas vezes retorna três valores e assim por diante) e, em seguida, deixe o resto da linha sozinho." Uma linha como <code>[sxz]$ $ es</code>será dividida na lista <code>['[sxz]$', '$', 'es']</code>, o que significa que o <code>pattern</code> será obtido <code>'[sxz]$'</code>, <code>search</code> obterá <code>'$'</code> e a <code>replace</code> obterá <code>'es'</code>. Isso é muito poder em uma pequena linha de código.
+        </li>
+        <li>
+            Finalmente, você passa <code>pattern</code>, <code>search</code> e <code>replace</code> para a função <code>build_match_and_apply_functions()</code>, que retorna uma tupla de funções. Você anexa essa tupla à lista de <code>rules</code> e as <code>rules</code> acabam armazenando a lista de funções de correspondência e aplicação que a função <code>plural()</code> espera.
+        </li>
+    </ol>
+    <p>
+        A melhoria aqui é que você separou completamente as regras de pluralização em um arquivo externo, para que ele possa ser mantido separadamente do código que o usa. Código é código, dados são dados e a vida é boa.
+    </p>
+    
+    <h2 id="generators">Geradores</h2>
+    <p>
+        Não seria ótimo ter uma função <code>plural()</code> genérica que analisa o arquivo de regras? Obtenha regras, verifique se há uma correspondência, aplique a transformação apropriada e seguir para a próxima regra. Isso é tudo que a função <code>plural()</code> precisa fazer, e isso é tudo que a função <code>plural()</code> deve fazer.
+    </p>
+    
+    <pre><code class="language-python">def rules(rules_filename):
+    with open(rules_filename, encoding='utf-8') as pattern_file:
+        for line in pattern_file:
+            pattern, search, replace = line.split(None, 2)
+            yield build_match_and_apply_functions(pattern, search, replace)
+
+def plural(noun, rules_filename='plural5-rules.txt'):
+    for matches_rule, apply_rule in rules(rules_filename):
+        if matches_rule(noun):
+            return apply_rule(noun)
+    raise ValueError('no matching rule for {0}'.format(noun))</code></pre>
+
+    <p>
+        Como diabos <em>isso</em> funciona? Vejamos primeiro um exemplo interativo.
+    </p>
+    
+    <pre><code class="language-python-repl">&gt;&gt;&gt; def make_counter(x):
+...     print('entering make_counter')
+...     while True:
+...         yield x                    ①
+...         print('incrementing x')
+...         x = x + 1
+... 
+&gt;&gt;&gt; counter = make_counter(2)          ②
+&gt;&gt;&gt; counter                            ③
+&lt;generator object at 0x001C9C10&gt;
+&gt;&gt;&gt; next(counter)                      ④
+entering make_counter
+2
+&gt;&gt;&gt; next(counter)                      ⑤
+incrementing x
+3
+&gt;&gt;&gt; next(counter)                      ⑥
+incrementing x
+4</code></pre>
+
+    <ol>
+        <li>
+            A presença da palavra-chave <code>yield</code> em <code>make_counter</code> significa que esta não é uma função normal. É um tipo especial de função que gera valores um de cada vez. Você pode pensar nisso como uma função recuperável. Chamá-lo retornará um <i>gerador</i> que pode ser usado para gerar valores sucessivos de <code>x</code>.
+        </li>
+        <li>
+            Para criar uma instância do gerador <code>make_counter</code>, basta chamá-la como qualquer outra função. Observe que isso não executa realmente o código da função. Você pode dizer isso porque a primeira linha da função <code>make_counter()</code> chama <code>print()</code>, mas nada foi impresso ainda.
+        </li>
+        <li>
+            A função <code>make_counter()</code> retorna um objeto gerador.
+        </li>
+        <li>
+            A função <code>next()</code> pega um objeto gerador e retorna seu próximo valor. A primeira vez que você chama <code>next()</code> com o gerador de <code>counter</code>, ele executa o código <code>make_counter()</code> até a primeira instrução <code>yield</code> e retorna o valor gerado. Nesse caso, será <code>2</code>, porque você criou originalmente o gerador chamando <code>make_counter(2)</code>.
+        </li>
+        <li>
+            Chamar repetidamente <code>next()</code> com o mesmo objeto gerador continua exatamente de onde parou e continua até chegar à próxima instrução <code>yield</code>. Todas as variáveis, estado local, etc. são salvos <code>yield</code> e restaurados em <code>next()</code>. A próxima linha de código esperando para ser executada chama <code>print()</code>, que imprime <code>incrementing x</code>. Depois disso, a declaração <code>x = x + 1</code>. Em seguida, ele percorre o loop <code>while</code> novamente e a primeira coisa que atinge é a instrução <code>yield x</code>, que salva o estado de tudo e retorna o valor atual de <code>x</code> (agora <code>3</code>).
+        </li>
+        <li>
+            Na segunda vez que você chama <code>next(counter)</code>, você faz todas as mesmas coisas novamente, mas desta vez <code>x</code> é agora <code>4</code>.
+        </li>
+    </ol>
+    <p>
+        Uma vez que <code>make_counter</code> configura um loop infinito, você poderia teoricamente fazer isso para sempre, e ele simplesmente continuaria incrementando <code>x</code> e emitindo valores. Mas, em vez disso, vamos dar uma olhada em usos mais produtivos de geradores.
+    </p>
+    
+    <h3 id="a-fibonacci-generator">Um gerador de Fibonacci</h3>
+    <blockquote>
+        <p>
+            “Yield” pausa uma função. “Next()” continua de onde parou.
+        </p>
+    </blockquote>
+
+    <pre><code class="language-python">def fib(max):
+    a, b = 0, 1          ①
+    while a &lt; max:
+        yield a          ②
+        a, b = b, a + b  ③</code></pre>
+    
+    <ol>
+        <li>
+            A sequência de Fibonacci é uma sequência de números onde cada número é a soma dos dois números anteriores. Ele começa com 0 e 1 aumenta lentamente no início, depois cada vez mais rapidamente. Para iniciar a sequência, você precisa de duas variáveis: <code>a</code> começa em 0 e <code>b</code> começa em <code>1</code>.
+        </li>
+        <li>
+            <code>a</code> é o número atual na sequência, portanto, forneça-o.
+        </li>
+        <li>
+            <code>b</code> é o próximo número na sequência, então atribua-o a <code>a</code>, mas também calcule o próximo valor (<code>a + b</code>) e atribua-o a <code>b</code> para uso posterior. Observe que isso acontece em paralelo; se <code>a</code> for <code>3</code> e <code>b</code> for <code>5</code>, <code>a, b = b, a + b</code> definirá <code>a</code> como <code>5</code> (o valor anterior de <code>b</code>) e <code>b</code> como <code>8</code> (a soma dos valores anteriores de <code>a</code> e <code>b</code>).
+        </li>
+    </ol>
+    <p>
+        Portanto, você tem uma função que produz números de Fibonacci sucessivos. Claro, você poderia fazer isso com recursão, mas dessa forma é mais fácil de ler. Além disso, funciona bem com loops <code>for</code>.
+    </p>
+    
+    <pre><code class="language-python-repl">&gt;&gt;&gt; from fibonacci import fib
+&gt;&gt;&gt; for n in fib(1000):      ①
+...     print(n, end=' ')    ②
+0 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987
+&gt;&gt;&gt; list(fib(1000))          ③
+[0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987]</code></pre>
+
+    <ol>
+        <li>
+            Você pode usar um gerador como <code>fib()</code> em um loop <code>for</code> diretamente. O loop <code>for</code> irá chamar automaticamente a função <code>next()</code> para obter valores do gerador <code>fib()</code> e atribuí-los à variável <code>n</code> de índice do loop <code>for</code>.
+        </li>
+        <li>
+            Cada vez que percorre o loop <code>for</code>, <code>n</code> obtém um novo valor da instrução <code>yield</code> em <code>fib()</code> e tudo o que você precisa fazer é imprimi-lo. Uma vez que os números de <code>fib()</code> acabam (<code>a</code> torna-se maior que <code>max</code>, o que neste caso é <code>1000</code>), o loop <code>for</code> termina normalmente.
+        </li>
+        <li>
+            Este é útil: passe um gerador para a função <code>list()</code> e ele iterará por todo o gerador (assim como o loop <code>for</code> no exemplo anterior) e retornará uma lista de todos os valores.
+        </li>
+    </ol>
+
+    <h3 id="a-plural-rule-generator">Um gerador de regra plural</h3>
+    <p>
+        Vamos voltar para o script <code>plural5.py</code> e ver como essa versão da função <code>plural()</code> funciona.
+    </p>
+    
+    <pre><code class="language-python">def rules(rules_filename):
+    with open(rules_filename, encoding='utf-8') as pattern_file:
+        for line in pattern_file:
+            pattern, search, replace = line.split(None, 2)                   ①
+            yield build_match_and_apply_functions(pattern, search, replace)  ②
+
+def plural(noun, rules_filename='plural5-rules.txt'):
+    for matches_rule, apply_rule in rules(rules_filename):                   ③
+        if matches_rule(noun):
+            return apply_rule(noun)
+    raise ValueError('no matching rule for {0}'.format(noun))</code></pre>
+
+    <ol>
+        <li>
+            Nenhuma mágica aqui. Lembre-se de que as linhas do arquivo de regras têm três valores separados por espaços em branco, então você usa <code>line.split(None, 2)</code> para obter as três “colunas” e atribuí-las a três variáveis ​​locais.
+        </li>
+        <li>
+            <em>E então você cede</em>. O que você cede? Duas funções, construídas dinamicamente com seu velho amigo <code>build_match_and_apply_functions()</code>, que são idênticas aos exemplos anteriores. Em outras palavras, <code>rules()</code> é um gerador que gera correspondência e aplica funções <em>sob demanda</em>.
+        </li>
+        <li>
+            Como <code>rules()</code> é um gerador, você pode usá-lo diretamente em um loop <code>for</code>. Na primeira vez no loop <code>for</code>, você chamará a função <code>rules()</code>, que abrirá o arquivo de padrões, lerá a primeira linha, construirá dinamicamente uma função de correspondência e uma função de aplicação a partir dos padrões nessa linha e produzirá as funções construídas dinamicamente. Na segunda vez no loop <code>for</code>, você continuará exatamente de onde parou <code>rules()</code> (que foi no meio do loop <code>for line in pattern_file</code>). A primeira coisa que ele fará é ler a próxima linha do arquivo (que ainda está aberta), construir dinamicamente outra correspondência e aplicar a função com base nos padrões dessa linha no arquivo e produzir as duas funções.
+        </li>
+    </ol>
+    <p>
+        O que você ganhou no estágio 4? Hora de inicialização. No estágio 4, quando você importou o módulo <code>plural4</code>, ele leu todo o arquivo de padrões e construiu uma lista de todas as regras possíveis, antes mesmo que você pudesse pensar em chamar a função <code>plural()</code>. Com os geradores, você pode fazer tudo preguiçosamente: você lê a primeira regra, cria funções e as experimenta, e se isso funcionar, você nunca lê o resto do arquivo ou cria quaisquer outras funções.
+    </p>
+    <p>
+        O que você perdeu? Desempenho! Cada vez que você chama a função <code>plural()</code>, o gerador <code>rules()</code> começa do início - o que significa reabrir o arquivo de padrões e ler desde o início, uma linha de cada vez.
+    </p>
+    <p>
+        E se você pudesse ter o melhor dos dois mundos: custo mínimo de inicialização (não execute nenhum código <code>import</code>) <em>e</em> desempenho máximo (não crie as mesmas funções repetidamente). Ah, e você ainda deseja manter as regras em um arquivo separado (porque código é código e dados são dados), contanto que nunca precise ler a mesma linha duas vezes.
+    </p>
+    <p>
+        Para fazer isso, você precisará construir seu próprio iterador. Mas antes de fazer <em>isso</em>, você precisa aprender sobre as classes Python.
+    </p>
+    
+    <h2 id="furtherreading">Leitura adicional</h2>
+    <ul>
+        <li>
+            <a href="http://www.python.org/dev/peps/pep-0255/" target="_blank">PEP 255: Geradores Simples</a>
+        </li>
+        <li>
+            <a href="http://effbot.org/zone/python-with-statement.htm" target="_blank">Compreendendo a declaração “with” do Python</a>
+        </li>
+        <li>
+            <a href="http://ynniv.com/blog/2007/08/closures-in-python.html" target="_blank">Fechamentos em Python</a>
+        </li>
+        <li>
+            <a href="http://en.wikipedia.org/wiki/Fibonacci_number" target="_blank">Números de Fibonacci</a>
+        </li>
+        <li>
+            <a href="http://www2.gsu.edu/~wwwesl/egw/crump.htm" target="_blank">Substantivos plurais irregulares do inglês</a>
+        </li>
+    </ul>
+
+    <p>
+        Esse artigo é uma tradução de um capítulo do livro "Dive Into Python 3" escrito por Mark Pilgrim. Você pode ler o livro desde o início em português clicando <a href="https://www.acervolima.com.br/2021/05/o-que-ha-de-novo-em-dive-into-python-3.html">aqui</a>.
+    </p>
+    <p>
+        Traduzido por Acervo Lima. O original pode ser acessado <a href="https://diveintopython3.problemsolving.io/generators.html" target="_blank">aqui</a>.
+    </p>
+    <h2>Licença</h2>
+    <ul>
+        <li><a href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank">Creative Commons Attribution Share-Alike</a></li>
+    </ul>
+
+    <div class="prev-next-div">
+        <a class="prev" href="https://www.acervolima.com.br/2021/05/expressoes-regulares-em-python.html">&lt;&lt; Anterior</a>
+        <a class="next" href="#">Próximo &gt;&gt;</a>
+    </div>
+
+
+
+</body>
+</html>

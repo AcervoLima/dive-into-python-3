@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documento</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+    <h1>Compreensões</h1>
+    <blockquote class="q">
+        <p>
+            ❝Nossa imaginação é esticada ao máximo, não, como na ficção, para imaginar coisas que não existem realmente, mas apenas para compreender as coisas que existem.❞<br /> - <a href="http://en.wikiquote.org/wiki/Richard_Feynman" target="_blank">Richard Feynman</a>
+        </p>
+    </blockquote>
+
+    <h2 id="divingin">Mergulho</h2>
+    <p>
+        Cada linguagem de programação tem aquele único recurso, algo complicado intencionalmente simplificado. Se você está vindo de outra linguagem, pode facilmente perdê-lo, porque sua antiga linguagem não tornava isso simples (porque estava ocupado fazendo outra coisa simples). Este capítulo irá ensiná-lo sobre compreensões de lista, compreensões de dicionário e compreensões de conjunto: três conceitos relacionados centrados em torno de uma técnica muito poderosa. Mas, primeiro, quero fazer um pequeno desvio em dois módulos que o ajudarão a navegar em seu sistema de arquivos local.
+    </p>
+    
+    <h2 id="os">Trabalho com arquivos e diretórios</h2>
+    <p>
+        Python 3 vem com um módulo chamado <code>os</code>, que significa “sistema operacional”. O módulo <a href="http://docs.python.org/3.1/library/os.html" target="_blank"><code>os</code></a> contém uma infinidade de funções para obter informações - e, em alguns casos, manipular - diretórios locais, arquivos, processos e variáveis ​​de ambiente. Python faz o seu melhor para oferecer uma <abbr>API</abbr> unificada em <a href="https://www.acervolima.com.br/2021/05/instalando-o-python.html">todos os sistemas operacionais suportados</a> para que seus programas possam ser executados em qualquer computador com o mínimo possível de código específico de plataforma.
+    </p>
+    
+    <h3 id="getcwd">O diretório de trabalho atual</h3>
+    <p>
+        Quando você está começando a usar o Python, vai passar muito tempo no <a href="https://www.acervolima.com.br/2021/05/instalando-o-python.html#idle">Python Shell</a>. Ao longo deste livro, você verá exemplos semelhantes a este:
+    </p>
+    <ol>
+        <li>Importe um dos módulos da pasta <a href="https://diveintopython3.problemsolving.io/examples/" target="_blank"><code>examples</code></a>
+        </li>
+        <li>Chame uma função nesse módulo
+        </li>
+        <li>Explique o resultado
+        </li>
+    </ol>
+    <blockquote>
+        <p>
+            Sempre há um diretório de trabalho atual.
+        </p>
+    </blockquote>
+    <p>
+        Se você não souber sobre o diretório de trabalho atual, a etapa 1 provavelmente falhará com um <code>ImportError</code>. Por quê? Porque o Python procurará o módulo de exemplo no <a href="https://www.acervolima.com.br/2021/05/seu-primeiro-programa-python.html#importsearchpath">caminho de pesquisa de importação</a>, mas não o encontrará porque a pasta <code>examples</code> não é um dos diretórios no caminho de pesquisa. Para superar isso, você pode fazer uma das duas coisas:
+    </p>
+    <ol>
+        <li>
+            Adicione a pasta <code>examples</code> ao caminho de pesquisa de importação.
+        </li>
+        <li>
+            Mude o diretório de trabalho atual para a pasta <code>examples</code>.
+        </li>
+    </ol>
+    <p>
+        O diretório de trabalho atual é uma propriedade invisível que o Python mantém na memória o tempo todo. Sempre há um diretório de trabalho atual, esteja você no Python Shell, executando seu próprio script Python na linha de comando ou executando um script Python <abbr>CGI</abbr> em um servidor da web em algum lugar.
+    </p>
+    <p>
+        O módulo <code>os</code> contém duas funções para lidar com o diretório de trabalho atual.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; import os                                            ①
+&gt;&gt;&gt; print(os.getcwd())                                   ②
+C:\Python31
+&gt;&gt;&gt; os.chdir('/Users/pilgrim/diveintopython3/examples')  ③
+&gt;&gt;&gt; print(os.getcwd())                                   ④
+C:\Users\pilgrim\diveintopython3\examples</code></pre>
+
+    <ol>
+        <li>
+            O módulo <code>os</code> vem com Python; você pode importá-lo a qualquer hora, em qualquer lugar.
+        </li>
+        <li>
+            Use a função <code>os.getcwd()</code> para obter o diretório de trabalho atual. Quando você executa o Python Shell gráfico, o diretório de trabalho atual começa como o diretório onde está o executável do Python Shell. No Windows, isso depende de onde você instalou o Python; o diretório padrão é <code>c:\Python31</code>. Se você executar o Python Shell a partir da linha de comando, o diretório de trabalho atual começa como o diretório em que você estava quando executou <code>python3</code>.
+        </li>
+        <li>
+            Use a função <code>os.chdir()</code> para alterar o diretório de trabalho atual.
+        </li>
+        <li>
+            Quando chamei a função <code>os.chdir()</code>, usei um nome de caminho no estilo Linux (barras, sem letra de unidade), embora esteja no Windows. Este é um dos lugares onde o Python tenta esconder as diferenças entre os sistemas operacionais.
+        </li>
+    </ol>
+
+    <h3 id="ospath">Trabalho com nomes de arquivos e diretórios</h3>
+    <p>
+        Já que estamos falando de diretórios, quero destacar o módulo <code>os.path</code>. <code>os.path</code> contém funções para manipular nomes de arquivos e nomes de diretórios.
+    </p>
+    
+    <pre><code class="language-python-repl">&gt;&gt;&gt; import os
+&gt;&gt;&gt; print(os.path.join('/Users/pilgrim/diveintopython3/examples/', 'humansize.py'))              ①
+/Users/pilgrim/diveintopython3/examples/humansize.py
+&gt;&gt;&gt; print(os.path.join('/Users/pilgrim/diveintopython3/examples', 'humansize.py'))               ②
+/Users/pilgrim/diveintopython3/examples\humansize.py
+&gt;&gt;&gt; print(os.path.expanduser('~'))                                                               ③
+c:\Users\pilgrim
+&gt;&gt;&gt; print(os.path.join(os.path.expanduser('~'), 'diveintopython3', 'examples', 'humansize.py'))  ④
+c:\Users\pilgrim\diveintopython3\examples\humansize.py</code></pre>
+
+    <ol>
+        <li>
+            A função <code>os.path.join()</code> constrói um nome de caminho a partir de um ou mais nomes de caminho parciais. Nesse caso, ele simplesmente concatena strings.
+        </li>
+        <li>
+            Neste caso um pouco menos trivial, chamar a função <code>os.path.join()</code> adicionará uma barra extra ao nome do caminho antes de uni-lo ao nome do arquivo. É uma barra invertida em vez de uma barra normal, porque construí este exemplo no Windows. Se você replicar este exemplo no Linux ou Mac OS X, verá uma barra. Não mexa com barras; sempre use <code>os.path.join()</code> e deixe o Python fazer a coisa certa.
+        </li>
+        <li>
+            A função <code>os.path.expanduser()</code> irá expandir um nome de caminho que usa <code>~</code> para representar o diretório pessoal do usuário atual. Isso funciona em qualquer plataforma em que os usuários tenham um diretório inicial, incluindo Linux, Mac OS X e Windows. O caminho retornado não tem uma barra final, mas a função <code>os.path.join()</code> não se importa.
+        </li>
+        <li>
+            Combinando essas técnicas, você pode construir facilmente nomes de caminho para diretórios e arquivos no diretório pessoal do usuário. A função <code>os.path.join()</code> pode receber qualquer número de argumentos. Fiquei muito feliz quando descobri isso, já que <code>addSlashIfNecessary()</code> é uma das pequenas funções estúpidas que sempre preciso escrever ao construir minha caixa de ferramentas em uma nova linguagem. <em>Não</em> escreva esta pequena função estúpida em Python; pessoas inteligentes já cuidaram disso para você.
+        </li>
+    </ol>
+    <p>
+        <code>os.path</code> também contém funções para dividir nomes de caminhos completos, nomes de diretórios e nomes de arquivos em suas partes constituintes.
+    </p>
+
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; pathname = '/Users/pilgrim/diveintopython3/examples/humansize.py'
+&gt;&gt;&gt; os.path.split(pathname)                                        ①
+('/Users/pilgrim/diveintopython3/examples', 'humansize.py')
+&gt;&gt;&gt; (dirname, filename) = os.path.split(pathname)                  ②
+&gt;&gt;&gt; dirname                                                        ③
+'/Users/pilgrim/diveintopython3/examples'
+&gt;&gt;&gt; filename                                                       ④
+'humansize.py'
+&gt;&gt;&gt; (shortname, extension) = os.path.splitext(filename)            ⑤
+&gt;&gt;&gt; shortname
+'humansize'
+&gt;&gt;&gt; extension
+'.py'</code></pre>
+
+    <ol>
+        <li>
+            A função <code>split</code> divide um caminho completo e retorna uma tupla contendo o caminho e o nome do arquivo.
+        </li>
+        <li>
+            Lembra quando eu disse que você poderia usar <a href="https://www.acervolima.com.br/2021/05/tipos-de-dados-nativos-em-python.html#multivar">a atribuição de várias variáveis</a> para retornar vários valores de uma função? A função <code>os.path.split()</code> faz exatamente isso. Você atribui o valor de retorno da função <code>split</code> em uma tupla de duas variáveis. Cada variável recebe o valor do elemento correspondente da tupla retornada.
+        </li>
+        <li>
+            A primeira variável, <code>dirname</code>, recebe o valor do primeiro elemento da tupla retornada da função <code>os.path.split()</code>, o caminho do arquivo.
+        </li>
+        <li>
+            A segunda variável, <code>nome do arquivo</code>, recebe o valor do segundo elemento da tupla retornado da função <code>os.path.split()</code>, o nome do arquivo.
+        </li>
+        <li>
+            <code>os.path</code> também contém a função <code>os.path.splitext()</code>, que divide o nome do arquivo e retorna uma tupla contendo o nome do arquivo e a extensão do arquivo. Você usa a mesma técnica para atribuir cada um deles a variáveis ​​separadas.
+        </li>
+    </ol>
+
+    <h3 id="glob">Listagem de diretórios</h3>
+    <p>
+        O módulo <code>glob</code> é outra ferramenta da biblioteca padrão do Python. É uma maneira fácil de obter o conteúdo de um diretório programaticamente e usa o tipo de curinga com o qual você pode já estar familiarizado por trabalhar na linha de comando.
+    </p>
+    <blockquote>
+        <p>
+            O módulo <code>glob</code> usa curingas semelhantes a shell.
+        </p>
+    </blockquote>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; os.chdir('/Users/pilgrim/diveintopython3/')
+&gt;&gt;&gt; import glob
+&gt;&gt;&gt; glob.glob('examples/*.xml')                  ①
+['examples\\feed-broken.xml',
+ 'examples\\feed-ns0.xml',
+ 'examples\\feed.xml']
+&gt;&gt;&gt; os.chdir('examples/')                        ②
+&gt;&gt;&gt; glob.glob('*test*.py')                       ③
+['alphameticstest.py',
+ 'pluraltest1.py',
+ 'pluraltest2.py',
+ 'pluraltest3.py',
+ 'pluraltest4.py',
+ 'pluraltest5.py',
+ 'pluraltest6.py',
+ 'romantest1.py',
+ 'romantest10.py',
+ 'romantest2.py',
+ 'romantest3.py',
+ 'romantest4.py',
+ 'romantest5.py',
+ 'romantest6.py',
+ 'romantest7.py',
+ 'romantest8.py',
+ 'romantest9.py']</code></pre>
+
+    <ol>
+        <li>
+            O módulo <code>glob</code> recebe um curinga e retorna o caminho de todos os arquivos e diretórios que correspondem ao curinga. Neste exemplo, o curinga é um caminho de diretório mais “<code>*.xml</code>”, que corresponderá a todos os arquivos <code>.xml</code> no subdiretório <code>examples</code>.
+        </li>
+        <li>
+            Agora mude o diretório de trabalho atual para o subdiretório <code>examples</code>. A função <code>os.chdir()</code> pode ter nomes de caminhos relativos.
+        </li>
+        <li>
+            Você pode incluir vários curingas em seu padrão glob. Este exemplo encontra todos os arquivos no diretório de trabalho atual que terminam em uma extensão <code>.py</code> e contêm a palavra <code>test</code> em qualquer lugar em seu nome de arquivo.
+        </li>
+    </ol>
+
+    <h3 id="osstat">Obtendo metadados de arquivo</h3>
+    <p>
+        Cada sistema de arquivos moderno armazena metadados sobre cada arquivo: data de criação, data da última modificação, tamanho do arquivo e assim por diante. Python fornece uma única <abbr>API</abbr> para acessar esses metadados. Você não precisa abrir o arquivo; tudo que você precisa é o nome do arquivo.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; import os
+&gt;&gt;&gt; print(os.getcwd())                 ①
+c:\Users\pilgrim\diveintopython3\examples
+&gt;&gt;&gt; metadata = os.stat('feed.xml')     ②
+&gt;&gt;&gt; metadata.st_mtime                  ③
+1247520344.9537716
+&gt;&gt;&gt; import time                        ④
+&gt;&gt;&gt; time.localtime(metadata.st_mtime)  ⑤
+time.struct_time(tm_year=2009, tm_mon=7, tm_mday=13, tm_hour=17,
+  tm_min=25, tm_sec=44, tm_wday=0, tm_yday=194, tm_isdst=1)</code></pre>
+
+    <ol>
+        <li>
+            O diretório de trabalho atual é a pasta <code>examples</code>.
+        </li>
+        <li>
+            <code>feed.xml</code> é um arquivo na pasta <code>examples</code>. Chamar a função <code>os.stat()</code> retorna um objeto que contém vários tipos diferentes de metadados sobre o arquivo.
+        </li>
+        <li>
+            <code>st_mtime</code> é a hora da modificação, mas está em um formato que não é muito útil. (Tecnicamente, é o número de segundos desde a Época, que é definido como o primeiro segundo de 1º de janeiro de 1970. Sério).
+        </li>
+        <li>
+            O módulo <code>time</code> faz parte da biblioteca padrão do Python. Ele contém funções para converter entre diferentes representações de tempo, formatar valores de tempo em strings e mexer com fusos horários.
+        </li>
+        <li>
+            A função <code>time.localtime()</code> converte um valor de tempo de segundos desde a época (da propriedade <code>st_mtime</code> retornada da função <code>os.stat()</code>) em uma estrutura mais útil de ano, mês, dia, hora, minuto, segundo e assim por diante. Este arquivo foi modificado pela última vez em 13 de julho de 2009, por volta das 17:25.
+        </li>
+    </ol>
+
+    <pre><code class="language-python-repl"># continued from the previous example
+&gt;&gt;&gt; metadata.st_size                              ①
+3070
+&gt;&gt;&gt; import humansize
+&gt;&gt;&gt; humansize.approximate_size(metadata.st_size)  ②
+'3.0 KiB'</code></pre>
+
+    <ol>
+        <li>
+            A função <code>os.stat()</code> também retorna o tamanho de um arquivo, na propriedade <code>st_size</code>. O arquivo <code>feed.xml</code> tem <code>3070</code> bytes.
+        </li>
+        <li>
+            Você pode passar a propriedade <code>st_size</code> para a função <a href="https://www.acervolima.com.br/2021/05/seu-primeiro-programa-python.html#divingin"><code>approximate_size()</code></a>.
+        </li>
+    </ol>
+
+    <h3 id="abspath">Construindo Nomes de Caminho Absolutos</h3>
+    <p>
+        Na <a href="#osstat">seção anterior</a>, a função <code>glob.glob()</code> retornou uma lista de nomes de caminhos relativos. O primeiro exemplo tinha nomes de caminho como <code>'examples\feed.xml'</code>, e o segundo exemplo tinha nomes de caminho relativos ainda mais curtos como <code>'romantest1.py'</code>. Contanto que você permaneça no mesmo diretório de trabalho atual, esses nomes de caminho relativos funcionarão para abrir arquivos ou obter metadados de arquivos. Mas se você quiser construir um caminho de acesso absoluto - <i>ou seja</i>, um que inclua todos os nomes de diretório de volta ao diretório raiz ou letra de unidade - então você precisará da função <code>os.path.realpath()</code>.
+    </p>
+    
+    <pre><code class="language-python-repl">&gt;&gt;&gt; import os
+&gt;&gt;&gt; print(os.getcwd())
+c:\Users\pilgrim\diveintopython3\examples
+&gt;&gt;&gt; print(os.path.realpath('feed.xml'))
+c:\Users\pilgrim\diveintopython3\examples\feed.xml</code></pre>
+
+    <h2 id="listcomprehension">Compreensões de lista</h2>
+    <blockquote>
+        <p>
+            Você pode usar qualquer expressão Python em uma compreensão de lista.
+        </p>
+    </blockquote>
+    <p>
+        Uma compreensão de lista fornece uma maneira compacta de mapear uma lista em outra lista, aplicando uma função a cada um dos elementos da lista.
+    </p>
+    
+    <pre><code class="language-python-repl">&gt;&gt;&gt; a_list = [1, 9, 8, 4]
+&gt;&gt;&gt; [elem * 2 for elem in a_list]           ①
+[2, 18, 16, 8]
+&gt;&gt;&gt; a_list                                  ②
+[1, 9, 8, 4]
+&gt;&gt;&gt; a_list = [elem * 2 for elem in a_list]  ③
+&gt;&gt;&gt; a_list
+[2, 18, 16, 8]</code></pre>
+
+    <ol>
+        <li>
+            Para entender isso, olhe da direita para a esquerda. <code>a_list</code> é a lista que você está mapeando. O python intérpreta percorre <code>a_list</code> um elemento de cada vez, atribuir temporariamente o valor de cada elemento para a variável <code>elem</code>. O Python então aplica a operação <code>elem * 2</code> e anexa esse resultado à lista retornada.
+        </li>
+        <li>
+            Uma compreensão de lista cria uma nova lista; não altera a lista original.
+        </li>
+        <li>
+            É seguro atribuir o resultado de uma compreensão de lista à variável que você está mapeando. O Python constrói a nova lista na memória e, quando a compreensão da lista é concluída, ele atribui o resultado à variável original.
+        </li>
+    </ol>
+    <p>
+        Você pode usar qualquer expressão Python em uma compreensão de lista, incluindo as funções no módulo <code>os</code> para manipular arquivos e diretórios.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; import os, glob
+&gt;&gt;&gt; glob.glob('*.xml')                                 ①
+['feed-broken.xml', 'feed-ns0.xml', 'feed.xml']
+&gt;&gt;&gt; [os.path.realpath(f) for f in glob.glob('*.xml')]  ②
+['c:\\Users\\pilgrim\\diveintopython3\\examples\\feed-broken.xml',
+ 'c:\\Users\\pilgrim\\diveintopython3\\examples\\feed-ns0.xml',
+ 'c:\\Users\\pilgrim\\diveintopython3\\examples\\feed.xml']</code></pre>
+
+    <ol>
+        <li>
+            Isso retorna uma lista de todos os arquivos <code>.xml</code> no diretório de trabalho atual.
+        </li>
+        <li>
+            Essa compreensão de lista pega essa lista de arquivos <code>.xml</code> e a transforma em uma lista de nomes de caminho completos.
+        </li>
+    </ol>
+    <p>
+        As compreensões de lista também podem filtrar itens, produzindo um resultado que pode ser menor do que a lista original.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; import os, glob
+&gt;&gt;&gt; [f for f in glob.glob('*.py') if os.stat(f).st_size > 6000]  ①
+['pluraltest6.py',
+ 'romantest10.py',
+ 'romantest6.py',
+ 'romantest7.py',
+ 'romantest8.py',
+ 'romantest9.py']</code></pre>
+
+    <ol>
+        <li>
+            Para filtrar uma lista, você pode incluir uma cláusula <code>if</code> no final da compreensão da lista. A expressão após a palavra-chave <code>if</code> será avaliada para cada item da lista. Se a expressão for avaliada como <code>True</code>, o item será incluído na saída. Essa compreensão de lista examina a lista de todos os arquivos <code>.py</code> no diretório atual e a instrução <code>if</code> filtra essa lista testando se o tamanho de cada arquivo é maior do que <code>6000</code> bytes. Existem seis desses arquivos, portanto, a compreensão da lista retorna uma lista de seis nomes de arquivo.
+        </li>
+    </ol>
+    <p>
+        Todos os exemplos de compreensões de lista até agora apresentam expressões simples - multiplique um número por uma constante, chame uma única função ou simplesmente retorne o item original da lista (após a filtragem). Mas não há limite para o quão complexa pode ser a compreensão de uma lista.
+    </p>
+    
+    <pre><code class="language-python-repl">&gt;&gt;&gt; import os, glob
+&gt;&gt;&gt; [(os.stat(f).st_size, os.path.realpath(f)) for f in glob.glob('*.xml')]            ①
+[(3074, 'c:\\Users\\pilgrim\\diveintopython3\\examples\\feed-broken.xml'),
+ (3386, 'c:\\Users\\pilgrim\\diveintopython3\\examples\\feed-ns0.xml'),
+ (3070, 'c:\\Users\\pilgrim\\diveintopython3\\examples\\feed.xml')]
+&gt;&gt;&gt; import humansize
+&gt;&gt;&gt; [(humansize.approximate_size(os.stat(f).st_size), f) for f in glob.glob('*.xml')]  ②
+[('3.0 KiB', 'feed-broken.xml'),
+ ('3.3 KiB', 'feed-ns0.xml'),
+ ('3.0 KiB', 'feed.xml')]</code></pre>
+
+    <ol>
+        <li>
+            Esta compreensão de lista encontra todos os arquivos <code>.xml</code> no diretório de trabalho atual, obtém o tamanho de cada arquivo (chamando a função <code>os.stat()</code>) e constrói uma tupla do tamanho do arquivo e o caminho absoluto de cada arquivo (chamando a função <code>os.path.realpath()</code>).
+        </li>
+        <li>
+            Essa compreensão se baseia na anterior para chamar a função <a href="https://www.acervolima.com.br/2021/05/seu-primeiro-programa-python.html#divingin"><code>approximate_size()</code></a> com o tamanho do arquivo <code>.xml</code> de cada arquivo.
+        </li>
+    </ol>
+
+    <h2 id="dictionarycomprehension">Compreensão do dicionário</h2>
+    <p>
+        Uma compreensão de dicionário é como uma compreensão de lista, mas constrói um dicionário em vez de uma lista.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; import os, glob
+&gt;&gt;&gt; metadata = [(f, os.stat(f)) for f in glob.glob('*test*.py')]    ①
+&gt;&gt;&gt; metadata[0]                                                     ②
+('alphameticstest.py', nt.stat_result(st_mode=33206, st_ino=0, st_dev=0,
+ st_nlink=0, st_uid=0, st_gid=0, st_size=2509, st_atime=1247520344,
+ st_mtime=1247520344, st_ctime=1247520344))
+&gt;&gt;&gt; metadata_dict = {f:os.stat(f) for f in glob.glob('*test*.py')}  ③
+&gt;&gt;&gt; type(metadata_dict)                                             ④
+&lt;class 'dict'&gt;
+&gt;&gt;&gt; list(metadata_dict.keys())                                      ⑤
+['romantest8.py', 'pluraltest1.py', 'pluraltest2.py', 'pluraltest5.py',
+ 'pluraltest6.py', 'romantest7.py', 'romantest10.py', 'romantest4.py',
+ 'romantest9.py', 'pluraltest3.py', 'romantest1.py', 'romantest2.py',
+ 'romantest3.py', 'romantest5.py', 'romantest6.py', 'alphameticstest.py',
+ 'pluraltest4.py']
+&gt;&gt;&gt; metadata_dict['alphameticstest.py'].st_size                     ⑥
+2509</code></pre>
+
+    <ol>
+        <li>
+            Esta não é uma compreensão de dicionário; é uma <a href="#listcomprehension">compreensão de lista</a>. Ele encontra todos os arquivos <code>.py</code> com <code>test</code> em seus nomes e, em seguida, constrói uma tupla do nome do arquivo e dos metadados do arquivo (a partir da chamada da função <code>os.stat()</code>).
+        </li>
+        <li>
+            Cada item da lista resultante é uma tupla.
+        </li>
+        <li>
+            Esta é uma compreensão de dicionário. A sintaxe é semelhante à compreensão de uma lista, com duas diferenças. Primeiro, ele é colocado entre chaves em vez de colchetes. Em segundo lugar, em vez de uma única expressão para cada item, ele contém duas expressões separadas por dois pontos. A expressão antes dos dois pontos (<code>f</code> neste exemplo) é a chave do dicionário; a expressão após os dois pontos (<code>os.stat(f)</code> neste exemplo) é o valor.
+        </li>
+        <li>
+            Uma compreensão de dicionário retorna um dicionário.
+        </li>
+        <li>
+            As chaves deste dicionário específico são simplesmente os nomes de arquivo retornados da chamada para <code>glob.glob('*test*.py')</code>.
+        </li>
+        <li>
+            O valor associado a cada chave é o valor de retorno da função <code>os.stat()</code>. Isso significa que podemos “pesquisar” um arquivo por nome neste dicionário para obter seus metadados de arquivo. Uma das partes dos metadados é <code>st_size</code> o tamanho do arquivo. O arquivo <code>alphameticstest.py</code> tem <code>2509</code> bytes.
+        </li>
+    </ol>
+    <p>
+        Como as compreensões de lista, você pode incluir uma cláusula <code>if</code> em uma compreensão de dicionário para filtrar a sequência de entrada com base em uma expressão que é avaliada com cada item.
+    </p>
+    
+    <pre><code class="language-python-repl">&gt;&gt;&gt; import os, glob, humansize
+&gt;&gt;&gt; metadata_dict = {f:os.stat(f) for f in glob.glob('*')}                                  ①
+&gt;&gt;&gt; humansize_dict = {os.path.splitext(f)[0]:humansize.approximate_size(meta.st_size) \     
+...                   for f, meta in metadata_dict.items() if meta.st_size > 6000}          ②
+&gt;&gt;&gt; list(humansize_dict.keys())                                                             ③
+['romantest9', 'romantest8', 'romantest7', 'romantest6', 'romantest10', 'pluraltest6']
+&gt;&gt;&gt; humansize_dict['romantest9']                                                            ④
+'6.5 KiB'</code></pre>
+
+    <ol>
+        <li>
+            Esta compreensão de dicionário constrói uma lista de todos os arquivos no diretório de trabalho atual (<code>glob.glob('*')</code>), obtém os metadados de cada arquivo ( <code>os.stat(f)</code>) e constrói um dicionário cujas chaves são nomes de arquivos e cujos valores são os metadados de cada arquivo.
+        </li>
+        <li>
+            Esta compreensão de dicionário se baseia na compreensão anterior, filtra arquivos menores que <code>6000</code> bytes (<code>if meta.st_size &gt; 6000</code>) e usa essa lista filtrada para construir um dicionário cujas chaves são o nome do arquivo menos a extensão (<code>os.path.splitext(f)[0]</code>) e cujos valores são o tamanho aproximado de cada arquivo (<code>humansize.approximate_size(meta.st_size)</code>).
+        </li>
+        <li>
+            Como você viu em um exemplo anterior, existem seis desses arquivos, portanto, existem seis itens neste dicionário.
+        </li>
+        <li>
+            O valor de cada chave é a string retornada da função <code>approximate_size()</code>.
+        </li>
+    </ol>
+    
+    <h3 id="stupiddicttricks">Outras coisas divertidas para fazer com as compreensões de dicionário</h3>
+    <p>
+        Aqui está um truque com compreensões de dicionário que pode ser útil algum dia: trocar as chaves e os valores de um dicionário.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; a_dict = {'a': 1, 'b': 2, 'c': 3}
+&gt;&gt;&gt; {value:key for key, value in a_dict.items()}
+{1: 'a', 2: 'b', 3: 'c'}</code></pre>
+
+    <p id="postautopre13">
+        Claro, isso só funciona se os valores do dicionário forem imutáveis, como strings ou tuplas. Se você tentar fazer isso com um dicionário que contenha listas, a falha será espetacular.
+    </p>
+    
+    <pre><code class="language-python-repl">&gt;&gt;&gt; a_dict = {'a': [1, 2, 3], 'b': 4, 'c': 5}
+&gt;&gt;&gt; {value:key for key, value in a_dict.items()}
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+  File "&lt;stdin&gt;", line 1, in &lt;dictcomp&gt;
+TypeError: unhashable type: 'list'</code></pre>
+
+    <h2 id="setcomprehension">Definir Compreensões</h2>
+    <p>
+        Para não ficar de fora, os conjuntos também têm sua própria sintaxe de compreensão. É notavelmente semelhante à sintaxe para compreensões de dicionário. A única diferença é que os conjuntos têm apenas valores em vez de pares <code>chave: valor</code>.
+    </p>
+
+    <pre><code class="language-python-repl">&gt;&gt;&gt; a_set = set(range(10))
+&gt;&gt;&gt; a_set
+{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+&gt;&gt;&gt; {x ** 2 for x in a_set}           ①
+{0, 1, 4, 81, 64, 9, 16, 49, 25, 36}
+&gt;&gt;&gt; {x for x in a_set if x % 2 == 0}  ②
+{0, 8, 2, 4, 6}
+&gt;&gt;&gt; {2**x for x in range(10)}         ③
+{32, 1, 2, 4, 8, 64, 128, 256, 16, 512}</code></pre>
+
+    <ol>
+        <li>
+            As compreensões de conjuntos podem ter um conjunto como entrada. Esta compreensão de conjunto calcula os quadrados do conjunto de números de 0 a 9.
+        </li>
+        <li>
+            Como as compreensões de lista e de dicionário, as compreensões de conjunto podem conter uma cláusula <code>if</code> para filtrar cada item antes de retorná-lo no conjunto de resultados.
+        </li>
+        <li>
+            As compreensões de conjunto não precisam ter um conjunto como entrada; eles podem tomar qualquer sequência.
+        </li>
+    </ol>
+
+    <h2 id="furtherreading">Leitura Adicional</h2>
+    <ul>
+        <li>
+            <a href="http://docs.python.org/3.1/library/os.html" target="_blank">módulo <code>os</code></a>
+        </li>
+        <li>
+            <a href="http://www.doughellmann.com/PyMOTW/os/" target="_blank"><code>os</code> - Acesso portátil a recursos específicos do sistema operacional</a>
+        </li>
+        <li>
+            <a href="http://docs.python.org/3.1/library/os.path.html" target="_blank">módulo <code>os.path</code></a>
+        </li>
+        <li>
+            <a href="http://www.doughellmann.com/PyMOTW/ospath/" target="_blank"><code>os.path</code> - Manipulação independente de plataforma de nomes de arquivos</a>
+        </li>
+        <li>
+            <a href="http://docs.python.org/3.1/library/glob.html" target="_blank">módulo <code>glob</code></a>
+        </li>
+        <li>
+            <a href="http://www.doughellmann.com/PyMOTW/glob/" target="_blank"><code>glob</code> - Correspondência de padrão de nome de arquivo</a>
+        </li>
+        <li>
+            <a href="http://docs.python.org/3.1/library/time.html" target="_blank">módulo <code>time</code></a>
+        </li>
+        <li>
+            <a href="http://www.doughellmann.com/PyMOTW/time/" target="_blank"><code>time</code> - Funções para manipular o tempo do relógio</a>
+        </li>
+        <li>
+            <a href="http://docs.python.org/3.1/tutorial/datastructures.html#list-comprehensions"
+            target="_blank">Compreensões de lista</a>
+        </li>
+        <li>
+            <a href="http://docs.python.org/3.1/tutorial/datastructures.html#nested-list-comprehensions" target="_blank">Compreensões de listas aninhadas</a>
+        </li>
+        <li>
+            <a href="http://docs.python.org/3.1/tutorial/datastructures.html#looping-techniques" target="_blank">Técnicas de looping</a>
+        </li>
+    </ul>
+
+<p>
+     Esse artigo é uma tradução de um capítulo do livro "Dive Into Python 3" escrito por Mark Pilgrim. Você pode ler o livro desde o início em português clicando <a href="https://www.acervolima.com.br/2021/05/o-que-ha-de-novo-em-dive-into-python-3.html">aqui</a>.
+</p>
+<p>
+    Traduzido por Acervo Lima. O original pode ser acessado <a href="https://diveintopython3.problemsolving.io/comprehensions.html">aqui</a>.
+</p>
+<h2>Licença</h2>
+<ul>
+    <li><a href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution Share-Alike</a></li>
+</ul>
+
+<div class="prev-next-div">
+    <a class="prev" href="https://www.acervolima.com.br/2021/05/tipos-de-dados-nativos-em-python.html">&lt;&lt; Anterior</a>
+    <a class="next" href="#">Próximo &gt;&gt;</a>
+</div>
+
+
+
+</body>
+</html>

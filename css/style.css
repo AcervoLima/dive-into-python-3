@@ -1,0 +1,67 @@
+:root {
+    font-size: 10px;
+}
+
+html {
+    font-family: "Open Sans", sans-serif;
+    color: #333333;
+}
+
+body {
+    font-size: 1.6rem;
+}
+
+p {
+    line-height: 1.45em;
+}
+
+code {
+    font-family: 'Courier New', Courier, monospace;
+    background-color: #f1f1f1;
+}
+
+pre code {
+    background: #f1f1f1 !important;
+}
+
+.saida {
+    padding: 0.5rem;
+    background-color: #f1f1f1;
+}
+
+span.caption {
+    font-size: .8em;
+    font-weight: 600;
+}
+
+pre.terminal {
+    background-color: #f1f1f1;
+}
+
+.prev-next-div a {
+    text-decoration: none;
+    padding: 0.3rem 1.2rem;
+    color: #fff;
+    background-color: #000;
+}
+
+.prev {
+    float: left;
+}
+
+.next {
+    float: right;
+}
+
+.bloco-ferris p {
+    display: flex;
+}
+
+.bloco-ferris p strong{
+    margin: auto 2.5rem;
+}
+
+.ferris {
+    width: 100px;
+    height: auto;
+}
