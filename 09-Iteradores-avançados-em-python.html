@@ -183,126 +183,204 @@ SEND + MORE == MONEY
     
     <h2 id="assert">Fazendo afirmações</h2>
     <p>
-        Como muitas linguagens de programação, Python tem uma <code>assert</code>declaração. É assim que funciona.
+        Como muitas linguagens de programação, Python tem uma declaração <code>assert</code>. É assim que funciona.
+    </p>
+    
+    <pre><code class="language-python-repl">>>> assert 1 + 1 == 2                                     ①
+>>> assert 1 + 1 == 3                                     ②
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AssertionError
+>>> assert 2 + 2 == 5, "Only for very large values of 2"  ③
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AssertionError: Only for very large values of 2</code></pre>
 
-</p><p class="skip"><a href="#postautopre3" style="color: #b44582;">pule esta lista de códigos</a></p><pre class="screen" id="autopre3"><div class="w">[ <a class="toggle" href="javascript:toggleCodeBlock('autopre3')" style="color: #b44582;">ocultar</a> ] [ <a href="javascript:plainTextOnClick('autopre3')" style="color: #b44582;">abrir em uma nova janela</a> ]</div><div class="b"><a style="color: #b44582;"><samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="kwd">assert</span><span class="pln"> </span><span class="lit">1</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> </span><span class="lit">1</span><span class="pln"> </span><span class="pun">==</span><span class="pln"> </span><span class="lit">2</span></kbd>                                     <span class="u">①</span></a>
-<a style="color: #b44582;"><samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="kwd">assert</span><span class="pln"> </span><span class="lit">1</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> </span><span class="lit">1</span><span class="pln"> </span><span class="pun">==</span><span class="pln"> </span><span class="lit">3</span></kbd>                                     <span class="u">②</span></a>
-<samp class="traceback">Traceback (última chamada mais recente):
-  Arquivo "&lt;stdin&gt;", linha 1, em &lt;module&gt;
-AssertionError</samp>
-<a style="color: #b44582;"><samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="kwd">assert</span><span class="pln"> </span><span class="lit">2</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> </span><span class="lit">2</span><span class="pln"> </span><span class="pun">==</span><span class="pln"> </span><span class="lit">5</span><span class="pun">,</span><span class="pln"> </span><span class="str">"Only for very large values of 2"</span></kbd>  <span class="u">③</span></a>
-<samp class="traceback">Traceback (última chamada mais recente):
-  Arquivo "&lt;stdin&gt;", linha 1, em &lt;module&gt;
-AssertionError: Apenas para valores muito grandes de 2</samp></div></pre>
-<table style="width:100%;border-collapse:collapse;margin:0;border:0"><tbody><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">①</span></td><td style="vertical-align:top;margin:0;padding:0;width:auto;border:0">A <code>assert</code>instrução é seguida por qualquer expressão Python válida. Neste caso, a expressão <code>1 + 1 == 2</code>avalia para <code>True</code>, então o<code>assert</code> instrução não faz nada.
-</td></tr><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">②</span></td><td style="vertical-align:top;margin:0;padding:0;width:auto;border:0">No entanto, se a expressão Python for avaliada como <code>False</code>, a <code>assert</code>instrução gerará um <code>AssertionError</code>.
-</td></tr><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">③</span></td><td style="vertical-align:top;margin:0;padding:0;width:auto;border:0">Você também pode incluir uma mensagem legível que será impressa se o <code>AssertionError</code>for gerado.
-</td></tr></tbody></table>
-<p>Portanto, esta linha de código:
+    <ol>
+        <li>
+            A instrução <code>assert</code> é seguida por qualquer expressão Python válida. Neste caso, a expressão avalia <code>1 + 1 == 2</code> para <code>True</code>, então a instrução <code>assert</code> não faz nada.
+        </li>
+        <li>
+            No entanto, se a expressão Python for avaliada como <code>False</code>, a instrução <code>assert</code> gerará um <code>AssertionError</code>.
+        </li>
+        <li>
+            Você também pode incluir uma mensagem legível que será impressa se a exceção <code>AssertionError</code> for gerado.
+        </li>
+    </ol>
+    <p>
+        Portanto, esta linha de código:
+    </p>
+    
+    <pre><code class="language-python">assert len(unique_characters) &lt;= 10, 'Too many letters'</code></pre>
 
-</p><pre class="nd pp code"><code><span class="kwd">assert</span><span class="pln"> len</span><span class="pun">(</span><span class="pln">unique_characters</span><span class="pun">)</span><span class="pln"> </span><span class="pun">&lt;=</span><span class="pln"> </span><span class="lit">10</span><span class="pun">,</span><span class="pln"> </span><span class="str">'Too many letters'</span></code></pre>
-<p>... é equivalente a isto:
+    <p>
+        ... é equivalente a isto:
+    </p>
+    
+    <pre><code class="language-python-repl">if len(unique_characters) > 10:
+    raise AssertionError('Too many letters')</code></pre>
 
-</p><pre class="nd pp code"><code><span class="kwd">if</span><span class="pln"> len</span><span class="pun">(</span><span class="pln">unique_characters</span><span class="pun">)</span><span class="pln"> </span><span class="pun">&gt;</span><span class="pln"> </span><span class="lit">10</span><span class="pun">:</span><span class="pln"><br/>    </span><span class="kwd">raise</span><span class="pln"> </span><span class="typ">AssertionError</span><span class="pun">(</span><span class="str">'Too many letters'</span><span class="pun">)</span></code></pre>
-<p>O solucionador de alfamética usa exatamente isso <code>assert</code> afirmação para escapar mais cedo se o quebra-cabeça contiver mais de dez letras únicas. Uma vez que cada letra é atribuída a um dígito único, e há apenas dez dígitos, um quebra-cabeça com mais de dez letras exclusivas não pode ter uma solução.
+    <p>
+        O solucionador de alfamética usa exatamente isso <code>assert</code> afirmação para escapar mais cedo se o quebra-cabeça contiver mais de dez letras únicas. Uma vez que cada letra é atribuída a um dígito único, e há apenas dez dígitos, um quebra-cabeça com mais de dez letras exclusivas não pode ter uma solução.
+    </p>
+    
+    <h2 id="generator-expressions">Expressões geradoras</h2>
+    <p>
+        Uma expressão geradora é como uma <a href="https://www.acervolima.com.br/2021/05/closures-e-geradores-em-python.html">função geradora</a> sem a função.
+    </p>
+    
+    <pre><code class="language-python-repl">>>> unique_characters = {'E', 'D', 'M', 'O', 'N', 'S', 'R', 'Y'}
+>>> gen = (ord(c) for c in unique_characters)  ①
+>>> gen                                        ②
+<generator object <genexpr> at 0x00BADC10>
+>>> next(gen)                                  ③
+69
+>>> next(gen)
+68
+>>> tuple(ord(c) for c in unique_characters)   ④
+(69, 68, 77, 79, 78, 83, 82, 89)</code></pre>
 
-</p><p class="a">⁂
+    <ol>
+        <li>
+            Uma expressão geradora é como uma função anônima que produz valores. A expressão em si parece uma <a href="https://www.acervolima.com.br/2021/05/compreensoes-de-listas-dicionarios-e.html#listcomprehension">compreensão de lista</a>, mas está entre parênteses em vez de colchetes.
+        </li>
+        <li>
+            A expressão geradora retorna... um iterador.
+        </li>
+        <li>
+            Chamar <code>next(gen)</code> retorna o próximo valor do iterador.
+        </li>
+        <li>
+            Se você gosta, você pode percorrer todos os valores possíveis e retornar uma tupla, lista ou conjunto, passando a expressão geradora <code>tuple()</code>, <code>list()</code> ou <code>set()</code>. Nesses casos, você não precisa de um conjunto extra de parênteses - apenas passe a expressão “nua” <code>ord(c) for c in unique_characters</code> para a função <code>tuple()</code> e o Python descobrirá que é uma expressão geradora.
+        </li>
+    </ol>
+    <div class="admonition note">
+        <p class="admonition-title">Observação</p>
+        <p>
+            Usar uma expressão geradora em vez de uma compreensão de lista pode economizar CPU e RAM. Se você estiver construindo uma lista apenas para jogá-la fora (<i>por exemplo,</i> passando-a para <code>tuple()</code> ou <code>set()</code>), use uma expressão geradora!
+        </p>
+    </div>
+    <p>
+        Esta é outra maneira de realizar a mesma coisa, usando uma <a href="https://www.acervolima.com.br/2021/05/closures-e-geradores-em-python.html" style="color: #b44582;">função geradora</a>:
+    </p>
+    
+    <pre><code class="language-python">def ord_map(a_string):
+    for c in a_string:
+        yield ord(c)
 
-</p><h2 id="generator-expressions">Expressões geradoras <a class="hl" href="#generator-expressions" style="color: #b44582;">#</a></h2>
-<p>Uma expressão geradora é como uma <a href="generators.html" style="color: #b44582;">função geradora</a> sem a função.
+gen = ord_map(unique_characters)</code></pre>
 
-</p><p class="skip"><a href="#postautopre4" style="color: #b44582;">pule esta lista de códigos</a></p><pre class="screen" id="autopre4"><div class="w">[ <a class="toggle" href="javascript:toggleCodeBlock('autopre4')" style="color: #b44582;">ocultar</a> ] [ <a href="javascript:plainTextOnClick('autopre4')" style="color: #b44582;">abrir em uma nova janela</a> ]</div><div class="b"><samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="pln">unique_characters </span><span class="pun">=</span><span class="pln"> </span><span class="pun">{</span><span class="str">'E'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'D'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'M'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'O'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'N'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'S'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'R'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'Y'</span><span class="pun">}</span></kbd>
-<a style="color: #b44582;"><samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="pln">gen </span><span class="pun">=</span><span class="pln"> </span><span class="pun">(</span><span class="pln">ord</span><span class="pun">(</span><span class="pln">c</span><span class="pun">)</span><span class="pln"> </span><span class="kwd">for</span><span class="pln"> c </span><span class="kwd">in</span><span class="pln"> unique_characters</span><span class="pun">)</span></kbd>  <span class="u">①</span></a>
-<a style="color: #b44582;"><samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="pln">gen</span></kbd>                                        <span class="u">②</span></a>
-<samp class="pp"><span class="pln">&lt;objeto gerador </span><span class="tag">&lt;genexpr&gt; </span><span class="pln">em 0x00BADC10&gt;</span></samp>
-<a style="color: #b44582;"><samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="kwd">next</span><span class="pun">(</span><span class="pln">gen</span><span class="pun">)</span></kbd>                                  <span class="u">③</span></a>
-<samp class="pp"><span class="lit">69</span></samp>
-<samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="kwd">next</span><span class="pun">(</span><span class="pln">gen</span><span class="pun">)</span></kbd>
-<samp class="pp"><span class="lit">68</span></samp>
-<a style="color: #b44582;"><samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="pln">tuple</span><span class="pun">(</span><span class="pln">ord</span><span class="pun">(</span><span class="pln">c</span><span class="pun">)</span><span class="pln"> </span><span class="kwd">for</span><span class="pln"> c </span><span class="kwd">in</span><span class="pln"> unique_characters</span><span class="pun">)</span></kbd>   <span class="u">④</span></a>
-<samp class="pp"><span class="pun">( </span><span class="lit">69 </span><span class="pun">, </span><span class="lit">68 </span><span class="pun">, </span><span class="lit">77 </span><span class="pun">, </span><span class="lit">79 </span><span class="pun">, </span><span class="lit">78 </span><span class="pun">, </span><span class="lit">83 </span><span class="pun">, </span><span class="lit">82 </span><span class="pun">, </span><span class="lit">89 </span><span class="pun">)</span><span class="pln"> </span><span class="lit"></span><span class="pun"></span><span class="pln"> </span><span class="lit"></span><span class="pun"></span><span class="pln"> </span><span class="lit"></span><span class="pun"></span><span class="pln"> </span><span class="lit"></span><span class="pun"></span><span class="pln"> </span><span class="lit"></span><span class="pun"></span><span class="pln"> </span><span class="lit"></span><span class="pun"></span><span class="pln"> </span><span class="lit"></span><span class="pun"></span></samp></div></pre>
-<table style="width:100%;border-collapse:collapse;margin:0;border:0"><tbody><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">①</span></td><td style="vertical-align: top; margin: 0px; padding: 0px; width: auto; border: 0px none; background-color: inherit; cursor: inherit;">Uma expressão geradora é como uma função anônima que produz valores. A expressão em si parece uma <a href="comprehensions.html#listcomprehension" style="color: #b44582;">compreensão de lista</a> , mas está entre parênteses em vez de colchetes.
-</td></tr><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">②</span></td><td style="vertical-align:top;margin:0;padding:0;width:auto;border:0">A expressão geradora retorna ... um iterador.
-</td></tr><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">③</span></td><td style="vertical-align:top;margin:0;padding:0;width:auto;border:0">Chamar retorna o próximo valor do iterador.
-<code>next(<var>gen</var>)</code></td></tr><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">④</span></td><td style="vertical-align: top; margin: 0px; padding: 0px; width: auto; border: 0px none; background-color: inherit; cursor: inherit;">Se você gosta, você pode percorrer todos os valores possíveis e retornar uma tupla, lista ou conjunto, passando a expressão gerador <code>tuple()</code>, <code>list()</code>ou <code>set()</code>. Nesses casos, você não precisa de um conjunto extra de parênteses - apenas passe a expressão “nua” <code>ord(c) for c in unique_characters</code>para a <code>tuple()</code>função e o Python descobrirá que é uma expressão geradora.
-</td></tr></tbody></table>
-<blockquote class="note">
-<p><span class="u">☞</span>Usar uma expressão geradora em vez de uma compreensão de lista pode economizar <abbr>CPU</abbr> e <abbr>RAM</abbr> . Se você estiver construindo uma lista apenas para jogá-la fora ( <i>por exemplo,</i> passando-a para <code>tuple()</code>ou <code>set()</code>), use uma expressão geradora!
-</p></blockquote>
-<p>Esta é outra maneira de realizar a mesma coisa, usando uma <a href="generators.html" style="color: #b44582;">função geradora</a> :
+    <p>
+        A expressão geradora é mais compacta, mas funcionalmente equivalente.
+    </p>
+    
+    <h2 id="permutations">Calculando Permutações... O Caminho Preguiçoso!</h2>
+    <p>
+        Em primeiro lugar, o que diabos são permutações? As permutações são um conceito matemático. (Na verdade, existem várias definições, dependendo do tipo de matemática que você está fazendo. Aqui estou falando sobre combinatória, mas se isso não significa nada para você, não se preocupe com isso. Como sempre, a <a href="http://en.wikipedia.org/wiki/Permutation" target="_blank">Wikipedia é o seu amigo</a>).
+    </p>
+    <p>
+        A ideia é que você pegue uma lista de coisas (podem ser números, podem ser letras, podem ser ursos dançarinos) e encontre todas as maneiras possíveis de dividi-las em listas menores. Todas as listas menores têm o mesmo tamanho, que pode ser tão pequeno quanto 1 e tão grande quanto o número total de itens. Ah, e nada pode ser repetido. Os matemáticos dizem coisas como “vamos encontrar as permutações de 3 itens diferentes tomados 2 de cada vez”, o que significa que você tem uma sequência de 3 itens e deseja encontrar todos os pares ordenados possíveis.
+    </p>
+    
+    <pre><code class="language-python-repl">>>> import itertools                              ①
+>>> perms = itertools.permutations([1, 2, 3], 2)  ②
+>>> next(perms)                                   ③
+(1, 2)
+>>> next(perms)
+(1, 3)
+>>> next(perms)
+(2, 1)                                            ④
+>>> next(perms)
+(2, 3)
+>>> next(perms)
+(3, 1)
+>>> next(perms)
+(3, 2)
+>>> next(perms)                                   ⑤
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+StopIteration</code></pre>
 
-</p><pre class="nd pp code"><code><span class="kwd">def</span><span class="pln"> ord_map</span><span class="pun">(</span><span class="pln">a_string</span><span class="pun">):</span><span class="pln"><br/>    </span><span class="kwd">for</span><span class="pln"> c </span><span class="kwd">in</span><span class="pln"> a_string</span><span class="pun">:</span><span class="pln"><br/>        </span><span class="kwd">yield</span><span class="pln"> ord</span><span class="pun">(</span><span class="pln">c</span><span class="pun">)</span><span class="pln"><br/><br/>gen </span><span class="pun">=</span><span class="pln"> ord_map</span><span class="pun">(</span><span class="pln">unique_characters</span><span class="pun">)</span></code></pre>
-<p>A expressão geradora é mais compacta, mas funcionalmente equivalente.
+    <ol>
+        <li>
+            O módulo <code>itertools</code> contém todos os tipos de coisas divertidas, incluindo uma função <code>permutations()</code> que faz todo o trabalho árduo de encontrar permutações.
+        </li>
+        <li>
+            A função <code>permutations()</code> leva uma sequência (aqui uma lista de três inteiros) e um número, que é o número de itens que você deseja em cada grupo menor. A função retorna um iterador, que você pode usar em um loop <code>for</code> ou em qualquer lugar antigo que itere. Aqui, percorrerei o iterador manualmente para mostrar todos os valores.
+        </li>
+        <li>
+            A primeira permutação de <code>[1, 2, 3]</code> tomada 2 de cada vez é <code>(1, 2)</code>.
+        </li>
+        <li>
+            Observe que as permutações são ordenadas: <code>(2, 1)</code> é diferente de <code>(1, 2)</code>.
+        </li>
+        <li>
+            É isso! Essas são todas as permutações de <code>[1, 2, 3]</code> tomada 2 de cada vez. Os pares como <code>(1, 1)</code> e <code>(2, 2)</code> nunca aparecem, porque contêm repetições, portanto não são permutações válidas. Quando não há mais permutações, o iterador levanta uma exceção <code>StopIteration</code>.
+        </li>
+    </ol>
+    <blockquote>
+        <p>
+            O módulo <code>itertools</code> tem todo tipo de diversão.
+        </p>
+    </blockquote>
+    <p>
+        A função <code>permutations()</code> não precisa de uma lista. Pode receber qualquer sequência - até mesmo uma string.
+    </p>
+    
+    <pre><code class="language-python-repl">>>> import itertools
+>>> perms = itertools.permutations('ABC', 3)  ①
+>>> next(perms)
+('A', 'B', 'C')                               ②
+>>> next(perms)
+('A', 'C', 'B')
+>>> next(perms)
+('B', 'A', 'C')
+>>> next(perms)
+('B', 'C', 'A')
+>>> next(perms)
+('C', 'A', 'B')
+>>> next(perms)
+('C', 'B', 'A')
+>>> next(perms)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+StopIteration
+>>> list(itertools.permutations('ABC', 3))    ③
+[('A', 'B', 'C'), ('A', 'C', 'B'),
+ ('B', 'A', 'C'), ('B', 'C', 'A'),
+ ('C', 'A', 'B'), ('C', 'B', 'A')]</code></pre>
 
-</p><p class="a">⁂
+    <ol>
+        <li>
+            Uma string é apenas uma sequência de caracteres. Para fins de localização de permutações, a string <code>'ABC'</code> é equivalente à lista <code>['A', 'B', 'C']</code>.
+        </li>
+        <li>
+            A primeira permutação dos 3 itens <code>['A', 'B', 'C']</code>, considerados 3 de cada vez, é <code>('A', 'B', 'C')</code>. Existem cinco outras permutações - os mesmos três caracteres em todas as ordens concebíveis.
+        </li>
+        <li>
+            Como a função <code>permutations()</code> sempre retorna um iterador, uma maneira fácil de depurar permutações é passar esse iterador para a função <code>list()</code> interna para ver todas as permutações imediatamente.
+        </li>
+    </ol>
 
-</p><h2 id="permutations">Calculando Permutações ... O Caminho Preguiçoso! <a class="hl" href="#permutations" style="color: #b44582;">#</a></h2>
-<p>Em primeiro lugar, o que diabos são permutações? As permutações são um conceito matemático. (Na verdade, existem várias definições, dependendo do tipo de matemática que você está fazendo. Aqui estou falando sobre combinatória, mas se isso não significa nada para você, não se preocupe com isso. Como sempre, a <a href="http://en.wikipedia.org/wiki/Permutation" style="color: #b44582;">Wikipedia é o seu amigo</a> .)
+    <h2 id="more-itertools">Outras coisas divertidas no módulo <code>itertools</code></h2>
 
-</p><p>A ideia é que você pegue uma lista de coisas (podem ser números, podem ser letras, podem ser ursos dançarinos) e encontre todas as maneiras possíveis de dividi-las em listas menores. Todas as listas menores têm o mesmo tamanho, que pode ser tão pequeno quanto 1 e tão grande quanto o número total de itens. Ah, e nada pode ser repetido. Os matemáticos dizem coisas como “vamos encontrar as permutações de 3 itens diferentes tomados 2 de cada vez”, o que significa que você tem uma sequência de 3 itens e deseja encontrar todos os pares ordenados possíveis.
+    <pre><code class="language-python-repl">>>> import itertools
+>>> list(itertools.product('ABC', '123'))   ①
+[('A', '1'), ('A', '2'), ('A', '3'), 
+ ('B', '1'), ('B', '2'), ('B', '3'), 
+ ('C', '1'), ('C', '2'), ('C', '3')]
+>>> list(itertools.combinations('ABC', 2))  ②
+[('A', 'B'), ('A', 'C'), ('B', 'C')]</code></pre>
 
-</p><p class="skip"><a href="#postautopre5" style="color: #b44582;">pule esta lista de códigos</a></p><pre class="screen" id="autopre5"><div class="w">[ <a class="toggle" href="javascript:toggleCodeBlock('autopre5')" style="color: #b44582;">ocultar</a> ] [ <a href="javascript:plainTextOnClick('autopre5')" style="color: #b44582;">abrir em uma nova janela</a> ]</div><div class="b"><a style="color: #b44582;"><samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="kwd">import</span><span class="pln"> itertools</span></kbd>                              <span class="u">①</span></a>
-<a style="color: #b44582;"><samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="pln">perms </span><span class="pun">=</span><span class="pln"> itertools</span><span class="pun">.</span><span class="pln">permutations</span><span class="pun">([</span><span class="lit">1</span><span class="pun">,</span><span class="pln"> </span><span class="lit">2</span><span class="pun">,</span><span class="pln"> </span><span class="lit">3</span><span class="pun">],</span><span class="pln"> </span><span class="lit">2</span><span class="pun">)</span></kbd>  <span class="u">②</span></a>
-<a style="color: #b44582;"><samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="kwd">next</span><span class="pun">(</span><span class="pln">perms</span><span class="pun">)</span></kbd>                                   <span class="u">③</span></a>
-<samp class="pp"><span class="pun">( </span><span class="lit">1 </span><span class="pun">, </span><span class="lit">2 </span><span class="pun">)</span><span class="pln"> </span><span class="lit"></span><span class="pun"></span></samp>
-<samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="kwd">next</span><span class="pun">(</span><span class="pln">perms</span><span class="pun">)</span></kbd>
-<samp class="pp"><span class="pun">( </span><span class="lit">1 </span><span class="pun">, </span><span class="lit">3 </span><span class="pun">)</span><span class="pln"> </span><span class="lit"></span><span class="pun"></span></samp>
-<samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="kwd">next</span><span class="pun">(</span><span class="pln">perms</span><span class="pun">)</span></kbd>
-<a style="color: #b44582;"><samp class="pp"><span class="pun">( </span><span class="lit">2 </span><span class="pun">, </span><span class="lit">1 </span><span class="pun">)</span><span class="pln"> </span><span class="lit"></span><span class="pun"></span></samp>                                            <span class="u">④</span></a>
-<samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="kwd">next</span><span class="pun">(</span><span class="pln">perms</span><span class="pun">)</span></kbd>
-<samp class="pp"><span class="pun">( </span><span class="lit">2 </span><span class="pun">, </span><span class="lit">3 </span><span class="pun">)</span><span class="pln"> </span><span class="lit"></span><span class="pun"></span></samp>
-<samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="kwd">next</span><span class="pun">(</span><span class="pln">perms</span><span class="pun">)</span></kbd>
-<samp class="pp"><span class="pun">( </span><span class="lit">3 </span><span class="pun">, </span><span class="lit">1 </span><span class="pun">)</span><span class="pln"> </span><span class="lit"></span><span class="pun"></span></samp>
-<samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="kwd">next</span><span class="pun">(</span><span class="pln">perms</span><span class="pun">)</span></kbd>
-<samp class="pp"><span class="pun">( </span><span class="lit">3 </span><span class="pun">, </span><span class="lit">2 </span><span class="pun">)</span><span class="pln"> </span><span class="lit"></span><span class="pun"></span></samp>
-<a style="color: #b44582;"><samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="kwd">next</span><span class="pun">(</span><span class="pln">perms</span><span class="pun">)</span></kbd>                                   <span class="u">⑤</span></a>
-<samp class="traceback">Traceback (última chamada mais recente):
-  Arquivo "&lt;stdin&gt;", linha 1, em &lt;module&gt;
-StopIteration</samp></div></pre>
-<table style="width:100%;border-collapse:collapse;margin:0;border:0"><tbody><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">①</span></td><td style="vertical-align:top;margin:0;padding:0;width:auto;border:0">O <code>itertools</code>módulo contém todos os tipos de coisas divertidas, incluindo uma <code>permutations()</code>função que faz todo o trabalho árduo de encontrar permutações.
-</td></tr><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">②</span></td><td style="vertical-align: top; margin: 0px; padding: 0px; width: auto; border: 0px none; background-color: inherit; cursor: inherit;">A <code>permutations()</code>função leva uma sequência (aqui uma lista de três inteiros) e um número, que é o número de itens que você deseja em cada grupo menor. A função retorna um iterador, que você pode usar em um loop <code>for</code> ou em qualquer lugar antigo que itere. Aqui, percorrerei o iterador manualmente para mostrar todos os valores.
-</td></tr><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">③</span></td><td style="vertical-align:top;margin:0;padding:0;width:auto;border:0">A primeira permutação de <code>[1, 2, 3]</code>2 tomadas de cada vez é <code>(1, 2)</code>.
-</td></tr><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">④</span></td><td style="vertical-align:top;margin:0;padding:0;width:auto;border:0">Observe que as permutações são ordenadas: <code>(2, 1)</code>é diferente de <code>(1, 2)</code>.
-</td></tr><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">⑤</span></td><td style="vertical-align:top;margin:0;padding:0;width:auto;border:0">É isso! Essas são todas as permutações de <code>[1, 2, 3]</code>2 tomadas de cada vez. Os pares gostam <code>(1, 1)</code>e <code>(2, 2)</code>nunca aparecem, porque contêm repetições, portanto não são permutações válidas. Quando não há mais permutações, o iterador levanta uma <code>StopIteration</code>exceção.
-</td></tr></tbody></table>
-<aside>O <code>itertools</code>módulo tem todo tipo de diversão.</aside>
-<p>A <code>permutations()</code>função não precisa de uma lista. Pode receber qualquer sequência - até mesmo uma string.
+    <ol>
+        <li>
+            A função <code>itertools.product()</code> retorna um iterador contendo o produto cartesiano de duas sequências.
+        </li>
+        <li>
+            A função <code>itertools.combinations()</code> retorna um iterador contendo todas as combinações possíveis da sequência fornecida com o comprimento fornecido. É como a função <code>itertools.permutations()</code>, exceto que as combinações não incluem itens que são duplicatas de outros itens em uma ordem diferente. Portanto <code>itertools.permutations('ABC', 2)</code>, retornará ambos <code>('A', 'B')</code> e <code>('B', 'A')</code>(entre outros), mas <code>itertools.combinations('ABC', 2)</code> não retornará <code>('B', 'A')</code> porque é uma duplicata de <code>('A', 'B')</code> em uma ordem diferente.
+        </li>
+    </ol>
 
-</p><p class="skip"><a href="#postautopre6" style="color: #b44582;">pule esta lista de códigos</a></p><pre class="screen" id="autopre6"><div class="w">[ <a class="toggle" href="javascript:toggleCodeBlock('autopre6')" style="color: #b44582;">ocultar</a> ] [ <a href="javascript:plainTextOnClick('autopre6')" style="color: #b44582;">abrir em uma nova janela</a> ]</div><div class="b"><samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="kwd">import</span><span class="pln"> itertools</span></kbd>
-<a style="color: #b44582;"><samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="pln">perms </span><span class="pun">=</span><span class="pln"> itertools</span><span class="pun">.</span><span class="pln">permutations</span><span class="pun">(</span><span class="str">'ABC'</span><span class="pun">,</span><span class="pln"> </span><span class="lit">3</span><span class="pun">)</span></kbd>  <span class="u">①</span></a>
-<samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="kwd">next</span><span class="pun">(</span><span class="pln">perms</span><span class="pun">)</span></kbd>
-<a style="color: #b44582;"><samp class="pp"><span class="pun">( </span><span class="str">'A' </span><span class="pun">, </span><span class="str">'B' </span><span class="pun">, </span><span class="str">'C' </span><span class="pun">)</span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span></samp>                               <span class="u">②</span></a>
-<samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="kwd">next</span><span class="pun">(</span><span class="pln">perms</span><span class="pun">)</span></kbd>
-<samp class="pp"><span class="pun">( </span><span class="str">'A' </span><span class="pun">, </span><span class="str">'C' </span><span class="pun">, </span><span class="str">'B' </span><span class="pun">)</span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span></samp>
-<samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="kwd">next</span><span class="pun">(</span><span class="pln">perms</span><span class="pun">)</span></kbd>
-<samp class="pp"><span class="pun">( </span><span class="str">'B' </span><span class="pun">, </span><span class="str">'A' </span><span class="pun">, </span><span class="str">'C' </span><span class="pun">)</span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span></samp>
-<samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="kwd">next</span><span class="pun">(</span><span class="pln">perms</span><span class="pun">)</span></kbd>
-<samp class="pp"><span class="pun">( </span><span class="str">'B' </span><span class="pun">, </span><span class="str">'C' </span><span class="pun">, </span><span class="str">'A' </span><span class="pun">)</span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span></samp>
-<samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="kwd">next</span><span class="pun">(</span><span class="pln">perms</span><span class="pun">)</span></kbd>
-<samp class="pp"><span class="pun">( </span><span class="str">'C' </span><span class="pun">, </span><span class="str">'A' </span><span class="pun">, </span><span class="str">'B' </span><span class="pun">)</span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span></samp>
-<samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="kwd">next</span><span class="pun">(</span><span class="pln">perms</span><span class="pun">)</span></kbd>
-<samp class="pp"><span class="pun">( </span><span class="str">'C' </span><span class="pun">, </span><span class="str">'B' </span><span class="pun">, </span><span class="str">'A' </span><span class="pun">)</span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span></samp>
-<samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="kwd">next</span><span class="pun">(</span><span class="pln">perms</span><span class="pun">)</span></kbd>
-<samp class="traceback">Traceback (última chamada mais recente):
-  Arquivo "&lt;stdin&gt;", linha 1, em &lt;module&gt;
-StopIteration</samp>
-<a style="color: #b44582;"><samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="pln">list</span><span class="pun">(</span><span class="pln">itertools</span><span class="pun">.</span><span class="pln">permutations</span><span class="pun">(</span><span class="str">'ABC'</span><span class="pun">,</span><span class="pln"> </span><span class="lit">3</span><span class="pun">))</span></kbd>    <span class="u">③</span></a>
-<samp class="pp"><span class="pun">[( </span><span class="str">'A' </span><span class="pun">, </span><span class="str">'B' </span><span class="pun">, </span><span class="str">'C' </span><span class="pun">), </span><span class="pun">( </span><span class="str">'A' </span><span class="pun">, </span><span class="str">'C' </span><span class="pun">, </span><span class="str">'B' </span><span class="pun">), </span><span class="pun">( </span><span class="str">'B' </span><span class="pun">, </span><span class="str">'A' </span><span class="pun">, </span><span class="str">'C' </span><span class="pun">), </span><span class="pun">( </span><span class="str">'B' </span><span class="pun">, </span><span class="str">'C ' </span><span class="pun">, </span><span class="str">' A ' </span><span class="pun">), </span><span class="pun">( </span><span class="str">' C ' </span><span class="pun">, </span><span class="str">' A ' </span><span class="pun">, </span><span class="str">' B ' </span><span class="pun">), </span><span class="pun">( </span><span class="str">' C ' </span><span class="pun">, </span><span class="str">' B ' </span><span class="pun">, </span><span class="str">' A ' </span><span class="pun">)]</span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="pun"></span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"><br/> </span><span class="pun"></span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="pun"></span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"><br/> </span><span class="pun"></span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="pun"></span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span></samp></div></pre>
-<table style="width:100%;border-collapse:collapse;margin:0;border:0"><tbody><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">①</span></td><td style="vertical-align: top; margin: 0px; padding: 0px; width: auto; border: 0px none; background-color: inherit; cursor: inherit;">Uma string é apenas uma sequência de caracteres. Para fins de localização de permutações, a string <code>'ABC'</code>é equivalente à lista <code>['A', 'B', 'C']</code>.
-</td></tr><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">②</span></td><td style="vertical-align: top; margin: 0px; padding: 0px; width: auto; border: 0px none; background-color: inherit; cursor: inherit;">A primeira permutação dos 3 itens <code>['A', 'B', 'C']</code>, considerados 3 de cada vez, é <code>('A', 'B', 'C')</code>. Existem cinco outras permutações - os mesmos três caracteres em todas as ordens concebíveis.
-</td></tr><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">③</span></td><td style="vertical-align: top; margin: 0px; padding: 0px; width: auto; border: 0px none; background-color: inherit; cursor: inherit;">Como a <code>permutations()</code>função sempre retorna um iterador, uma maneira fácil de depurar permutações é passar esse iterador para a <code>list()</code>função interna para ver todas as permutações imediatamente.
-</td></tr></tbody></table>
-<p class="a">⁂
-
-</p><h2 id="more-itertools">Outras coisas divertidas no <code>itertools</code>módulo <a class="hl" href="#more-itertools" style="color: #b44582;">#</a></h2>
-<p class="skip"><a href="#postautopre7" style="color: #b44582;">pule esta lista de códigos</a></p><pre class="screen" id="autopre7"><div class="w">[ <a class="toggle" href="javascript:toggleCodeBlock('autopre7')" style="color: #b44582;">ocultar</a> ] [ <a href="javascript:plainTextOnClick('autopre7')" style="color: #b44582;">abrir em uma nova janela</a> ]</div><div class="b"><samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="kwd">import</span><span class="pln"> itertools</span></kbd>
-<a style="color: #b44582;"><samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="pln">list</span><span class="pun">(</span><span class="pln">itertools</span><span class="pun">.</span><span class="pln">product</span><span class="pun">(</span><span class="str">'ABC'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'123'</span><span class="pun">))</span></kbd>   <span class="u">①</span></a>
-<samp class="pp"><span class="pun">[( </span><span class="str">'A' </span><span class="pun">, </span><span class="str">'1' </span><span class="pun">), </span><span class="pun">( </span><span class="str">'A' </span><span class="pun">, </span><span class="str">'2' </span><span class="pun">), </span><span class="pun">( </span><span class="str">'A' </span><span class="pun">, </span><span class="str">'3' </span><span class="pun">), </span><span class="pun">( </span><span class="str">'B' </span><span class="pun">, </span><span class="str">'1' </span><span class="pun">), </span><span class="pun">( </span><span class="str">'B' </span><span class="pun">, </span><span class="str">'2' </span><span class="pun">) , </span><span class="pun">( </span><span class="str">'B' </span><span class="pun">, </span><span class="str">'3' </span><span class="pun">), </span><span class="pun">( </span><span class="str">'C' </span><span class="pun">, </span><span class="str">'1' </span><span class="pun">), </span><span class="pun">( </span><span class="str">'C' </span><span class="pun">, </span><span class="str">'2' </span><span class="pun">), </span><span class="pun">( </span><span class="str">'C' </span><span class="pun">, </span><span class="str">'3' </span><span class="pun">)]</span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="pun"></span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="pun"></span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> <br/> </span><span class="pun"></span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="pun"></span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="pun"></span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> <br/> </span><span class="pun"></span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="pun"></span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="pun"></span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span></samp>
-<a style="color: #b44582;"><samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="pln">list</span><span class="pun">(</span><span class="pln">itertools</span><span class="pun">.</span><span class="pln">combinations</span><span class="pun">(</span><span class="str">'ABC'</span><span class="pun">,</span><span class="pln"> </span><span class="lit">2</span><span class="pun">))</span></kbd>  <span class="u">②</span></a>
-<samp class="pp"><span class="pun">[( </span><span class="str">'A' </span><span class="pun">, </span><span class="str">'B' </span><span class="pun">), </span><span class="pun">( </span><span class="str">'A' </span><span class="pun">, </span><span class="str">'C' </span><span class="pun">), </span><span class="pun">( </span><span class="str">'B' </span><span class="pun">, </span><span class="str">'C' </span><span class="pun">)]</span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="pun"></span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="pun"></span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span></samp></div></pre>
-<table style="width:100%;border-collapse:collapse;margin:0;border:0"><tbody><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">①</span></td><td style="vertical-align:top;margin:0;padding:0;width:auto;border:0">A <code>itertools.product()</code>função retorna um iterador contendo o produto cartesiano de duas sequências.
-</td></tr><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">②</span></td><td style="vertical-align: top; margin: 0px; padding: 0px; width: auto; border: 0px none; background-color: inherit; cursor: inherit;">A <code>itertools.combinations()</code>função retorna um iterador contendo todas as combinações possíveis da sequência fornecida com o comprimento fornecido. É como a <code>itertools.permutations()</code>função, exceto que as combinações não incluem itens que são duplicatas de outros itens em uma ordem diferente. Portanto <code>itertools.permutations('ABC', 2)</code>, retornará ambos <code>('A', 'B')</code>e <code>('B', 'A')</code>(entre outros), mas <code>itertools.combinations('ABC', 2)</code>não retornará <code>('B', 'A')</code>porque é uma duplicata de <code>('A', 'B')</code>em uma ordem diferente.
-</td></tr></tbody></table>
 <p class="skip"><a href="#postautopre8" style="color: #b44582;">pule esta lista de códigos</a></p><pre class="screen" id="autopre8"><div class="w">[ <a class="toggle" href="javascript:toggleCodeBlock('autopre8')" style="color: #b44582;">ocultar</a> ] [ <a href="javascript:plainTextOnClick('autopre8')" style="color: #b44582;">abrir em uma nova janela</a> ] [ <a href="examples/favorite-people.txt" style="color: #b44582;">baixar<code>favorite-people.txt</code></a> ]
 </div><div class="b"><a style="color: #b44582;"><samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="pln">names </span><span class="pun">=</span><span class="pln"> list</span><span class="pun">(</span><span class="pln">open</span><span class="pun">(</span><span class="str">'examples/favorite-people.txt'</span><span class="pun">,</span><span class="pln"> encoding</span><span class="pun">=</span><span class="str">'utf-8'</span><span class="pun">))</span></kbd>  <span class="u">①</span></a>
 <samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="pln">names</span></kbd>
@@ -321,7 +399,7 @@ StopIteration</samp>
 <code>list(open(<var>filename</var>))</code><code>rstrip()</code><code>lstrip()</code><code>strip()</code></td></tr><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">③</span></td><td style="vertical-align:top;margin:0;padding:0;width:auto;border:0">A <code>sorted()</code>função pega uma lista e a retorna classificada. Por padrão, ele é classificado em ordem alfabética.
 </td></tr><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">④</span></td><td style="vertical-align:top;margin:0;padding:0;width:auto;border:0">Mas a <code>sorted()</code>função também pode ter uma função como parâmetro- <var>chave</var> e é classificada por essa chave. Nesse caso, a função de classificação é <code>len()</code>, portanto, ela classifica por . Nomes mais curtos vêm primeiro, depois mais longos, depois os mais longos.
 <code>len(<var>each item</var>)</code></td></tr></tbody></table>
-<p>O que isso tem a ver com o <code>itertools</code>módulo? Estou feliz que você perguntou.
+<p>O que isso tem a ver com o módulo <code>itertools</code>? Estou feliz que você perguntou.
 
 </p><p class="skip"><a href="#postautopre9" style="color: #b44582;">pule esta lista de códigos</a></p><pre class="screen" id="autopre9"><div class="w">[ <a class="toggle" href="javascript:toggleCodeBlock('autopre9')" style="color: #b44582;">ocultar</a> ] [ <a href="javascript:plainTextOnClick('autopre9')" style="color: #b44582;">abrir em uma nova janela</a> ]</div><div class="b">... continuando do shell interativo anterior ...
 <samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="kwd">import</span><span class="pln"> itertools</span></kbd>
@@ -350,7 +428,7 @@ Nomes com 6 letras:
 Lizzie
 Wesley</samp></div></pre>
 <table style="width:100%;border-collapse:collapse;margin:0;border:0"><tbody><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">①</span></td><td style="vertical-align:top;margin:0;padding:0;width:auto;border:0">A <code>itertools.groupby()</code>função recebe uma sequência e uma função-chave e retorna um iterador que gera pares. Cada par contém o resultado de e outro iterador contendo todos os itens que compartilharam aquele resultado chave.
-<code>key_function(<var>each item</var>)</code></td></tr><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">②</span></td><td style="vertical-align:top;margin:0;padding:0;width:auto;border:0">Chamar a <code>list()</code>função “exauriu” o iterador, <i>ou seja</i> , você já gerou todos os itens no iterador para fazer a lista. Não há botão “reset” em um iterador; você não pode simplesmente começar de novo depois de esgotá-lo. Se quiser fazer um loop por ele novamente (digamos, no próximo loop <code>for</code>), você precisa chamar <code>itertools.groupby()</code>novamente para criar um novo iterador.
+<code>key_function(<var>each item</var>)</code></td></tr><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">②</span></td><td style="vertical-align:top;margin:0;padding:0;width:auto;border:0">Chamar a função <code>list()</code> “exauriu” o iterador, <i>ou seja</i> , você já gerou todos os itens no iterador para fazer a lista. Não há botão “reset” em um iterador; você não pode simplesmente começar de novo depois de esgotá-lo. Se quiser fazer um loop por ele novamente (digamos, no próximo loop <code>for</code>), você precisa chamar <code>itertools.groupby()</code>novamente para criar um novo iterador.
 </td></tr><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">③</span></td><td style="vertical-align: top; margin: 0px; padding: 0px; width: auto; border: 0px none; background-color: inherit; cursor: inherit;">Neste exemplo, dada uma lista de nomes <em>já classificados por comprimento</em> , <code>itertools.groupby(names, len)</code>colocará todos os nomes de 4 letras em um iterador, todos os nomes de 5 letras em outro iterador e assim por diante. A <code>groupby()</code>função é completamente genérica; ele poderia agrupar strings pela primeira letra, números por seu número de fatores ou qualquer outra função de tecla que você possa imaginar.
 </td></tr></tbody></table>
 <!-- YO DAWG, WE HEARD YOU LIKE LOOPING, SO WE PUT AN ITERATOR IN YOUR ITERATOR SO YOU CAN LOOP WHILE YOU LOOP. -->
@@ -384,7 +462,7 @@ Wesley</samp></div></pre>
 <a style="color: #b44582;"><samp class="p">&gt;&gt;&gt; </samp><kbd class="pp"><span class="pln">dict</span><span class="pun">(</span><span class="pln">zip</span><span class="pun">(</span><span class="pln">characters</span><span class="pun">,</span><span class="pln"> guess</span><span class="pun">))</span></kbd>   <span class="u">②</span></a>
 <samp class="pp"><span class="pun">{ </span><span class="str">'E' </span><span class="pun">: </span><span class="str">'0' </span><span class="pun">, </span><span class="str">'D' </span><span class="pun">: </span><span class="str">'3' </span><span class="pun">, </span><span class="str">'M' </span><span class="pun">: </span><span class="str">'2' </span><span class="pun">, </span><span class="str">'O' </span><span class="pun">: </span><span class="str">'4' </span><span class="pun">, </span><span class="str">'N' </span><span class="pun">: </span><span class="str">'5' </span><span class="pun">, </span><span class="str">'S' </span><span class="pun">: </span><span class="str">'1' </span><span class="pun">, </span><span class="str">' R ' </span><span class="pun">: </span><span class="str">' 6 ' </span><span class="pun">, </span><span class="str">' Y ' </span><span class="pun">: </span><span class="str">' 7 ' </span><span class="pun">}</span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"><br/> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span><span class="pln"> </span><span class="str"></span><span class="pun"></span></samp></div></pre>
 <table style="width:100%;border-collapse:collapse;margin:0;border:0"><tbody><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">①</span></td><td style="vertical-align:top;margin:0;padding:0;width:auto;border:0">Dada uma lista de letras e uma lista de dígitos (cada um representado aqui como cadeias de 1 caractere), a <code>zip</code>função criará um par de letras e dígitos, em ordem.
-</td></tr><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">②</span></td><td style="vertical-align: top; margin: 0px; padding: 0px; width: auto; border: 0px none; background-color: inherit; cursor: inherit;">Por que isso é legal? Porque essa estrutura de dados é exatamente a estrutura certa para passar para a <code>dict()</code>função de criar um dicionário que usa letras como chaves e seus dígitos associados como valores. (Esta não é a única maneira de fazer isso, é claro. Você poderia usar uma <a href="comprehensions.html#dictionarycomprehension" style="color: #b44582;">compreensão de dicionário</a> para criar o dicionário diretamente.) Embora a representação impressa do dicionário liste os pares em uma ordem diferente (os dicionários não têm "ordem" por se), você pode ver que cada letra está associada ao dígito, com base na ordem dos <var>caracteres</var> originais e nas sequências de <var>adivinhação</var> .
+</td></tr><tr><td style="text-align:center;vertical-align:baseline;margin:0;padding:0;width:2em;border:0"><span class="u">②</span></td><td style="vertical-align: top; margin: 0px; padding: 0px; width: auto; border: 0px none; background-color: inherit; cursor: inherit;">Por que isso é legal? Porque essa estrutura de dados é exatamente a estrutura certa para passar para a <code>dict()</code>função de criar um dicionário que usa letras como chaves e seus dígitos associados como valores. (Esta não é a única maneira de fazer isso, é claro. Você poderia usar uma <a href="https://www.acervolima.com.br/2021/05/compreensoes-de-listas-dicionarios-e.html#dictionarycomprehension" style="color: #b44582;">compreensão de dicionário</a> para criar o dicionário diretamente.) Embora a representação impressa do dicionário liste os pares em uma ordem diferente (os dicionários não têm "ordem" por se), você pode ver que cada letra está associada ao dígito, com base na ordem dos <var>caracteres</var> originais e nas sequências de <var>adivinhação</var> .
 </td></tr></tbody></table>
 <p id="guess">O solucionador de alfamética usa essa técnica para criar um dicionário que mapeia as letras do quebra-cabeça em dígitos na solução, para cada solução possível.
 
